@@ -102,6 +102,9 @@
 
                 {{--GUEST--}}
                 @guest
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('facilities.index') }}">Daftar Fasilitas</a>
+                    </li>
                     <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
                         <a href="{{ route('login') }}"
                            class="btn btn-outline-light rounded-pill px-4 fw-semibold"
@@ -127,6 +130,10 @@
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('reservations.index') ? 'active' : '' }}"
                                href="{{ route('reservations.index') }}">Riwayat</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('reports.create') ? 'active' : '' }}"
+                               href="{{ route('reports.create') }}">Lapor Kerusakan</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('reports.*') ? 'active' : '' }}"
@@ -214,6 +221,25 @@
         <div class="container d-flex align-items-center">
             <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ session('warning') }}
             <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+        </div>
+    </div>
+    @endif
+
+    @if ($errors->any())
+    <div class="alert alert-danger alert-dismissible fade show mb-0 rounded-0 border-0 border-start border-4 border-danger" role="alert">
+        <div class="container">
+            <div class="d-flex align-items-start">
+                <i class="bi bi-exclamation-octagon-fill me-2 mt-1"></i>
+                <div>
+                    <div class="fw-semibold mb-1">Periksa kembali isian berikut:</div>
+                    <ul class="mb-0 ps-3">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+            </div>
         </div>
     </div>
     @endif

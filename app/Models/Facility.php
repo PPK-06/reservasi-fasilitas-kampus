@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['name', 'type', 'location', 'capacity', 'description'])]
+#[Fillable(['name', 'type', 'location', 'capacity', 'description', 'status'])]
 class Facility extends Model
 {
     public function reservations(): HasMany
