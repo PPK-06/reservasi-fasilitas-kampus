@@ -12,6 +12,7 @@ Route::get('/', function () {
 */
 // M1 Auth & Akun (Elang): login, logout, register
 Route::get('/login', [AuthController::class, 'create'])->middleware('guest')->name('login');
+Route::post('/login', [AuthController::class, 'store'])->middleware('guest')->name('login.store');
 
 /*
 | Pengguna — auth + role:pengguna, tanpa prefix (dokumen route bagian 9)
