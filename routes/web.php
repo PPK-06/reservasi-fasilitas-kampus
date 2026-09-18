@@ -1,10 +1,17 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
 });
+
+/*
+| Publik — tanpa prefix (dokumen route bagian 8)
+*/
+// M1 Auth & Akun (Elang): login, logout, register
+Route::get('/login', [AuthController::class, 'create'])->middleware('guest')->name('login');
 
 /*
 | Pengguna — auth + role:pengguna, tanpa prefix (dokumen route bagian 9)
