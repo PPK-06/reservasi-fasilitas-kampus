@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'facility_id',
     'category',
     'description',
+    'status',
     'resolution_note',
 ])]
 class Report extends Model
