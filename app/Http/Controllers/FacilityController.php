@@ -2,11 +2,50 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Facility;
+use Illuminate\Http\Request;
+
 class FacilityController extends Controller
 {
     /*P1 – Daftar Fasilitas (publik)*/
-    public function index()
+    public function index(Request $request)
     {
-        return 'P1 - Daftar Fasilitas (WIP)';
+        $query = Facility::query();
+
+        // ── Filter: tipe (F6 — nilai dari konstanta model) ──
+        if ($request->filled('type')) {
+            $query->where('type', $request->input('type'));
+        }
+
+        // ── Filter: lokasi (F6 — idem) ──
+        if ($request->filled('location')) {
+            $query->where('location', $request->input('location'));
+        }
+
+        // ── Filter: kapasitas minimal (A4) ──
+        // Hanya diterapkan pada baris yang capacity IS NOT NULL.
+        // Fasilitas bertipe 'Alat' memiliki capacity NULL, jadi otomatis
+        // tidak terpengaruh — tetap muncul di hasil pencarian.
+        if ($request->filled('capacity')) {
+            $minCapacity = (int) $request->input('capacity');
+            $query->where(function ($q) use ($minCapacity) {
+                $q->where('capacity', '>=', $minCapacity)
+                  ->orWhereNull('capacity');
+            });
+        }
+
+        // ── Filter: pencarian nama (bonus convenience) ──
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->input('search') . '%');
+        }
+
+        // Urutan: aktif di atas, lalu by name (D5 — non-aktif tetap muncul)
+        $facilities = $query
+            ->orderByRaw("FIELD(status, 'active', 'under_maintenance', 'inactive')")
+            ->orderBy('name')
+            ->paginate(12)
+            ->withQueryString();
+
+        return view('facilities.index', compact('facilities'));
     }
 }
