@@ -17,7 +17,6 @@ class StoreReportRequest extends FormRequest
         return [
             'facility_id' => [
                 'required',
-                'integer',
                 'exists:facilities,id',
             ],
 
