@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Officer\ReportController as OfficerReportController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\Admin\RecapController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -53,4 +54,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // M1 Auth & Akun (Elang): admin.users.*
 
     // M5 Rekap & Export (Fazl): admin.recap.*
+    Route::get('/recap', [RecapController::class, 'index'])->name('recap.index');
+    Route::get('/recap/export', [RecapController::class, 'export'])->name('recap.export');
 });
