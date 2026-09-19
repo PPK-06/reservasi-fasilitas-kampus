@@ -39,11 +39,15 @@ class ReservationController extends Controller
      */
     public function store(StoreReservationRequest $request): RedirectResponse
     {
-        $date  = $request->validated()['date'];
-        $start = Carbon::createFromFormat('Y-m-d H:i', "{$date} {$request->validated()['start_slot']}");
-        $end   = Carbon::createFromFormat('Y-m-d H:i', "{$date} {$request->validated()['end_slot']}");
+        $validated = $request->validated();
+        $date  = $validated['date'];
+        $start = Carbon::createFromFormat('Y-m-d H:i', "{$date} {$validated['start_slot']}");
+        $end   = Carbon::createFromFormat('Y-m-d H:i', "{$date} {$validated['end_slot']}");
 
-        $reservation = new Reservation($request->only('facility_id', 'purpose'));
+        $reservation = new Reservation([
+            'facility_id' => $validated['facility_id'],
+            'purpose'     => $validated['purpose'],
+        ]);
         $reservation->user_id    = auth()->id();
         $reservation->start_time = $start;
         $reservation->end_time   = $end;

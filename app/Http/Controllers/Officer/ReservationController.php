@@ -103,10 +103,6 @@ class ReservationController extends Controller
      */
     public function reject(Request $request, Reservation $reservation): RedirectResponse
     {
-        $request->validate([
-            'status_reason' => ['required', 'string', 'min:10', 'max:500'],
-        ]);
-
         if ($reservation->status !== 'pending') {
             return back()->with('error', 'Hanya reservasi berstatus menunggu yang dapat ditolak.');
         }
@@ -114,6 +110,10 @@ class ReservationController extends Controller
         if ($reservation->start_time->lte(now())) {
             return back()->with('error', 'Reservasi ini sudah terlewat dan tidak dapat ditolak.');
         }
+
+        $request->validate([
+            'status_reason' => ['required', 'string', 'min:10', 'max:500'],
+        ]);
 
         $reservation->status = 'rejected';
         $reservation->status_reason = $request->input('status_reason');
@@ -128,13 +128,13 @@ class ReservationController extends Controller
      */
     public function cancel(Request $request, Reservation $reservation): RedirectResponse
     {
-        $request->validate([
-            'status_reason' => ['required', 'string', 'min:10', 'max:500'],
-        ]);
-
         if ($reservation->status !== 'approved') {
             return back()->with('error', 'Hanya reservasi berstatus disetujui yang dapat dibatalkan petugas.');
         }
+
+        $request->validate([
+            'status_reason' => ['required', 'string', 'min:10', 'max:500'],
+        ]);
 
         $reservation->status = 'cancelled_by_officer';
         $reservation->status_reason = $request->input('status_reason');
