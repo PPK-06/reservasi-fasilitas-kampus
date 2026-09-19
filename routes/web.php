@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Officer\ReportController as OfficerReportController;
 use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 
@@ -36,6 +37,9 @@ Route::middleware(['auth', 'role:petugas'])->prefix('officer')->name('officer.')
     // M3 Reservasi (Dhimas): officer.dashboard, officer.reservations.*
 
     // M4 Laporan (Fazl): officer.reports.*
+    Route::get('/reports', [OfficerReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports/{report}', [OfficerReportController::class, 'show'])->name('reports.show');
+    Route::patch('/reports/{report}', [OfficerReportController::class, 'update'])->name('reports.update');
 
     // M2 Fasilitas (Ferdy): officer.facilities.*
 });
