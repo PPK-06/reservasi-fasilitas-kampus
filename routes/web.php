@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\FacilityController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -14,6 +15,9 @@ Route::get('/', function () {
 Route::get('/login', [AuthController::class, 'create'])->middleware('guest')->name('login');
 Route::post('/login', [AuthController::class, 'store'])->middleware('guest')->name('login.store');
 Route::post('/logout', [AuthController::class, 'destroy'])->middleware('auth')->name('logout');
+
+// M2 Fasilitas (Ferdy): facilities.index, facilities.show
+Route::get('/facilities', [FacilityController::class, 'index'])->name('facilities.index');
 
 /*
 | Pengguna — auth + role:pengguna, tanpa prefix (dokumen route bagian 9)
