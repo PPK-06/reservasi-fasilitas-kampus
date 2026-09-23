@@ -72,26 +72,79 @@ class UserController extends Controller
 
     /**
      * A5 — detail satu akun.
+     *
+     * Hanya menampilkan. Seluruh aksi berada di method PATCH di bawah, dan
+     * tombolnya dirender view mengikuti matriks C2.
      */
     public function show(User $user): View
     {
-        abort(501);
+        return view('admin.users.show', [
+            'user' => $user,
+        ]);
     }
 
     /**
-     * A3 — transisi `pending` → `verified` (C2).
+     * A5 — transisi `pending` → `verified` (C2), tujuan A3 (bagian 11).
+     *
+     * Cakupannya hanya dari `pending`. Bagian 11 memetakan keempat aksi status
+     * satu-satu ke matriks C2, dan pemulihan akses akun `rejected` maupun
+     * `suspended` adalah pekerjaan `activate`, bukan aksi ini.
+     *
+     * Diperiksa di server, bukan hanya disembunyikan di tampilan: PATCH yang
+     * dikirim langsung untuk status lain tetap harus ditolak.
+     *
+     * Tidak membawa query string filter A3 — itu D15, disengaja. `back()` juga
+     * tidak dipakai karena ia akan mendarat di A5, bukan A3.
      */
     public function verify(User $user): RedirectResponse
     {
-        abort(501);
+        if ($user->status !== 'pending') {
+            $alasan = match ($user->status) {
+                'verified' => 'Akun ini sudah berstatus terverifikasi, tidak ada yang perlu diubah.',
+                'rejected' => 'Akun yang ditolak tidak diverifikasi ulang. Pakai aksi Aktifkan untuk memulihkan aksesnya.',
+                default => 'Akun yang dinonaktifkan tidak diverifikasi ulang. Pakai aksi Aktifkan untuk memulihkan aksesnya.',
+            };
+
+            return redirect()
+                ->route('admin.users.show', $user)
+                ->with('error', $alasan);
+        }
+
+        $user->status = 'verified';
+        $user->save();
+
+        return redirect()
+            ->route('admin.users.index')
+            ->with('success', 'Akun '.$user->name.' berhasil diverifikasi.');
     }
 
     /**
-     * A3 — transisi `pending` → `rejected` (C2).
+     * A5 — transisi `pending` → `rejected` (C2), tujuan A3 (bagian 11).
+     *
+     * Cakupannya jauh lebih sempit daripada verify: matriks C2 hanya
+     * menyediakan `pending` → `rejected`. Menutup akses akun yang sudah
+     * `verified` memakai suspend, bukan reject.
      */
     public function reject(User $user): RedirectResponse
     {
-        abort(501);
+        if ($user->status !== 'pending') {
+            $alasan = match ($user->status) {
+                'verified' => 'Akun yang sudah terverifikasi tidak dapat ditolak. Pakai aksi Nonaktifkan untuk menutup aksesnya.',
+                'rejected' => 'Akun ini sudah berstatus ditolak.',
+                default => 'Akun yang dinonaktifkan tidak dapat ditolak.',
+            };
+
+            return redirect()
+                ->route('admin.users.show', $user)
+                ->with('error', $alasan);
+        }
+
+        $user->status = 'rejected';
+        $user->save();
+
+        return redirect()
+            ->route('admin.users.index')
+            ->with('success', 'Registrasi akun '.$user->name.' ditolak.');
     }
 
     /**
