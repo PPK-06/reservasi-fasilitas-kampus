@@ -31,12 +31,11 @@
                     </button>
                 </form>
 
-                {{-- TODO P4: aktifkan setelah route `register` dibuat (Tahap 2)
+                {{-- Flash sukses registrasi ditampilkan layout induk, tidak diulang di sini --}}
                 <p class="text-center text-muted mt-4 mb-0" style="font-size:0.9rem;">
                     Belum punya akun?
                     <a href="{{ route('register') }}">Daftar di sini</a>
                 </p>
-                --}}
             </div>
         </div>
     </div>
