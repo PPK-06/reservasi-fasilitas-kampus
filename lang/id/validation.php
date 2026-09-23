@@ -47,6 +47,7 @@ return [
     'required_if' => 'Kolom :attribute wajib diisi saat :other bernilai :value.',
     'string' => 'Kolom :attribute harus berupa teks.',
     'unique' => ':attribute sudah terpakai.',
+    'uploaded' => ':attribute gagal diunggah. Pastikan ukuran berkas tidak lebih dari 3 MB.',
 
     /*
     | `max` dan `min` punya empat bentuk, dipilih Laravel berdasarkan jenis

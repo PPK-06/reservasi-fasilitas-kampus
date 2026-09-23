@@ -638,6 +638,7 @@ class DatabaseSeeder extends Seeder
     {
         $uploadDirectory = public_path(self::UPLOAD_DIR);
         File::ensureDirectoryExists($uploadDirectory);
+        $this->emptyUploadDirectory($uploadDirectory);
 
         $sampleCount = count($samplePhotos);
         $copied = 0;
@@ -658,6 +659,23 @@ class DatabaseSeeder extends Seeder
         }
 
         $this->command->info('Foto laporan dibuat: '.$copied.' berkas di public/'.self::UPLOAD_DIR.'/.');
+    }
+
+    /**
+     * Mengosongkan folder upload laporan sebelum foto contoh disalin.
+     *
+     * migrate:fresh mengosongkan tabel report_photos, tapi tidak menyentuh
+     * berkas fisiknya. Tanpa langkah ini setiap seeding meninggalkan berkas
+     * yatim yang tidak lagi dirujuk baris mana pun (F5). Foldernya sendiri
+     * dan .gitkeep dipertahankan karena keduanya dilacak git.
+     */
+    private function emptyUploadDirectory(string $uploadDirectory): void
+    {
+        foreach (File::files($uploadDirectory, true) as $file) {
+            if ($file->getFilename() !== '.gitkeep') {
+                File::delete($file->getPathname());
+            }
+        }
     }
 
     /**
