@@ -4,7 +4,7 @@
 **Bentuk:** Proyek besar, dipresentasikan sebagai UTS
 **Tenggat pengumpulan:** 11 Oktober 2026, 12.00 WIB via Kulon
 **Tim:** 4 mahasiswa
-**Versi dokumen:** 1.5 — 17 September 2026 *(keputusan yang muncul saat review PR pertama; F10 dikoreksi sebelum v1.4 sempat diedarkan)*
+**Versi dokumen:** 1.6 — 23 September 2026
 
 **Dokumen pendamping:**
 - `halaman-navigasi-dan-skema.md` — daftar halaman, peta navigasi, spesifikasi tabel, relasi, index, ERD
@@ -12,6 +12,20 @@
 - `pembagian-modul-dan-urutan-kerja.md` — siapa memegang modul apa, urutan kerja, kepemilikan file
 
 Dokumen ini berisi **aturan**; kedua dokumen pendamping berisi **penerapannya**.
+
+---
+
+## Perubahan dari v1.5
+
+Tidak ada aturan bisnis yang berubah. Satu baris konfigurasi ditambahkan, konsekuensi dari keputusan modul M1 yang berlaku untuk seluruh proyek.
+
+| Bagian | Perubahan |
+|---|---|
+| **Konfigurasi lingkungan** | + `APP_LOCALE=id` pada daftar baris `.env` yang wajib seragam. Dasarnya D17 `keputusan-m1-tahap2.md` — pesan validasi Bahasa Indonesia lewat `lang/id`, yang hanya dipakai kalau locale-nya `id` |
+| **Konfigurasi lingkungan** | Frasa "Tiga baris terakhir" diganti penyebutan nama, supaya tidak rusak saat daftarnya bertambah |
+| **Jadwal target** | Dua sisa pekerjaan periode 12–18 Sep ditandai selesai, dan tenggat `DatabaseSeeder` 27 September ditandai terpenuhi. Riwayatnya dibiarkan, mengikuti pola coret-lalu-tandai yang sudah dipakai baris itu |
+
+Daftar perubahan sebelumnya (v1.3 → v1.5) ada di bawah, termasuk catatan soal v1.4 yang sempat ditulis dengan F10 terbalik lalu dikoreksi sebelum sempat diedarkan. Catatan itu dipindahkan dari baris versi di header ke sana, supaya headernya tetap satu baris saat versi naik lagi.
 
 ---
 
@@ -103,12 +117,17 @@ Empat berkas. Dua di antaranya ikut git, dua lagi tidak.
 
 ```
 APP_TIMEZONE=Asia/Jakarta
+APP_LOCALE=id
 SESSION_DRIVER=file
 QUEUE_CONNECTION=sync
 CACHE_STORE=file
 ```
 
-Tiga baris terakhir **baru ditulis di v1.3**, meski sudah dijalankan sejak sesi setup. Ketiganya menentukan apakah Laravel menyimpan session, antrian job, dan cache di **database atau di file**. Karena semuanya diarahkan ke file dan `sync`, database proyek ini tidak butuh tabel `sessions`, `cache`, `cache_locks`, `jobs`, `job_batches`, maupun `failed_jobs` — dan itulah yang membuat jumlah tabel tetap lima, sesuai ERD. Lihat F8.
+`SESSION_DRIVER`, `QUEUE_CONNECTION`, dan `CACHE_STORE` **baru ditulis di v1.3**, meski sudah dijalankan sejak sesi setup. Ketiganya menentukan apakah Laravel menyimpan session, antrian job, dan cache di **database atau di file**. Karena semuanya diarahkan ke file dan `sync`, database proyek ini tidak butuh tabel `sessions`, `cache`, `cache_locks`, `jobs`, `job_batches`, maupun `failed_jobs` — dan itulah yang membuat jumlah tabel tetap lima, sesuai ERD. Lihat F8.
+
+`APP_LOCALE` **baru ditulis di v1.6**, dasarnya D17 `keputusan-m1-tahap2.md`: pesan validasi Bahasa Indonesia disediakan lewat berkas `lang/id` untuk seluruh proyek, dan berkas itu hanya dipakai Laravel kalau locale-nya `id`. `config/app.php` sudah menjemputnya lewat `env('APP_LOCALE', 'id')`, dengan `fallback_locale` tetap `en`.
+
+Sifatnya sama persis dengan keempat baris di atas: **wajib seragam, tidak ikut git, dan gagal tanpa gejala apa pun.** Gejala spesifiknya kalau nilainya masih `en` — pesan validasi tetap Bahasa Inggris walau `lang/id` sudah ada, tanpa satu pun error, sehingga mudah disangka berkas lang-nya yang tidak bekerja. `.env.example` sudah memakai `id`, tapi `.env` yang sudah terlanjur ada tidak tertimpa olehnya; perubahannya manual, lalu jalankan `php artisan config:clear`. Alasan lengkapnya di D17, tidak diulang di sini.
 
 **`php.ini`** — tidak ikut git. Karena batas upload foto 3 MB × maksimal 3 foto (lihat B2), nilai bawaan PHP tidak cukup:
 
@@ -890,7 +909,7 @@ Tenggat 11 Oktober 2026, 12.00 WIB.
 
 | Periode | Target |
 |---|---|
-| 12–18 Sep | ~~Daftar halaman & peta navigasi, skema database~~ **selesai**; ~~setup Laravel & repo~~ **selesai**; ~~kelima migration~~ **selesai**; ~~route list & kontrak form~~ **selesai**; sisa: `DatabaseSeeder` bersama, penetapan siapa memegang modul apa |
+| 12–18 Sep | ~~Daftar halaman & peta navigasi, skema database~~ **selesai**; ~~setup Laravel & repo~~ **selesai**; ~~kelima migration~~ **selesai**; ~~route list & kontrak form~~ **selesai**; ~~penetapan siapa memegang modul apa~~ **selesai**; ~~`DatabaseSeeder` bersama~~ **selesai 23 Sep**, di luar periode ini |
 | 19–27 Sep | Autentikasi & role; modul fasilitas |
 | 28 Sep–5 Okt | Modul reservasi; modul laporan |
 | 6–9 Okt | Rekap & export; UI/UX, validasi client, data demo |
@@ -898,7 +917,7 @@ Tenggat 11 Oktober 2026, 12.00 WIB.
 
 **Fitur fungsional dianggap selesai 5 Oktober**, bukan 10 Oktober. Sisa lima hari bukan buffer mewah — itu ruang untuk bug yang baru muncul saat modul digabung, dan untuk penyusunan dokumen Word yang butuh screenshot setiap fitur.
 
-**`DatabaseSeeder` tidak boleh lewat dari 27 September.** Modul reservasi dan laporan tidak dapat diuji tanpa `users` dan `facilities` yang sudah ada, dan data reservasi pending yang terlewat (A8) mustahil dibuat lewat form.
+**~~`DatabaseSeeder` tidak boleh lewat dari 27 September.~~ Selesai 23 September.** Modul reservasi dan laporan tidak dapat diuji tanpa `users` dan `facilities` yang sudah ada, dan data reservasi pending yang terlewat (A8) mustahil dibuat lewat form. Alasannya dibiarkan tertulis karena menjelaskan kenapa ia didahulukan, bukan ditunda ke akhir.
 
 ---
 
