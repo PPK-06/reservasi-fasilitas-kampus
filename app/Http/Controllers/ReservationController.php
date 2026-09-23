@@ -9,6 +9,7 @@ use App\Support\Slot;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 /**
@@ -77,7 +78,7 @@ class ReservationController extends Controller
      */
     public function show(Reservation $reservation): View
     {
-        $this->authorize('view', $reservation);
+        Gate::authorize('view', $reservation);
 
         $reservation->load('facility', 'user');
 
@@ -89,7 +90,7 @@ class ReservationController extends Controller
      */
     public function cancel(Request $request, Reservation $reservation): RedirectResponse
     {
-        $this->authorize('cancel', $reservation);
+        Gate::authorize('cancel', $reservation);
 
         $request->validate([
             'status_reason' => ['nullable', 'string', 'max:500'],
