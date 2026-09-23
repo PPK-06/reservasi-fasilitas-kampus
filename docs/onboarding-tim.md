@@ -2,10 +2,22 @@
 
 **Untuk:** 3 anggota tim selain PM
 **Repo:** https://github.com/PPK-06/reservasi-fasilitas-kampus
-**Versi dokumen:** 1.4 — 18 September 2026
+**Versi dokumen:** 1.5 — 23 September 2026
 **Tujuan:** dari nol sampai aplikasi jalan di komputermu, lalu siap mulai ngoding modul masing-masing.
 
 Baca sampai habis sebelum mulai. Kalau ada langkah yang gagal, lapor di grup — jangan cari solusi sendiri lalu diam-diam mengubah konfigurasi, karena konfigurasi yang berbeda antar anggota adalah sumber masalah paling mahal di proyek ini.
+
+---
+
+## Perubahan dari v1.4
+
+| Bagian | Perubahan |
+|---|---|
+| 4 | + `APP_LOCALE=id` masuk daftar baris `.env` yang wajib seragam di semua komputer. Dasarnya D17 `keputusan-m1-tahap2.md` |
+| 4 | Kalimat "Baris lain jangan diubah" diperjelas. Sebelumnya bisa terbaca sebagai larangan mengubah `APP_LOCALE` pada `.env` yang sudah terlanjur ada |
+| 4 | + subbagian **"Kenapa `APP_LOCALE` mudah terlewat"** — gejalanya, dan `php artisan config:clear` setelah mengubahnya |
+| 6 | Perintah pengisian data demo ditulis sebagai keadaan sekarang, bukan "nanti setelah `DatabaseSeeder` selesai". Seeder-nya sudah selesai |
+| 12 | + `keputusan-m1-tahap2.md` masuk daftar. Jumlah dokumen jadi enam, dan rujukan "Yang terakhir" diganti nama berkasnya supaya tidak ikut bergeser |
 
 ---
 
@@ -118,16 +130,35 @@ php artisan key:generate
 
 Lalu **buka `.env` dan isi `DB_PASSWORD`** sesuai password MySQL di komputermu. Kalau kosong (umumnya XAMPP), biarkan kosong.
 
-Baris lain **jangan diubah**. Khususnya empat ini, yang sudah diputuskan tim dan harus sama di semua komputer:
+Kelima baris berikut sudah diputuskan tim dan **harus sama persis di semua komputer**:
 
 ```
 APP_TIMEZONE=Asia/Jakarta
+APP_LOCALE=id
 SESSION_DRIVER=file
 QUEUE_CONNECTION=sync
 CACHE_STORE=file
 ```
 
-Tiga baris terakhir adalah alasan kenapa database proyek ini hanya berisi lima tabel. Kalau salah satunya diubah ke `database`, Laravel akan mencari tabel yang tidak pernah kita buat dan aplikasi error di halaman mana pun.
+**Baris di luar daftar ini jangan diubah.** Sebaliknya, kalau `.env`-mu sudah terlanjur ada dan salah satu dari kelima baris di atas bernilai lain, **ubah supaya sama** — larangan itu berlaku untuk baris di luar daftar, bukan untuk daftar ini. `.env.example` sudah memakai nilai yang benar, tapi ia tidak menimpa `.env` yang sudah ada.
+
+`SESSION_DRIVER`, `QUEUE_CONNECTION`, dan `CACHE_STORE` adalah alasan kenapa database proyek ini hanya berisi lima tabel. Kalau salah satunya diubah ke `database`, Laravel akan mencari tabel yang tidak pernah kita buat dan aplikasi error di halaman mana pun.
+
+### Kenapa `APP_LOCALE` mudah terlewat
+
+Baru di v1.5. Dasarnya **D17 `keputusan-m1-tahap2.md`**: pesan validasi Bahasa Indonesia disediakan lewat berkas `lang/id` untuk seluruh proyek. Berkas itu hanya dipakai Laravel kalau locale-nya `id`.
+
+Gejala kalau nilainya masih `en`: **pesan validasi tetap Bahasa Inggris walau `lang/id` sudah ada, dan tidak ada error apa pun.** Berkas lang-nya ada, isinya benar, tidak ada yang gagal — mudah disangka berkas lang-nya yang tidak bekerja, padahal `.env`-mu yang belum disetel.
+
+Sifatnya sama persis dengan `APP_TIMEZONE` di bawah: wajib seragam, tidak ikut git, dan gagal tanpa gejala. `.env.example` sudah memakai `id`, tapi `.env` yang sudah terlanjur ada **tidak akan tertimpa olehnya** — itu sebabnya perubahannya harus manual.
+
+Setelah mengubahnya:
+
+```bash
+php artisan config:clear
+```
+
+Verifikasi cepat: buka `/register`, tekan Daftar dengan form kosong. Pesannya harus berbunyi "Kolom Nama wajib diisi.", bukan "The name field is required."
 
 ### Kenapa `APP_TIMEZONE` paling kritis
 
@@ -213,7 +244,15 @@ Perhatikan `start_time` dan `end_time` harus bertipe **datetime**, bukan timesta
 
 **Jangan pernah mengedit file migration yang sudah ada di `main`.** Database anggota lain sudah menjalankannya; mengedit isinya membuat database mereka berbeda tanpa ada yang sadar, dan tidak akan ada error yang memberi tahu. Perubahan skema berikutnya lewat **migration baru**, dan dibahas di grup dulu.
 
-Nanti setelah `DatabaseSeeder` bersama selesai, perintahnya berubah jadi `php artisan migrate:fresh --seed` untuk mengisi data demo. Akan diumumkan di grup.
+`DatabaseSeeder` sudah selesai, jadi perintah yang dipakai sekarang **bukan lagi `php artisan migrate` di atas**, melainkan:
+
+```bash
+php artisan migrate:fresh --seed
+```
+
+Ia menghapus seluruh tabel, menjalankan ulang kelima migration, lalu mengisi data demo: sembilan akun, dua belas fasilitas, delapan belas reservasi, delapan laporan, dan lima belas foto laporan. Aman dijalankan berulang kali selama kamu tidak keberatan data lokalmu terhapus — memang itu gunanya.
+
+Syaratnya folder `database/seeders/sample-photos/` ikut ter-pull. Kalau kosong atau tidak ada, seeder berhenti dengan `RuntimeException` sebelum menulis satu baris pun, dan pesan errornya menyebutkan apa yang harus dilakukan.
 
 ---
 
@@ -331,7 +370,7 @@ Abaikan. Extension itu tidak dipakai proyek ini, dan perintahnya tetap berjalan 
 
 ## 12. Dokumen yang harus kamu baca
 
-Lima dokumen di folder **`docs/`** di dalam repo, jadi ikut ter-clone dan ikut terbarui saat kamu `git pull`. Bacanya sesuai kebutuhan, bukan sekaligus.
+Enam dokumen di folder **`docs/`** di dalam repo, jadi ikut ter-clone dan ikut terbarui saat kamu `git pull`. Bacanya sesuai kebutuhan, bukan sekaligus.
 
 | Dokumen | Isi | Kapan dibaca |
 |---|---|---|
@@ -340,8 +379,9 @@ Lima dokumen di folder **`docs/`** di dalam repo, jadi ikut ter-clone dan ikut t
 | `halaman-navigasi-dan-skema.md` | 22 halaman, peta navigasi, spesifikasi tabel, ERD | Saat merancang halamanmu |
 | `route-dan-kontrak-form.md` | Nama route, konvensi penamaan, aturan validasi tiap form | **Setiap hari saat ngoding** |
 | `keputusan-m1-tahap1.md` | Perilaku middleware role dan alur login, beserta alasannya | Saat menulis blok route modulmu, atau saat heran kenapa kamu dilempar ke halaman login |
+| `keputusan-m1-tahap2.md` | Keputusan M1 tahap 2: bentuk halaman A3, bahasa pesan validasi, dan catatan pembagian aksi status akun di A5 | Saat menulis Form Request modulmu, atau saat pesan validasimu muncul dalam Bahasa Inggris |
 
-Yang terakhir paling sering dibuka. Nama route di situ final, dan kamu akan memakai nama route milik modul orang lain (tombol di P2 mengarah ke U1 dan U4) — jangan menunggu modul itu jadi, nama route-nya sudah bisa dipakai sekarang.
+`route-dan-kontrak-form.md` paling sering dibuka. Nama route di situ final, dan kamu akan memakai nama route milik modul orang lain (tombol di P2 mengarah ke U1 dan U4) — jangan menunggu modul itu jadi, nama route-nya sudah bisa dipakai sekarang.
 
 **Nama file tidak memuat nomor versi.** Versinya ada di baris "Versi dokumen" di dalam tiap file, dan riwayatnya dijaga git. Ini disengaja supaya rujukan antar-dokumen tidak basi tiap kali salah satunya naik versi.
 

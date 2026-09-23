@@ -1,8 +1,8 @@
-# Keputusan M1 — Filter dan Bentuk Halaman A3
+# Keputusan M1 — Tahap 2
 ## Sistem Reservasi & Pelaporan Fasilitas Kampus
 
 **Mata kuliah:** Pengembangan Platform Khusus (PPK)
-**Versi dokumen:** 1.0 — 23 September 2026
+**Versi dokumen:** 1.1 — 23 September 2026
 **Ditetapkan oleh:** Elang (pemegang M1)
 
 **Dokumen induk:** `dasar-proyek.md` — aturan bisnis yang mengikat
@@ -14,13 +14,27 @@
 
 ---
 
+## Perubahan dari v1.0
+
+| Bagian | Perubahan |
+|---|---|
+| Judul | "Filter dan Bentuk Halaman A3" diganti "Tahap 2". Isi berkas sudah melampaui satu halaman sejak D17 dan catatan A5 masuk |
+| D15 | Alasan kedua dicabut. Versi 1.0 menulis bahwa verifikasi bisa dilakukan dari tombol di baris A3 tanpa masuk ke A5; A3 tidak pernah punya tombol semacam itu. Keputusannya sendiri tidak berubah |
+| D17 | Baru. Pesan validasi Bahasa Indonesia disediakan lewat berkas `lang/id`, bukan `messages()` per Form Request |
+| Catatan A5 | Baru. Pembagian `verify` dan `activate` terhadap matriks C2, beserta kekeliruan yang sempat terjadi karena C2 dibaca tanpa catatan bagian 11 |
+| D16 | Alasan angka 15 menyebut "tujuh akun demo"; seeder sekarang membuat sembilan. Keputusannya sendiri tidak berubah |
+
+---
+
 ## Kenapa dokumen ini ada
 
 Bagian 1.4 `halaman-navigasi-dan-skema.md` menetapkan A3 sebagai *"seluruh akun dengan filter role dan status, serta penanda jumlah akun `pending`"*, lalu berhenti di situ. Bentuk filternya tidak ditetapkan di dokumen mana pun.
 
 Kekosongan itu tidak simetris dengan halaman berfilter yang lain. A6 punya kontraknya di bagian 26 `route-dan-kontrak-form.md`, lengkap dengan nama field dan aturan validasinya. A3 tidak punya padanannya. Tanpa penetapan, bentuk filter A3 akan ditentukan oleh apa yang kebetulan pertama kali ditulis di controller.
 
-Delapan keputusan berikut mengisi kekosongan itu. Tiga di antaranya (D9, D13, D15) menutup jalur yang secara teknis jalan tapi keliru, dan alasannya ditulis supaya tidak ada yang "memperbaikinya" balik.
+Delapan keputusan pertama di bawah (D9 sampai D16) mengisi kekosongan itu. Tiga di antaranya (D9, D13, D15) menutup jalur yang secara teknis jalan tapi keliru, dan alasannya ditulis supaya tidak ada yang "memperbaikinya" balik.
+
+**Isi berkas ini sudah melampaui halaman A3, dan judulnya menyesuaikan di v1.1.** D17 menetapkan cara pesan validasi diterjemahkan untuk seluruh proyek, dan satu catatan di bawah menegaskan pembagian aksi status akun di A5. Keduanya muncul dari pekerjaan tahap 2 yang sama dan tidak punya berkas keputusan sendiri; memisahkannya hanya akan memaksa pembaca melacak dua deret penomoran.
 
 **Penomoran melanjutkan `keputusan-m1-tahap1.md`** supaya seluruh keputusan M1 jadi satu deret, bukan dua deret yang harus dibedakan lewat nama file. D1 sampai D8 ada di dokumen itu.
 
@@ -40,6 +54,9 @@ Delapan keputusan berikut mengisi kekosongan itu. Tiga di antaranya (D9, D13, D1
 | **D14** | Nilai filter yang tidak dikenal diabaikan, bukan ditolak. Tanpa Form Request |
 | **D15** | Filter tidak dibawa melewati A5. `verify` dan `reject` kembali ke A3 tanpa query string |
 | **D16** | Paginasi 15 baris per halaman, dengan `withQueryString()` |
+| **D17** | Pesan validasi Bahasa Indonesia lewat berkas `lang/id`, bukan `messages()` per Form Request |
+
+Ditambah satu catatan tanpa nomor: pembagian `verify` dan `activate` di A5 terhadap matriks C2. Bukan keputusan baru, melainkan penegasan atas catatan bagian 11 `route-dan-kontrak-form.md`.
 
 ---
 
@@ -139,7 +156,11 @@ Whitelist ditulis eksplisit di controller, bukan diambil dari kolom enum, supaya
 
 Membawa filter melewati A5 berarti empat tempat harus kompak: A3 menempelkan query string pada setiap tautan baris, A5 menerimanya, A5 menyimpannya sebagai hidden input pada form `verify` dan `reject`, lalu controller meneruskannya ke `redirect()->route()`. Kalau satu di antaranya lupa, filternya hilang tanpa error dan tanpa gejala selain "kok balik ke semua lagi".
 
-Biaya itu tidak sebanding untuk tenggat yang ada, sementara alur verifikasi yang wajar juga bisa dilakukan dari tombol di baris A3 tanpa masuk ke A5 sama sekali.
+Biaya itu tidak sebanding untuk tenggat yang ada.
+
+**Harga yang diterima, dan harganya lebih mahal daripada yang tertulis di v1.0.** Setiap verifikasi memang harus lewat A5 — peta 2.4 hanya menyediakan "A3 klik baris → A5", dan bagian 1.4 menempatkan seluruh aksi di A5. Artinya admin yang sedang menyaring tab "Menunggu" akan kehilangan filternya **setiap kali** ia memverifikasi satu akun, bukan sesekali. Pada antrian yang panjang, ia memilih tab itu berulang kali. Itu diterima untuk sekarang, bukan diabaikan.
+
+**Koreksi terhadap v1.0.** Versi 1.0 menulis alasan kedua: *"alur verifikasi yang wajar juga bisa dilakukan dari tombol di baris A3 tanpa masuk ke A5 sama sekali"*. Itu keliru dan **dicabut**. A3 tidak pernah punya tombol aksi per baris — barisnya hanya tautan ke A5, dan bagian 1.4 memang menempatkan verifikasi, penolakan, suspend, aktifkan, dan reset password seluruhnya di A5. Alasan pertama di paragraf sebelumnya tetap berlaku dan sendirian sudah cukup menopang keputusan ini.
 
 **`back()` bukan alternatif.** `verify` dan `reject` dipanggil dari A5, jadi `back()` akan mendarat di A5 — bertentangan dengan kolom Tujuan bagian 11 yang menulis A3. Ini berbeda dengan `officer.facilities.status` yang kolom Tujuannya memang ditulis "kembali ke halaman asal".
 
@@ -153,7 +174,61 @@ Biaya itu tidak sebanding untuk tenggat yang ada, sementara alur verifikasi yang
 
 **Alasan.** `withQueryString()` bukan pilihan gaya — tanpanya, tautan halaman 2 dirender tanpa `?status=` dan filternya hilang di klik pertama. Ini gejala yang mudah disalahartikan sebagai filternya yang rusak, padahal filternya benar dan tautannya yang tidak lengkap.
 
-Angka 15 dipilih supaya tujuh akun demo dari seeder muat di satu halaman, sehingga paginasi tidak menyulitkan pengujian manual, sekaligus tetap memaksa paginasi terlihat begitu seeder dilengkapi.
+Angka 15 dipilih supaya sembilan akun demo dari seeder muat di satu halaman, sehingga paginasi tidak menyulitkan pengujian manual, sekaligus tetap memaksa paginasi terlihat begitu jumlah akun bertambah.
+
+---
+
+## D17 — Bahasa pesan validasi
+
+**Keputusan:** pesan validasi Bahasa Indonesia disediakan lewat berkas `lang/` untuk seluruh proyek, bukan lewat method `messages()` di masing-masing Form Request.
+
+**Ini bukan keputusan baru soal bahasa.** Bagian 1 `route-dan-kontrak-form.md` sudah menetapkan Bahasa Indonesia untuk teks yang dilihat pengguna, termasuk pesan error. Yang belum ditetapkan adalah **caranya**, dan selama ini seluruh proyek berjalan tanpa mematuhi aturan itu: locale masih `en`, sehingga setiap form menampilkan pesan bawaan Laravel dalam Bahasa Inggris. D17 menetapkan cara memenuhinya, bukan mengubah aturannya.
+
+**Alasan memilih berkas lang di atas `messages()`.** Bagian 6 mendaftarkan tujuh Form Request, dan daftar itu akan bertambah — ditulis empat orang. `messages()` per berkas berarti aturan yang sama ditulis ulang di banyak tempat dengan kata-kata yang berbeda-beda: "wajib diisi", "harus diisi", "tidak boleh kosong". Tidak ada yang salah satu per satu, tapi hasilnya halaman yang terdengar seperti ditulis empat orang, karena memang begitu.
+
+Nama field juga perlu diterjemahkan, dan itu masalah yang lebih besar daripada kalimat pesannya. `identity_number` tidak boleh muncul apa adanya di depan admin. Array `attributes` menyelesaikannya sekali untuk seluruh proyek — sekali `identity_number` dipetakan ke "NIM/NIP", setiap aturan yang menyentuh kolom itu ikut benar tanpa ada yang perlu mengingatnya.
+
+Menyetel locale ke `id` juga menerjemahkan teks bawaan Laravel yang lain, misalnya tautan paginasi, yang tidak akan tersentuh oleh `messages()` sebanyak apa pun.
+
+**Cakupan yang benar-benar dibuat**, bukan seluruh aturan bawaan Laravel:
+
+| Berkas | Isi |
+|---|---|
+| `lang/id/validation.php` | 16 aturan tunggal: `after_or_equal`, `array`, `before_or_equal`, `confirmed`, `date`, `date_format`, `email`, `exists`, `image`, `in`, `integer`, `mimes`, `required`, `required_if`, `string`, `unique`. Ditambah `max` dan `min` dalam keempat bentuknya (`array`, `file`, `numeric`, `string`), 33 entri `attributes` untuk seluruh kolom kelima tabel plus field yang hanya ada di form, `values` untuk `required_if`, dan `custom` yang sengaja dibiarkan kosong |
+| `lang/id/pagination.php` | `previous` dan `next`. Tautan paginasi tidak dibaca dari `validation.php`; view Bootstrap 5 memanggil `pagination.previous` dan `pagination.next` sendiri |
+
+Aturan yang diterjemahkan adalah yang dipakai kedua Form Request yang sudah ada **ditambah** yang sudah ditetapkan kontrak bagian 17 sampai 26 untuk Form Request yang menyusul. Aturan di luar itu belum diterjemahkan dan akan jatuh ke `fallback_locale` = `en`. Kalau ada yang muncul Bahasa Inggris, tambahkan barisnya di `lang/id/validation.php`, bukan `messages()` di Form Request — supaya satu pesan tetap punya satu tempat.
+
+**Yang sengaja tidak dibuat:** `lang/id/auth.php`, karena pesan kegagalan login ditulis sendiri `AuthController` dan tidak lewat `trans()`; dan `lang/id/passwords.php`, karena C5 meniadakan reset via email dan F8 membuang tabelnya.
+
+**Pengecualian yang sudah ditetapkan lebih dulu.** Bagian 17 menetapkan `StoreReservationRequest` punya `messages()` sendiri untuk `date.after_or_equal` dan `date.before_or_equal`, karena kedua pesannya menyebut aturan A3 yang tidak bisa diwakili kalimat umum. Pesan di Form Request menang atas berkas lang, jadi keduanya tidak bertabrakan. Pengecualian semacam itu ditulis di dokumen lebih dulu, bukan diputuskan sendiri saat mengoding.
+
+**Konsekuensi operasional yang mengikat semua orang.** `APP_LOCALE` harus bernilai `id` di `.env` **tiap komputer**. `config/app.php` membacanya lewat `env('APP_LOCALE', 'id')` dan `.env.example` sudah memakai `id`, tapi `.env` tidak ikut git — yang sudah terlanjur punya `.env` dengan `APP_LOCALE=en` harus mengubahnya sendiri.
+
+Gejala kalau terlewat: pesan tetap Bahasa Inggris **tanpa error apa pun**. Berkas lang-nya ada, isinya benar, dan tidak ada yang gagal — mudah disangka berkas lang-nya yang tidak bekerja. Ini persis jebakan yang sudah diperingatkan F3 untuk `APP_TIMEZONE`: `.env` menimpa nilai default di `config`, dan putusnya rantai tidak menghasilkan gejala selain hasil yang salah. Karena itu nilainya tidak ditulis langsung di `config/app.php` — kalau ditulis langsung, baris `APP_LOCALE` di `.env` justru diabaikan diam-diam, kebalikan dari yang F3 minta.
+
+---
+
+## Catatan — pembagian `verify` dan `activate` di A5
+
+Bukan keputusan baru. Ini penegasan atas apa yang sudah ditulis catatan bagian 11 `route-dan-kontrak-form.md`, karena pembacaan yang keliru sempat terjadi saat A5 dikoding.
+
+Bagian 11 memetakan keempat aksi status akun **satu-satu** ke matriks C2:
+
+| Route | Transisi |
+|---|---|
+| `verify` | `pending` → `verified` |
+| `reject` | `pending` → `rejected` |
+| `suspend` | `verified` → `suspended` |
+| `activate` | `rejected` → `verified`, `suspended` → `verified` |
+
+**Kenapa ini perlu ditegaskan.** C2 sendiri mengizinkan `rejected` → `verified` dan `suspended` → `verified`. Membaca C2 **saja** membuat `verify()` terlihat boleh melayani ketiga status asal sekaligus, karena ketiganya memang berujung `verified` dan tidak satu pun melanggar matriks. Kekeliruan itu benar-benar terjadi: `verify()` sempat ditulis menerima `pending`, `rejected`, dan `suspended`, lolos dari pembacaan C2, dan baru tertangkap saat dicocokkan dengan bagian 11 — yang membuat `activate()` tidak punya pekerjaan tersisa.
+
+**Pembedaannya bermakna, bukan formalitas.** `verify` adalah penilaian pertama atas pendaftar yang belum pernah dinilai siapa pun. `activate` adalah pemulihan akses akun yang **sudah pernah** dinilai lalu ditolak atau dinonaktifkan. Menggabungkan keduanya ke satu route menghapus perbedaan itu dari riwayat: tidak ada lagi cara membedakan akun yang baru pertama kali lolos verifikasi dari akun yang pernah ditolak lalu dipulihkan. Itu justru informasi yang dicari admin saat memeriksa akun bermasalah.
+
+**Cara membacanya yang benar: C2 dan catatan bagian 11 dibaca bersama-sama.** C2 menetapkan transisi mana yang sah, bagian 11 menetapkan route mana yang menjalankannya. Salah satu saja tidak cukup — C2 tanpa bagian 11 menghasilkan kekeliruan di atas, dan bagian 11 tanpa C2 menghilangkan alasan kenapa `mana pun → pending` dilarang.
+
+Penerapan di kode: `verify()` menolak status asal apa pun selain `pending` dan mengembalikannya ke A5 dengan pesan yang menunjuk aksi Aktifkan, supaya admin tidak menyangka sistemnya rusak.
 
 ---
 
@@ -164,8 +239,10 @@ Angka 15 dipilih supaya tujuh akun demo dari seeder muat di satu halaman, sehing
 | D9, D10, D13, D14, D16 | `app/Http/Controllers/Admin/UserController.php` — method `index` |
 | D11, D12 | `resources/views/admin/users/index.blade.php` |
 | D15 | `Admin\UserController@verify` dan `@reject` |
+| D17 | `lang/id/validation.php`, `lang/id/pagination.php`, dan baris `locale` di `config/app.php` |
+| Catatan A5 | `Admin\UserController@verify` dan `@activate`, serta tombol aksi di `resources/views/admin/users/show.blade.php` |
 
-Tidak ada satu pun keputusan di atas yang menyentuh model, migration, atau `#[Fillable]`. Filter hanya membaca.
+Tidak ada satu pun keputusan di atas yang menyentuh model, migration, atau `#[Fillable]`. Filter hanya membaca, dan D17 hanya menyentuh berkas bahasa dan satu baris konfigurasi.
 
 ---
 
