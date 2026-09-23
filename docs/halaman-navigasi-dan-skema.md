@@ -2,12 +2,20 @@
 ## Sistem Reservasi & Pelaporan Fasilitas Kampus
 
 **Mata kuliah:** Pengembangan Platform Khusus (PPK)
-**Versi dokumen:** 1.1 — 18 September 2026
+**Versi dokumen:** 1.2 — 23 September 2026
 **Dokumen induk:** `dasar-proyek.md`
 
 Dokumen induk berisi **aturan bisnis yang mengikat**. Dokumen ini berisi **penerapannya** ke halaman dan tabel. Kalau ada yang terasa bertentangan, dokumen induk yang menang, dan perbedaannya harus dilaporkan ke tim supaya salah satunya diperbaiki.
 
 Kode halaman (P1, U1, O1, A1, …) di dokumen ini bersifat final dan dipakai sebagai rujukan bersama.
+
+---
+
+## Perubahan dari v1.1
+
+| Bagian | Perubahan |
+|---|---|
+| 6.4 | Nama index `idx_queue` pada `reports` diganti `idx_report_queue`. Nama lama bertabrakan dengan index bernama sama di `reservations` (6.3). Lihat catatan di 6.4 — migration yang sudah ada di `main` masih memakai nama lama, dan cara memperbaikinya belum diputuskan tim |
 
 ---
 
@@ -375,6 +383,8 @@ $table->index(['user_id', 'status', 'start_time'], 'idx_user_history');
 $table->index(['status', 'start_time'], 'idx_queue');
 ```
 
+**Catatan (v1.2):** nama `idx_queue` di sini **tidak berubah**. Yang diganti adalah index bernama sama pada `reports`, lihat catatan revisi di 6.4.
+
 ### 6.4 `reports`
 
 | Kolom | Tipe | Null | Default | Keterangan |
@@ -407,10 +417,27 @@ $table->enum('status', ['baru', 'diproses', 'selesai', 'ditolak'])->default('bar
 $table->text('resolution_note')->nullable();
 $table->timestamps();
 
-$table->index(['status', 'created_at'], 'idx_queue');
+$table->index(['status', 'created_at'], 'idx_report_queue');
 $table->index(['facility_id', 'status'], 'idx_facility_freq');
 $table->index(['user_id', 'status'], 'idx_reporter');
 ```
+
+**Catatan revisi (v1.2) — tabrakan nama index.**
+
+Sampai v1.1 blok di atas menuliskan `idx_queue`, nama yang sama persis dengan index pada `reservations` di 6.3. Di MySQL ini sah karena nama index berlaku per tabel, jadi `migrate:fresh` di lingkungan pengembangan tidak pernah gagal. **Di SQLite nama index berlaku per database**, sehingga migration `reports` selalu gagal dengan `index idx_queue already exists`.
+
+Ini bukan masalah teoretis: `phpunit.xml` menyetel test suite ke `DB_CONNECTION=sqlite` dengan `DB_DATABASE=:memory:`. Selama belum ada feature test yang memakai `RefreshDatabase`, tidak ada yang terlihat rusak. Begitu ada satu saja test yang menyentuh database — dan modul mana pun akan membutuhkannya — seluruh suite mati di tahap migrasi, dengan pesan error yang menunjuk ke arah yang salah.
+
+**Keadaan saat ini:** migration yang sudah ada di `main` masih memakai `idx_queue`. Dokumen ini sudah memakai nama yang benar supaya siapa pun yang menulis skema dari sini tidak mengulang kesalahan yang sama.
+
+**Cara memperbaikinya belum diputuskan tim.** Dua opsi yang ada, keduanya punya konsekuensi:
+
+| Opsi | Konsekuensi |
+|---|---|
+| Ubah migration asli, lalu seluruh anggota menjalankan `migrate:fresh` serentak | Melanggar larangan mengedit migration yang sudah di-push (onboarding bagian 6 dan 10). Risikonya hilang kalau diumumkan dan semua benar-benar menjalankan ulang — dan di proyek ini `migrate:fresh` memang rutin karena seeder terus berubah |
+| Arahkan `phpunit.xml` ke database MySQL terpisah | Tidak menyentuh migration sama sekali, tapi menyentuh konfigurasi bersama dan setiap anggota perlu database test sendiri |
+
+**Migration baru bukan jalan keluar.** Kegagalan terjadi saat migration `reports` dijalankan, sehingga migration berikutnya yang me-`renameIndex` tidak pernah tercapai. Jalur "perubahan skema lewat migration baru" yang biasa dipakai tidak berfungsi untuk kasus ini.
 
 ### 6.5 `report_photos`
 
