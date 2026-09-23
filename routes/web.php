@@ -7,6 +7,9 @@ use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\Officer\DashboardController;
 use App\Http\Controllers\Officer\ReservationController as OfficerReservationController;
 use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\Officer\ReportController as OfficerReportController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\Admin\RecapController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/facilities');
@@ -36,6 +39,10 @@ Route::middleware(['auth', 'role:pengguna'])->group(function () {
     Route::patch('/reservations/{reservation}/cancel', [ReservationController::class, 'cancel'])->name('reservations.cancel');
 
     // M4 Laporan (Fazl): reports.*
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports/create', [ReportController::class, 'create'])->name('reports.create');
+    Route::post('/reports', [ReportController::class, 'store'])->name('reports.store');
+    Route::get('/reports/{report}', [ReportController::class, 'show'])->name('reports.show');
 });
 
 /*
@@ -51,6 +58,9 @@ Route::middleware(['auth', 'role:petugas'])->prefix('officer')->name('officer.')
     Route::patch('/reservations/{reservation}/cancel', [OfficerReservationController::class, 'cancel'])->name('reservations.cancel');
 
     // M4 Laporan (Fazl): officer.reports.*
+    Route::get('/reports', [OfficerReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports/{report}', [OfficerReportController::class, 'show'])->name('reports.show');
+    Route::patch('/reports/{report}', [OfficerReportController::class, 'update'])->name('reports.update');
 
     // M2 Fasilitas (Ferdy): officer.facilities.*
 });
@@ -73,4 +83,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::patch('/users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');
 
     // M5 Rekap & Export (Fazl): admin.recap.*
+    Route::get('/recap', [RecapController::class, 'index'])->name('recap.index');
+    Route::get('/recap/export', [RecapController::class, 'export'])->name('recap.export');
 });
