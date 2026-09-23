@@ -10,7 +10,7 @@
    Pakai inline di tabel, card, atau deskripsi item.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-{{-- Contoh: status reservasi --}}
+<!-- Contoh: status reservasi -->
 @php $status = $reservation->status; @endphp
 
 @switch($status)
@@ -33,7 +33,7 @@
         <span class="badge text-bg-light text-dark border">{{ $reservation->status }}</span>
 @endswitch
 
-{{-- Contoh: status laporan --}}
+<!-- Contoh: status laporan -->
 @switch($report->status)
     @case('baru')
         <span class="badge text-bg-warning"><i class="bi bi-hourglass-split me-1"></i>Baru</span>
@@ -85,7 +85,7 @@
                         <td>{{ \Carbon\Carbon::parse($reservation->start_time)->format('d M Y, H:i') }}</td>
                         <td>{{ \Carbon\Carbon::parse($reservation->end_time)->format('d M Y, H:i') }}</td>
                         <td>
-                            {{-- tempel Badge Status snippet di sini --}}
+                            <!-- tempel Badge Status snippet di sini -->
                         </td>
                         <td class="text-end pe-3">
                             <a href="{{ route('reservations.show', $reservation) }}"
@@ -143,7 +143,7 @@
      c. Script di @push('scripts') menangkap data-* dan mengisi modal.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-{{-- Tombol pemicu (di dalam baris tabel) --}}
+<!-- Tombol pemicu (di dalam baris tabel) -->
 <button type="button"
         class="btn btn-outline-danger btn-sm"
         data-bs-toggle="modal"
@@ -153,7 +153,7 @@
     <i class="bi bi-x-circle"></i> Tolak
 </button>
 
-{{-- Modal (taruh sekali di luar loop, sebelum @endsection) --}}
+<!-- Modal (taruh sekali di luar loop, sebelum @endsection) -->
 <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow">
@@ -186,7 +186,7 @@
     </div>
 </div>
 
-{{-- Script — masuk ke @push('scripts') di view bersangkutan --}}
+<!-- Script — masuk ke @push('scripts') di view bersangkutan -->
 @push('scripts')
 <script>
 document.getElementById('confirmModal').addEventListener('show.bs.modal', function (event) {
@@ -206,7 +206,7 @@ document.getElementById('confirmModal').addEventListener('show.bs.modal', functi
    Cara pakai sama dengan modal #4, cukup ganti target ke #rejectModal.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-{{-- Tombol pemicu (di dalam baris tabel) --}}
+<!-- Tombol pemicu (di dalam baris tabel) -->
 <button type="button"
         class="btn btn-outline-danger btn-sm"
         data-bs-toggle="modal"
@@ -216,7 +216,7 @@ document.getElementById('confirmModal').addEventListener('show.bs.modal', functi
     <i class="bi bi-x-circle"></i> Tolak
 </button>
 
-{{-- Modal Penolakan dengan textarea alasan (taruh sekali di luar loop) --}}
+<!-- Modal Penolakan dengan textarea alasan (taruh sekali di luar loop) -->
 <div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow">
@@ -259,7 +259,7 @@ document.getElementById('confirmModal').addEventListener('show.bs.modal', functi
     </div>
 </div>
 
-{{-- Script — masuk ke @push('scripts') di view bersangkutan --}}
+<!-- Script — masuk ke @push('scripts') di view bersangkutan -->
 @push('scripts')
 <script>
 document.getElementById('rejectModal').addEventListener('show.bs.modal', function (event) {
