@@ -48,4 +48,10 @@ class FacilityController extends Controller
 
         return view('facilities.index', compact('facilities'));
     }
+
+    /*P2 – Detail Fasilitas (publik)*/
+    public function show(Facility $facility)
+    {
+        return view('facilities.show', compact('facility'));
+    }
 }
