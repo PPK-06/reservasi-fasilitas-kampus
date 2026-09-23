@@ -2,7 +2,7 @@
 ## Sistem Reservasi & Pelaporan Fasilitas Kampus
 
 **Mata kuliah:** Pengembangan Platform Khusus (PPK)
-**Versi dokumen:** 1.3 — 18 September 2026
+**Versi dokumen:** 1.4 — 23 September 2026
 
 **Dokumen pendamping:**
 - `dasar-proyek.md` — aturan bisnis dan keputusan teknis
@@ -14,6 +14,20 @@
 Ketiga dokumen pertama menjawab **apa yang dibangun**. Dokumen ini menjawab **siapa mengerjakan yang mana, dalam urutan apa, dan file mana yang tidak boleh disentuh sembarangan**.
 
 Dokumen ini **tidak memuat tanggal**. Urutannya yang mengikat, bukan kalendernya.
+
+---
+
+## Perubahan dari v1.3
+
+Seluruhnya di **bagian 3**, dan seluruhnya karena keadaan `main` sudah bergerak sejak v1.3 ditulis. Tidak ada pembagian kerja yang berubah.
+
+| Bagian | Perubahan |
+|---|---|
+| 3 | Poin 4 diperbarui: `DatabaseSeeder` sudah lengkap, bukan lagi "baru berisi akun". Ditambah syarat folder `database/seeders/sample-photos/` harus ikut ter-pull |
+| 3 | Poin 6 ditulis ulang sebagai **mekanisme, bukan potret**. Jumlah route yang belum terdaftar berubah terus, jadi angkanya diganti cara memeriksa sendiri lewat `php artisan route:list` |
+| 3 | Status Tahap 1 ditulis ulang dengan alasan yang sama — halaman mana yang tertahan bergantung pada route mana yang sudah ada, dan itu berubah tiap kali seseorang mendaftarkan route |
+| 3 | `DatabaseSeeder` dipindahkan dari tabel Tahap 3 ke Tahap 2 dan ditandai selesai |
+| 3 | Poin 5: "Tujuh akun demo" jadi sembilan. Dua akun `verified` ditambahkan saat seeder dilengkapi, dan angka lama bertentangan dengan tabel di poin 4 |
 
 ---
 
@@ -263,7 +277,9 @@ Pekerjaan ini kecil — tinggal menyalin dari dokumen skema.
 
 ### Tahap 1 — Membuka kunci
 
-**Status: bagian Elang selesai. Bagian Ferdy selesai sebagian** — layout, navbar, dan tiga contoh komponen sudah di `main`, tapi `facilities.index` yang dipanggil link brand belum terdaftar, sehingga setiap halaman yang `@extends('layouts.app')` masih error 500. Lihat subbagian di bawah.
+**Status: bagian Elang selesai. Bagian Ferdy selesai sebagian** — layout, navbar, dan tiga contoh komponen sudah di `main`.
+
+**Halaman mana yang bisa dirender bergantung pada route mana yang sudah terdaftar, dan itu bergerak terus.** Navbar memanggil nama route milik keempat modul; satu nama yang belum terdaftar sudah cukup membuat setiap halaman yang memanggilnya melempar `RouteNotFoundException`. Karena isi navbar berbeda per role, halaman yang tertahan juga berbeda per role — dan berkurang tiap kali seseorang mendaftarkan route baru. Jangan mengandalkan potret keadaan di dokumen ini; cara memeriksa sendiri ada di poin 6 subbagian di bawah.
 
 Dua hal, **paralel satu sama lain**, tapi keduanya mendahului tahap 2.
 
@@ -296,11 +312,35 @@ Bukan `User::create($request->validated() + ['status' => 'pending'])`, yang akan
 
 **3. Pemeriksaan F10 untuk `Reservation`, `Report`, dan `ReportPhoto` masih terutang.** Momennya sekarang paling baik justru karena poin 1 — salah isi `#[Fillable]` sekarang berbunyi, bukan diam. Pemegang tiap model memeriksa modelnya sendiri lalu lapor di grup.
 
-**4. `php artisan migrate:fresh --seed` sekarang berhasil.** Sebelumnya tidak pernah, karena `UserFactory` bawaan Laravel masih mengisi `email_verified_at` yang sudah dihapus dari migration (C1/F8). Jalankan sekali setelah `git pull`. Seeder saat ini **baru berisi akun** — fasilitas, reservasi, dan laporan menyusul, lihat bagian 5.
+**4. `php artisan migrate:fresh --seed` sekarang berhasil, dan seeder-nya sudah lengkap.** Sebelumnya tidak pernah berhasil, karena `UserFactory` bawaan Laravel masih mengisi `email_verified_at` yang sudah dihapus dari migration (C1/F8). Jalankan sekali setelah `git pull`.
 
-**5. Login sudah jalan**, beserta pemeriksaan status dan percabangan landing H1. Tujuh akun demo tersedia dengan password seragam.
+Isi `DatabaseSeeder` sekarang, bukan lagi hanya akun:
 
-**6. Route navbar yang belum terdaftar menahan render, bukan cuma mematikan link.** Ini yang paling mudah disalahpahami. `route('nama')` untuk nama yang belum terdaftar melempar `RouteNotFoundException`, bukan menghasilkan link kosong — jadi **seluruh halaman** gagal dirender, termasuk halaman yang tidak ada hubungannya dengan link itu. Navbar memanggil 15 nama yang belum ada.
+| Data | Jumlah | Cakupan |
+|---|---|---|
+| Akun | 9 | keempat status C2, ketiga role, satu password seragam |
+| Fasilitas | 12 | kelima tipe D1, keenam lokasi D2, ketiga status D3 |
+| Reservasi | 18 | kelima status A7, termasuk `pending` yang `start_time`-nya sudah lewat (A8) |
+| Laporan | 8 | keempat status B3, keenam kategori B1 |
+| Foto laporan | 15 | 1–3 per laporan sesuai B2, berkasnya benar-benar disalin ke `public/uploads/reports/` |
+
+**Folder `database/seeders/sample-photos/` harus ikut ter-pull.** Seeder menyalin foto contoh dari sana; kalau foldernya kosong atau tidak ada, ia berhenti dengan `RuntimeException` **sebelum menulis satu baris pun** — bukan menghasilkan laporan tanpa foto yang diam-diam melanggar B2. Pesan errornya menyebutkan apa yang harus dilakukan.
+
+Isi minimal yang disyaratkan ada di bagian 5; yang di atas adalah isi sebenarnya.
+
+**5. Login sudah jalan**, beserta pemeriksaan status dan percabangan landing H1. Sembilan akun demo tersedia dengan password seragam, mencakup keempat status C2 dan ketiga role — rinciannya di tabel poin 4 di atas.
+
+**6. Route navbar yang belum terdaftar menahan render, bukan cuma mematikan link.** Ini yang paling mudah disalahpahami. `route('nama')` untuk nama yang belum terdaftar melempar `RouteNotFoundException`, bukan menghasilkan link kosong — jadi **seluruh halaman** gagal dirender, termasuk halaman yang tidak ada hubungannya dengan link itu.
+
+Navbar memanggil nama route milik **keempat modul sekaligus**, sebagian di dalam percabangan per role. Selama masih ada satu saja yang belum terdaftar, setiap halaman yang memanggilnya ikut mati.
+
+**Jumlahnya berubah tiap kali seseorang mendaftarkan route, jadi dokumen ini tidak menyebut angka.** Periksa sendiri:
+
+```bash
+php artisan route:list --except-vendor
+```
+
+Bandingkan hasilnya dengan nama yang dipanggil `resources/views/layouts/app.blade.php`. Nama yang dipanggil navbar tapi tidak muncul di daftar itulah yang masih menahan render — dan role yang navbar-nya memanggil nama tersebut adalah role yang halamannya belum bisa dibuka.
 
 Dua cara menghadapinya, dan keduanya sah:
 
@@ -315,7 +355,7 @@ Empat orang jalan bersamaan, masing-masing di modulnya.
 
 | Orang | Kerjakan |
 |---|---|
-| Elang | A3, A4, A5 · P4 Registrasi |
+| Elang | **`DatabaseSeeder`** *(selesai)* · A3, A4, A5 · P4 Registrasi |
 | Ferdy | P1, A1, A2, O6 |
 | Dhimas | **Putuskan bentuk U1 bersama Ferdy** → class `Slot` → query ketersediaan → U1, U2, U3 → O1, O2, O3 |
 | Fazl | U4, U5, U6 → O4, O5 |
@@ -334,16 +374,15 @@ Ketiganya cukup terdaftar dengan controller seadanya untuk melepas orang lain; h
 
 Dhimas dan Fazl boleh **memulai controller dan Form Request** sebelum login jadi — yang tidak bisa dilakukan hanya membuka halamannya di browser.
 
+**`DatabaseSeeder` dipindahkan ke tahap 2 dan sudah selesai.** Sampai v1.3 ia terdaftar di tahap 3 dengan alasan "menunggu kelima model" — padahal kelima model sudah ada sejak tahap 0, jadi tidak pernah ada yang perlu ditunggu. Ia prasyarat **pengujian**, bukan prasyarat penulisan: Dhimas dan Fazl tidak bisa menguji modulnya dengan benar di atas database kosong, sehingga menundanya sampai akhir berarti bug yang seharusnya ketahuan minggu ini baru muncul di PR terakhir. Cakupannya di poin 4 subbagian di atas, syarat minimalnya di bagian 5.
+
 ### Tahap 3 — Yang bergantung pada tahap 2
 
 | Pekerjaan | Menunggu |
 |---|---|
 | **P2 Detail Fasilitas + Grid** (Ferdy) | `Slot` dan query ketersediaan dari Dhimas |
 | **Komponen peringatan D4** (Dhimas) | Dipakai O5, O6, A1, A5 — disepakati bentuknya sebelum ditulis |
-| **`DatabaseSeeder`** (Elang) | Kelima model sudah ada |
 | **M5 Rekap & Export** (Fazl) | M4 selesai; datanya dari modul lain |
-
-**`DatabaseSeeder` adalah prasyarat pengujian, bukan prasyarat penulisan.** Tapi Dhimas dan Fazl tidak bisa menguji modulnya dengan benar tanpa itu, jadi jangan ditunda sampai akhir. Isi minimalnya di bagian 5.
 
 ---
 
