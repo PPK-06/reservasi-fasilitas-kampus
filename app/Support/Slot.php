@@ -2,6 +2,11 @@
 
 namespace App\Support;
 
+use App\Models\Facility;
+use App\Models\Reservation;
+use Carbon\Carbon;
+use DateTimeInterface;
+
 /**
  * Konstanta slot waktu — F1.
  *
@@ -12,7 +17,7 @@ namespace App\Support;
 class Slot
 {
     /** Jam buka operasional */
-    const OPEN  = '07:00';
+    const OPEN = '07:00';
 
     /** Jam tutup operasional */
     const CLOSE = '20:00';
@@ -57,15 +62,74 @@ class Slot
     }
 
     /**
+     * @return array<string, array{start: string, end: string, status: string, is_available: bool, is_booked: bool, is_past_limit: bool}>
+     */
+    public static function availability(Facility|int $facility, string|DateTimeInterface $date): array
+    {
+        $facilityId = $facility instanceof Facility ? $facility->id : (int) $facility;
+        $dateStr = $date instanceof DateTimeInterface ? $date->format('Y-m-d') : Carbon::parse($date)->toDateString();
+
+        $minDate = Carbon::now()->addDay()->toDateString();
+        $maxDate = Carbon::now()->addDays(30)->toDateString();
+        $isDateBookable = ($dateStr >= $minDate && $dateStr <= $maxDate);
+
+        $startOfDay = Carbon::createFromFormat('Y-m-d H:i:s', "{$dateStr} 00:00:00");
+        $endOfDay = Carbon::createFromFormat('Y-m-d H:i:s', "{$dateStr} 23:59:59");
+
+        $reservations = Reservation::query()
+            ->select(['facility_id', 'start_time', 'end_time'])
+            ->where('facility_id', $facilityId)
+            ->where('status', 'approved')
+            ->where('start_time', '<', $endOfDay)
+            ->where('end_time', '>', $startOfDay)
+            ->get();
+
+        $startTimes = self::startTimes();
+        $endTimes = self::endTimes();
+        $slots = [];
+
+        for ($i = 0; $i < count($startTimes); $i++) {
+            $slotStart = $startTimes[$i];
+            $slotEnd = $endTimes[$i];
+
+            $slotStartCarbon = Carbon::createFromFormat('Y-m-d H:i', "{$dateStr} {$slotStart}");
+            $slotEndCarbon = Carbon::createFromFormat('Y-m-d H:i', "{$dateStr} {$slotEnd}");
+
+            $isBooked = $reservations->contains(function ($res) use ($slotStartCarbon, $slotEndCarbon) {
+                return $res->start_time < $slotEndCarbon && $res->end_time > $slotStartCarbon;
+            });
+
+            if ($isBooked) {
+                $status = 'booked';
+            } elseif (! $isDateBookable) {
+                $status = 'past_limit';
+            } else {
+                $status = 'available';
+            }
+
+            $slots[$slotStart] = [
+                'start' => $slotStart,
+                'end' => $slotEnd,
+                'status' => $status,
+                'is_available' => $status === 'available',
+                'is_booked' => $status === 'booked',
+                'is_past_limit' => $status === 'past_limit',
+            ];
+        }
+
+        return $slots;
+    }
+
+    /**
      * Hasilkan daftar string jam "HH:MM" dari $from sampai $to, step 30 menit.
      *
      * @return list<string>
      */
     private static function generate(string $from, string $to): array
     {
-        $slots   = [];
+        $slots = [];
         $current = strtotime("1970-01-01 {$from}");
-        $end     = strtotime("1970-01-01 {$to}");
+        $end = strtotime("1970-01-01 {$to}");
 
         while ($current <= $end) {
             $slots[] = date('H:i', $current);
