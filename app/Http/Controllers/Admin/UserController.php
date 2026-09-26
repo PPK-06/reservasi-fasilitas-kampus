@@ -156,18 +156,63 @@ class UserController extends Controller
     }
 
     /**
-     * A5 — transisi `rejected` | `suspended` → `verified` (C2).
+     * A5 — transisi `rejected` → `verified` dan `suspended` → `verified` (C2),
+     * tujuan A5 (bagian 11).
+     *
+     * Pasangan verify, bukan duplikatnya. Verify adalah penilaian pertama atas
+     * akun `pending`; activate adalah pemulihan akses akun yang sudah pernah
+     * dinilai lalu ditolak atau dinonaktifkan (catatan A5, keputusan M1 tahap 2).
+     * Karena itu `pending` ditolak di sini dan diarahkan ke Verifikasi.
+     *
+     * Diperiksa di server, bukan hanya disembunyikan di tampilan: PATCH yang
+     * dikirim langsung untuk status lain tetap harus ditolak.
+     *
+     * Berbeda dengan verify dan reject, tujuannya A5, bukan A3 — admin tetap
+     * di halaman akun yang baru dipulihkan.
      */
     public function activate(User $user): RedirectResponse
     {
-        abort(501);
+        if (! in_array($user->status, ['rejected', 'suspended'], true)) {
+            $alasan = match ($user->status) {
+                'verified' => 'Akun ini sudah berstatus terverifikasi, tidak ada yang perlu diaktifkan.',
+                default => 'Akun yang masih menunggu tidak diaktifkan. Pakai aksi Verifikasi untuk menilai pendaftarannya.',
+            };
+
+            return redirect()
+                ->route('admin.users.show', $user)
+                ->with('error', $alasan);
+        }
+
+        $user->status = 'verified';
+        $user->save();
+
+        return redirect()
+            ->route('admin.users.show', $user)
+            ->with('success', 'Akun '.$user->name.' berhasil diaktifkan kembali.');
     }
 
     /**
-     * A5 — reset password akun.
+     * A5 — reset password oleh admin (C5), tujuan A5 (bagian 11).
+     *
+     * Validasi ditulis di sini, bukan di Form Request: kontrak bagian 25 hanya
+     * punya satu field, dan bagian 6 tidak mendaftarkan Form Request untuknya.
+     * Gagal validasi kembali ke A5, tempat modalnya berada.
+     *
+     * Password tidak di-hash di sini: kolomnya punya cast `hashed` di model,
+     * dan hashing dua kali membuat akun tidak bisa login. Status akun tidak
+     * disentuh — reset password bukan transisi C2.
      */
-    public function resetPassword(User $user): RedirectResponse
+    public function resetPassword(Request $request, User $user): RedirectResponse
     {
-        abort(501);
+        $validated = $request->validate([
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        $user->password = $validated['password'];
+        $user->save();
+
+        return redirect()
+            ->route('admin.users.show', $user)
+            ->with('success', 'Password akun '.$user->name.' berhasil direset.');
     }
 }

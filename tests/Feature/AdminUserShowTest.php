@@ -2,18 +2,18 @@
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * A5 Detail Akun — show, verify, dan reject.
+ * A5 Detail Akun — show, verify, reject, activate, dan resetPassword.
  *
  * Inti berkas ini adalah matriks transisi C2. Tombol yang tidak dirender bukan
  * penjaga, jadi setiap transisi yang tidak sah diuji dengan PATCH yang dikirim
  * langsung, bukan lewat tombol.
  *
- * Belum mencakup suspend, activate, dan resetPassword: ketiganya masih
- * abort(501) di potongan ini.
+ * Belum mencakup suspend: masih abort(501), menunggu komponen peringatan D4.
  */
 uses(DatabaseTransactions::class);
 
@@ -58,7 +58,7 @@ it('menampilkan tombol Verifikasi dan Tolak untuk akun pending', function (): vo
         ->assertSee('Tolak');
 });
 
-it('tidak menampilkan tombol aksi apa pun untuk akun verified', function (): void {
+it('tidak menampilkan tombol transisi status apa pun untuk akun verified', function (): void {
     daftarkanRouteNavbarAdmin();
     $user = akunBerstatus('verified');
 
@@ -67,10 +67,14 @@ it('tidak menampilkan tombol aksi apa pun untuk akun verified', function (): voi
     $response->assertOk()
         ->assertDontSee(route('admin.users.verify', $user), false)
         ->assertDontSee(route('admin.users.reject', $user), false)
-        ->assertSee('Tidak ada aksi yang tersedia');
+        ->assertDontSee(route('admin.users.activate', $user), false)
+        // Nonaktifkan menunggu komponen peringatan D4; tombolnya tidak boleh
+        // dirender lebih dulu sementara route-nya masih abort(501).
+        ->assertDontSee(route('admin.users.suspend', $user), false)
+        ->assertDontSee('Nonaktifkan');
 });
 
-it('tidak menampilkan tombol aksi apa pun untuk akun rejected dan suspended', function (): void {
+it('menampilkan tombol Aktifkan hanya untuk akun rejected dan suspended', function (): void {
     daftarkanRouteNavbarAdmin();
 
     foreach (['rejected', 'suspended'] as $status) {
@@ -78,12 +82,31 @@ it('tidak menampilkan tombol aksi apa pun untuk akun rejected dan suspended', fu
 
         $this->actingAs(adminPenguji())->get(route('admin.users.show', $user))
             ->assertOk()
+            ->assertSee(route('admin.users.activate', $user), false)
+            ->assertSee('Aktifkan')
             ->assertDontSee(route('admin.users.verify', $user), false)
             ->assertDontSee(route('admin.users.reject', $user), false)
-            // activate menyusul di potongan berikutnya; tombolnya tidak boleh
-            // dirender lebih dulu sementara route-nya masih abort(501).
-            ->assertDontSee(route('admin.users.activate', $user), false)
-            ->assertSee('Tidak ada aksi yang tersedia');
+            ->assertDontSee(route('admin.users.suspend', $user), false);
+    }
+
+    $pending = akunBerstatus('pending');
+
+    $this->actingAs(adminPenguji())->get(route('admin.users.show', $pending))
+        ->assertOk()
+        ->assertDontSee(route('admin.users.activate', $pending), false);
+});
+
+it('menampilkan modal Reset Password untuk setiap status akun', function (): void {
+    daftarkanRouteNavbarAdmin();
+
+    foreach (['pending', 'verified', 'rejected', 'suspended'] as $status) {
+        $user = akunBerstatus($status);
+
+        $this->actingAs(adminPenguji())->get(route('admin.users.show', $user))
+            ->assertOk()
+            ->assertSee('Reset Password')
+            ->assertSee(route('admin.users.reset-password', $user), false)
+            ->assertSee('name="password_confirmation"', false);
     }
 });
 
@@ -235,11 +258,123 @@ it('menolak akses petugas ke seluruh aksi A5 dengan 403', function (): void {
     expect($user->fresh()->status)->toBe('pending');
 });
 
-it('membiarkan suspend, activate, dan reset password tetap belum dikerjakan', function (): void {
+it('membiarkan suspend tetap belum dikerjakan', function (): void {
     $user = akunBerstatus('verified');
-    $admin = adminPenguji();
 
-    $this->actingAs($admin)->patch(route('admin.users.suspend', $user))->assertStatus(501);
-    $this->actingAs($admin)->patch(route('admin.users.activate', $user))->assertStatus(501);
-    $this->actingAs($admin)->patch(route('admin.users.reset-password', $user))->assertStatus(501);
+    $this->actingAs(adminPenguji())->patch(route('admin.users.suspend', $user))->assertStatus(501);
+
+    expect($user->fresh()->status)->toBe('verified');
+});
+
+it('mengaktifkan akun rejected dan suspended lalu kembali ke A5 (bagian 11)', function (): void {
+    foreach (['rejected', 'suspended'] as $status) {
+        $user = akunBerstatus($status);
+
+        $this->actingAs(adminPenguji())
+            ->patch(route('admin.users.activate', $user))
+            ->assertRedirect(route('admin.users.show', $user))
+            ->assertSessionHas('success');
+
+        expect($user->fresh()->status)->toBe('verified');
+    }
+});
+
+it('menolak PATCH activate untuk akun pending dan verified tanpa mengubah apa pun (C2)', function (): void {
+    foreach (['pending', 'verified'] as $status) {
+        $user = akunBerstatus($status);
+        $asli = $user->fresh()->getAttributes();
+
+        $this->actingAs(adminPenguji())
+            ->patch(route('admin.users.activate', $user))
+            ->assertRedirect(route('admin.users.show', $user))
+            ->assertSessionHas('error');
+
+        expect($user->fresh()->getAttributes())->toBe($asli);
+    }
+});
+
+it('mengarahkan akun pending ke aksi Verifikasi saat activate ditolak', function (): void {
+    $user = akunBerstatus('pending');
+
+    $this->actingAs(adminPenguji())->patch(route('admin.users.activate', $user));
+
+    expect(session('error'))->toContain('Verifikasi');
+});
+
+it('hanya mengubah status saat activate (C2)', function (): void {
+    $user = akunBerstatus('suspended');
+    $asli = $user->only(['role', 'email', 'identity_number', 'user_type', 'name', 'password']);
+
+    $this->actingAs(adminPenguji())->patch(route('admin.users.activate', $user));
+
+    expect($user->fresh()->only(array_keys($asli)))->toBe($asli);
+});
+
+it('mereset password sebagai hash tunggal tanpa mengubah status (C5)', function (): void {
+    foreach (['pending', 'verified', 'rejected', 'suspended'] as $status) {
+        $user = akunBerstatus($status);
+
+        $this->actingAs(adminPenguji())
+            ->patch(route('admin.users.reset-password', $user), [
+                'password' => 'passwordbaru123',
+                'password_confirmation' => 'passwordbaru123',
+            ])
+            ->assertRedirect(route('admin.users.show', $user))
+            ->assertSessionHas('success');
+
+        $segar = $user->fresh();
+
+        // Hash::check hanya lolos kalau hash-nya tunggal; hash ganda gagal di sini.
+        expect(Hash::check('passwordbaru123', $segar->password))->toBeTrue()
+            ->and($segar->status)->toBe($status);
+    }
+});
+
+it('menolak reset password kurang dari 8 karakter', function (): void {
+    $user = akunBerstatus('verified');
+    $hashLama = $user->password;
+
+    $this->actingAs(adminPenguji())
+        ->from(route('admin.users.show', $user))
+        ->patch(route('admin.users.reset-password', $user), [
+            'password' => 'pendek1',
+            'password_confirmation' => 'pendek1',
+        ])
+        ->assertRedirect(route('admin.users.show', $user))
+        ->assertSessionHasErrors('password');
+
+    expect($user->fresh()->password)->toBe($hashLama);
+});
+
+it('menolak reset password dengan konfirmasi yang tidak cocok', function (): void {
+    $user = akunBerstatus('verified');
+    $hashLama = $user->password;
+
+    $this->actingAs(adminPenguji())
+        ->from(route('admin.users.show', $user))
+        ->patch(route('admin.users.reset-password', $user), [
+            'password' => 'passwordbaru123',
+            'password_confirmation' => 'passwordlain123',
+        ])
+        ->assertRedirect(route('admin.users.show', $user))
+        ->assertSessionHasErrors('password');
+
+    expect($user->fresh()->password)->toBe($hashLama);
+});
+
+it('menolak akses petugas ke activate dan reset password dengan 403', function (): void {
+    $petugas = User::where('role', 'petugas')->firstOrFail();
+    $user = akunBerstatus('suspended');
+    $hashLama = $user->password;
+
+    $this->actingAs($petugas)->patch(route('admin.users.activate', $user))->assertForbidden();
+    $this->actingAs($petugas)->patch(route('admin.users.reset-password', $user), [
+        'password' => 'passwordbaru123',
+        'password_confirmation' => 'passwordbaru123',
+    ])->assertForbidden();
+
+    $segar = $user->fresh();
+
+    expect($segar->status)->toBe('suspended')
+        ->and($segar->password)->toBe($hashLama);
 });
