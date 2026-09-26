@@ -170,3 +170,35 @@ it('halaman detail fasilitas P2 menampilkan grid ketersediaan 26 slot dengan out
         ->assertSee('btn-outline-primary')
         ->assertDontSee('Grid ketersediaan akan segera tersedia');
 });
+
+it('halaman detail fasilitas P2 menyediakan modal konfirmasi reservasi langsung dengan alasan penggunaan', function (): void {
+    $user = User::where('role', 'pengguna')->where('status', 'verified')->firstOrFail();
+    $facility = Facility::where('status', 'active')->firstOrFail();
+    $targetDate = Carbon::now()->addDays(8)->toDateString();
+
+    $response = $this->actingAs($user)->get(route('facilities.show', [
+        'facility' => $facility->id,
+        'date' => $targetDate,
+    ]));
+
+    $response->assertOk()
+        ->assertSee('reservationModal')
+        ->assertSee('Alasan / Tujuan Penggunaan')
+        ->assertSee('Kirim Pengajuan');
+
+    $submitResponse = $this->actingAs($user)->post(route('reservations.store'), [
+        'facility_id' => $facility->id,
+        'date' => $targetDate,
+        'start_slot' => '08:00',
+        'end_slot' => '10:00',
+        'purpose' => 'Kegiatan seminar riset mahasiswa',
+    ]);
+
+    $submitResponse->assertRedirect();
+    $this->assertDatabaseHas('reservations', [
+        'facility_id' => $facility->id,
+        'user_id' => $user->id,
+        'purpose' => 'Kegiatan seminar riset mahasiswa',
+        'status' => 'pending',
+    ]);
+});

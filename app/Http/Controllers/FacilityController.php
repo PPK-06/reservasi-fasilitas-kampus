@@ -62,7 +62,9 @@ class FacilityController extends Controller
         }
 
         $slots = Slot::availability($facility, $selectedDate);
+        $startSlots = Slot::startTimes();
+        $endSlots = Slot::endTimes();
 
-        return view('facilities.show', compact('facility', 'selectedDate', 'slots'));
+        return view('facilities.show', compact('facility', 'selectedDate', 'slots', 'startSlots', 'endSlots'));
     }
 }
