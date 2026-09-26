@@ -1,17 +1,17 @@
 <?php
 
+use App\Http\Controllers\Admin\FacilityController as AdminFacilityController;
+use App\Http\Controllers\Admin\RecapController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FacilityController;
-use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\Officer\DashboardController;
+use App\Http\Controllers\Officer\FacilityController as OfficerFacilityController;
+use App\Http\Controllers\Officer\ReportController as OfficerReportController;
 use App\Http\Controllers\Officer\ReservationController as OfficerReservationController;
 use App\Http\Controllers\RegisterController;
-use App\Http\Controllers\Officer\ReportController as OfficerReportController;
 use App\Http\Controllers\ReportController;
-use App\Http\Controllers\Admin\RecapController;
-use App\Http\Controllers\Admin\FacilityController as AdminFacilityController;
-use App\Http\Controllers\Officer\FacilityController as OfficerFacilityController;
+use App\Http\Controllers\ReservationController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/facilities');
@@ -36,6 +36,7 @@ Route::get('/facilities/{facility}', [FacilityController::class, 'show'])->name(
 Route::middleware(['auth', 'role:pengguna'])->group(function () {
     // M3 Reservasi (Dhimas): reservations.*
     Route::get('/reservations/create', [ReservationController::class, 'create'])->name('reservations.create');
+    Route::get('/reservations/availability', [ReservationController::class, 'availability'])->name('reservations.availability');
     Route::post('/reservations', [ReservationController::class, 'store'])->name('reservations.store');
     Route::get('/reservations', [ReservationController::class, 'index'])->name('reservations.index');
     Route::get('/reservations/{reservation}', [ReservationController::class, 'show'])->name('reservations.show');

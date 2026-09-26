@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Support\Slot;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -21,28 +23,28 @@ class Facility extends Model
 
     /** @var array<string, string>  slug => label tampilan */
     public const TYPES = [
-        'Ruang Kelas'   => 'Ruang Kelas',
-        'Aula'          => 'Aula',
-        'Laboratorium'  => 'Laboratorium',
-        'Lapangan'      => 'Lapangan',
-        'Alat'          => 'Alat',
+        'Ruang Kelas' => 'Ruang Kelas',
+        'Aula' => 'Aula',
+        'Laboratorium' => 'Laboratorium',
+        'Lapangan' => 'Lapangan',
+        'Alat' => 'Alat',
     ];
 
     /** @var array<string, string>  slug => label tampilan */
     public const LOCATIONS = [
-        'Gedung A'             => 'Gedung A',
-        'Gedung B'             => 'Gedung B',
-        'Gedung C'             => 'Gedung C',
-        'Gedung Serba Guna'    => 'Gedung Serba Guna',
-        'Area Olahraga'        => 'Area Olahraga',
-        'Gudang Inventaris'    => 'Gudang Inventaris',
+        'Gedung A' => 'Gedung A',
+        'Gedung B' => 'Gedung B',
+        'Gedung C' => 'Gedung C',
+        'Gedung Serba Guna' => 'Gedung Serba Guna',
+        'Area Olahraga' => 'Area Olahraga',
+        'Gudang Inventaris' => 'Gudang Inventaris',
     ];
 
     /** @var array<string, string>  slug => label tampilan */
     public const STATUSES = [
-        'active'             => 'Aktif',
-        'under_maintenance'  => 'Dalam Perbaikan',
-        'inactive'           => 'Nonaktif',
+        'active' => 'Aktif',
+        'under_maintenance' => 'Dalam Perbaikan',
+        'inactive' => 'Nonaktif',
     ];
 
     /*
@@ -65,6 +67,14 @@ class Facility extends Model
     public function statusLabel(): string
     {
         return self::STATUSES[$this->status] ?? $this->status;
+    }
+
+    /**
+     * @return array<string, array{start: string, end: string, status: string, is_available: bool, is_booked: bool, is_past_limit: bool}>
+     */
+    public function slotAvailability(string|DateTimeInterface $date): array
+    {
+        return Slot::availability($this, $date);
     }
 
     /*
