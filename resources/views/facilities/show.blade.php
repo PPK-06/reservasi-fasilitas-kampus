@@ -264,18 +264,6 @@
                             <i class="bi bi-lightning me-1"></i>Aksi
                         </h6>
 
-                        @if ($isActive)
-                            <button type="button"
-                                    class="btn btn-primary w-100 mb-2"
-                                    id="btn-sidebar-reserve">
-                                <i class="bi bi-calendar-plus me-1"></i>Ajukan Reservasi
-                            </button>
-                        @else
-                            <button type="button" class="btn btn-secondary w-100 mb-2 disabled">
-                                <i class="bi bi-calendar-plus me-1"></i>Ajukan Reservasi
-                            </button>
-                        @endif
-
                         <a href="{{ route('reports.create', ['facility' => $facility->id]) }}"
                            class="btn btn-outline-danger w-100">
                             <i class="bi bi-exclamation-triangle me-1"></i>Laporkan Kerusakan
@@ -426,7 +414,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const endTimes = @json($endSlots ?? []);
     const slotButtons = document.querySelectorAll('.p2-slot-btn');
     const btnOpenModal = document.getElementById('btn-open-reserve-modal');
-    const btnSidebarReserve = document.getElementById('btn-sidebar-reserve');
     const btnReset = document.getElementById('btn-p2-reset');
     const selectionInfo = document.getElementById('p2-selection-info');
     const modalStartSlot = document.getElementById('modal_start_slot');
@@ -585,19 +572,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     btnOpenModal?.addEventListener('click', openModal);
-
-    btnSidebarReserve?.addEventListener('click', function () {
-        if (startIndex !== null && endIndex !== null) {
-            openModal();
-        } else {
-            const gridSection = document.getElementById('section-grid-ketersediaan');
-            if (gridSection) {
-                gridSection.scrollIntoView({ behavior: 'smooth' });
-                selectionInfo.classList.add('text-primary');
-                selectionInfo.innerHTML = '<i class="bi bi-hand-index me-1"></i>Silakan klik slot jam mulai lalu jam selesai di grid terlebih dahulu!';
-            }
-        }
-    });
 
     @if ($errors->any() && old('facility_id') == $facility->id)
         if (reserveModal) {
