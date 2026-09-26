@@ -121,11 +121,33 @@ it('membuat akun petugas tanpa NIM/NIP dan tipe pengguna (C4)', function (): voi
 it('membuang NIM/NIP dan tipe pengguna yang ikut terkirim untuk petugas (C4)', function (): void {
     $this->actingAs(adminPembuatAkun())
         ->post(route('admin.users.store'), isianTambahAkunSah(['role' => 'petugas']))
+        ->assertRedirect(route('admin.users.index'))
         ->assertSessionHasNoErrors();
 
     $user = User::where('email', 'uji.tambah.akun@kampus.test')->firstOrFail();
 
-    expect($user->identity_number)->toBeNull()
+    expect($user->role)->toBe('petugas')
+        ->and($user->identity_number)->toBeNull()
+        ->and($user->user_type)->toBeNull();
+});
+
+it('tidak menolak akun petugas karena NIM/NIP terkirim yang sudah dipakai akun lain (C4)', function (): void {
+    $nimTerpakai = User::where('role', 'pengguna')->whereNotNull('identity_number')->firstOrFail()->identity_number;
+
+    // Tanpa pembersihan di prepareForValidation(), unique:users,identity_number
+    // berjalan atas nilai ini dan menolak akun petugas yang tidak butuh NIM.
+    $this->actingAs(adminPembuatAkun())
+        ->post(route('admin.users.store'), isianTambahAkunSah([
+            'role' => 'petugas',
+            'identity_number' => $nimTerpakai,
+        ]))
+        ->assertRedirect(route('admin.users.index'))
+        ->assertSessionHasNoErrors();
+
+    $user = User::where('email', 'uji.tambah.akun@kampus.test')->firstOrFail();
+
+    expect($user->role)->toBe('petugas')
+        ->and($user->identity_number)->toBeNull()
         ->and($user->user_type)->toBeNull();
 });
 

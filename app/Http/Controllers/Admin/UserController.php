@@ -70,10 +70,8 @@ class UserController extends Controller
      * `status` tidak fillable (F10), jadi diisi sebagai properti setelah
      * konstruktor. Lewat mass assignment ia akan ditolak penjaga F11.
      *
-     * NIM/NIP dan tipe pengguna dikosongkan untuk petugas (C4). Kontrak bagian
-     * 24 hanya mewajibkan keduanya untuk pengguna, tidak melarangnya untuk
-     * petugas — dan field yang disembunyikan JavaScript tetap bisa ikut
-     * terkirim. Petugas tidak punya NIM, jadi nilai apa pun di sana dibuang.
+     * NIM/NIP dan tipe pengguna untuk petugas sudah dikosongkan
+     * StoreUserRequest sebelum validasi (C4), jadi tidak diurus lagi di sini.
      *
      * Password tidak di-hash di sini: kolomnya punya cast `hashed` di model,
      * dan hashing dua kali membuat akun tidak bisa login.
@@ -81,12 +79,6 @@ class UserController extends Controller
     public function store(StoreUserRequest $request): RedirectResponse
     {
         $user = new User($request->validated());
-
-        if ($user->role !== 'pengguna') {
-            $user->identity_number = null;
-            $user->user_type = null;
-        }
-
         $user->status = 'verified';
         $user->save();
 
