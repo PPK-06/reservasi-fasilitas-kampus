@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Facility;
+use App\Support\Slot;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class FacilityController extends Controller
 {
-    /*P1 – Daftar Fasilitas (publik)*/
+    /* P1 – Daftar Fasilitas (publik) */
     public function index(Request $request)
     {
         $query = Facility::query();
@@ -30,13 +32,13 @@ class FacilityController extends Controller
             $minCapacity = (int) $request->input('capacity');
             $query->where(function ($q) use ($minCapacity) {
                 $q->where('capacity', '>=', $minCapacity)
-                  ->orWhereNull('capacity');
+                    ->orWhereNull('capacity');
             });
         }
 
         // ── Filter: pencarian nama (bonus convenience) ──
         if ($request->filled('search')) {
-            $query->where('name', 'like', '%' . $request->input('search') . '%');
+            $query->where('name', 'like', '%'.$request->input('search').'%');
         }
 
         // Urutan: aktif di atas, lalu by name (D5 — non-aktif tetap muncul)
@@ -49,9 +51,18 @@ class FacilityController extends Controller
         return view('facilities.index', compact('facilities'));
     }
 
-    /*P2 – Detail Fasilitas (publik)*/
-    public function show(Facility $facility)
+    /* P2 – Detail Fasilitas (publik) */
+    public function show(Request $request, Facility $facility)
     {
-        return view('facilities.show', compact('facility'));
+        $dateInput = $request->query('date');
+        try {
+            $selectedDate = $dateInput ? Carbon::parse($dateInput)->toDateString() : now()->addDay()->toDateString();
+        } catch (\Throwable $e) {
+            $selectedDate = now()->addDay()->toDateString();
+        }
+
+        $slots = Slot::availability($facility, $selectedDate);
+
+        return view('facilities.show', compact('facility', 'selectedDate', 'slots'));
     }
 }

@@ -63,17 +63,32 @@
                             <span class="badge bg-primary d-none" id="slot-badge-count">0 Slot</span>
                         </div>
 
+                        <div class="d-flex align-items-center gap-3 mb-2" style="font-size: 0.8rem;">
+                            <span class="d-flex align-items-center gap-1">
+                                <span class="d-inline-block rounded border border-primary bg-white" style="width: 14px; height: 14px;"></span>
+                                Tersedia
+                            </span>
+                            <span class="d-flex align-items-center gap-1">
+                                <span class="d-inline-block rounded bg-secondary" style="width: 14px; height: 14px;"></span>
+                                Tidak Tersedia
+                            </span>
+                            <span class="d-flex align-items-center gap-1">
+                                <span class="d-inline-block rounded bg-primary" style="width: 14px; height: 14px;"></span>
+                                Dipilih
+                            </span>
+                        </div>
+
                         <div class="row row-cols-3 row-cols-sm-4 row-cols-md-6 g-2 mb-2" id="slot-grid-container">
                             @foreach ($startSlots as $index => $slot)
                                 <div class="col">
                                     <button type="button"
-                                            class="btn btn-outline-secondary w-100 py-2 slot-btn position-relative"
+                                            class="btn btn-outline-primary w-100 py-2 slot-btn position-relative"
                                             data-index="{{ $index }}"
                                             data-start="{{ $slot }}"
                                             data-end="{{ $endSlots[$index] }}"
                                             style="font-size: 0.83rem; font-weight: 500;">
                                         <div class="slot-time">{{ $slot }}</div>
-                                        <small class="slot-status-label d-block text-muted" style="font-size: 0.65rem;">Tersedia</small>
+                                        <small class="slot-status-label d-block text-primary" style="font-size: 0.65rem;">Tersedia</small>
                                     </button>
                                 </div>
                             @endforeach
@@ -174,18 +189,13 @@ document.addEventListener('DOMContentLoaded', function () {
             const label = btn.querySelector('.slot-status-label');
 
             btn.classList.remove('btn-primary', 'text-white', 'btn-outline-primary', 'btn-outline-secondary', 'btn-danger', 'btn-secondary');
-            label.classList.remove('text-muted', 'text-white-50');
+            label.classList.remove('text-muted', 'text-white-50', 'text-primary');
 
-            if (isBooked) {
-                btn.classList.add('btn-danger');
-                btn.disabled = true;
-                label.classList.add('text-white-50');
-                label.textContent = 'Terisi';
-            } else if (isPastLimit) {
+            if (isBooked || isPastLimit) {
                 btn.classList.add('btn-secondary');
                 btn.disabled = true;
                 label.classList.add('text-white-50');
-                label.textContent = 'Lewat';
+                label.textContent = isBooked ? 'Terisi' : 'Lewat';
             } else {
                 btn.disabled = false;
                 if (startIndex !== null && endIndex !== null && idx >= startIndex && idx <= endIndex) {
@@ -193,8 +203,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     label.classList.add('text-white-50');
                     label.textContent = (idx === startIndex) ? 'Mulai' : ((idx === endIndex) ? 'Selesai' : 'Dipilih');
                 } else {
-                    btn.classList.add('btn-outline-secondary');
-                    label.classList.add('text-muted');
+                    btn.classList.add('btn-outline-primary');
+                    label.classList.add('text-primary');
                     label.textContent = 'Tersedia';
                 }
             }
@@ -272,15 +282,15 @@ document.addEventListener('DOMContentLoaded', function () {
                     const label = b.querySelector('.slot-status-label');
                     if (idx >= startIndex && idx <= hoverIdx) {
                         b.classList.add('btn-primary', 'text-white');
-                        b.classList.remove('btn-outline-secondary');
+                        b.classList.remove('btn-outline-primary');
                         label.classList.add('text-white-50');
-                        label.classList.remove('text-muted');
+                        label.classList.remove('text-primary');
                         label.textContent = idx === startIndex ? 'Mulai' : (idx === hoverIdx ? 'Selesai' : 'Dipilih');
                     } else if (idx < startIndex || idx > hoverIdx) {
                         b.classList.remove('btn-primary', 'text-white');
-                        b.classList.add('btn-outline-secondary');
+                        b.classList.add('btn-outline-primary');
                         label.classList.remove('text-white-50');
-                        label.classList.add('text-muted');
+                        label.classList.add('text-primary');
                         label.textContent = 'Tersedia';
                     }
                 });

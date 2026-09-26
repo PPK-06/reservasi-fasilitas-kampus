@@ -145,21 +145,77 @@
         </div>
 
         {{-- ═══════════════════════════════════════════════════════
-             PLACEHOLDER GRID KETERSEDIAAN
-             Menunggu class Slot & query ketersediaan dari M3 (Dhimas)
+             GRID KETERSEDIAAN JADWAL (P2 / US 1 / F4 / D5)
              ═══════════════════════════════════════════════════════ --}}
         <div class="card border-0 shadow-sm mt-4">
-            <div class="card-header bg-white py-3">
+            <div class="card-header bg-white d-flex flex-wrap justify-content-between align-items-center gap-2 py-3">
                 <h6 class="mb-0 fw-bold text-dark">
                     <i class="bi bi-calendar3 me-2"></i>Ketersediaan Jadwal
                 </h6>
+                <form method="GET" action="{{ route('facilities.show', $facility) }}" class="d-flex align-items-center gap-2">
+                    <label for="p2-date" class="form-label small fw-semibold mb-0 text-muted">Tanggal:</label>
+                    <input type="date"
+                           name="date"
+                           id="p2-date"
+                           class="form-control form-control-sm"
+                           value="{{ $selectedDate }}"
+                           min="{{ now()->addDay()->toDateString() }}"
+                           max="{{ now()->addDays(30)->toDateString() }}"
+                           onchange="this.form.submit()">
+                </form>
             </div>
-            <div class="card-body text-center py-5">
-                <i class="bi bi-calendar2-week fs-1 text-muted d-block mb-3"></i>
-                <h6 class="fw-bold text-muted">Grid ketersediaan akan segera tersedia</h6>
-                <p class="text-muted mb-0" style="font-size: 0.85rem;">
-                    Fitur ini sedang dalam pengembangan dan akan ditambahkan pada integrasi berikutnya.
-                </p>
+            <div class="card-body">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3 pb-2 border-bottom">
+                    <div class="small text-muted">
+                        <i class="bi bi-clock me-1"></i>Jam operasional: <strong>07:00 – 20:00</strong> (26 slot, @ 30 menit)
+                    </div>
+                    <div class="d-flex align-items-center gap-3" style="font-size: 0.8rem;">
+                        <span class="d-flex align-items-center gap-1">
+                            <span class="d-inline-block rounded border border-primary bg-white" style="width: 14px; height: 14px;"></span>
+                            Tersedia
+                        </span>
+                        <span class="d-flex align-items-center gap-1">
+                            <span class="d-inline-block rounded bg-secondary" style="width: 14px; height: 14px;"></span>
+                            Tidak Tersedia
+                        </span>
+                    </div>
+                </div>
+
+                <div class="row row-cols-3 row-cols-sm-4 row-cols-md-6 g-2">
+                    @foreach ($slots as $slot)
+                        @php
+                            $canBook = $slot['is_available'] && $isActive;
+                        @endphp
+                        <div class="col">
+                            @if ($canBook)
+                                <a href="{{ route('reservations.create', ['facility' => $facility->id, 'date' => $selectedDate, 'start_slot' => $slot['start']]) }}"
+                                   class="btn btn-outline-primary w-100 py-2 text-decoration-none"
+                                   style="font-size: 0.83rem; font-weight: 500;"
+                                   title="Pesan slot {{ $slot['start'] }} - {{ $slot['end'] }}">
+                                    <div class="fw-semibold">{{ $slot['start'] }}</div>
+                                    <small class="d-block" style="font-size: 0.65rem;">Tersedia</small>
+                                </a>
+                            @else
+                                <button type="button"
+                                        class="btn btn-secondary w-100 py-2"
+                                        disabled
+                                        style="font-size: 0.83rem; font-weight: 500; opacity: 0.65;"
+                                        title="Slot {{ $slot['start'] }} - {{ $slot['end'] }} tidak tersedia">
+                                    <div class="fw-semibold">{{ $slot['start'] }}</div>
+                                    <small class="d-block" style="font-size: 0.65rem;">
+                                        {{ $slot['is_booked'] ? 'Terisi' : 'Tidak Tersedia' }}
+                                    </small>
+                                </button>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
+
+                @if ($isActive)
+                    <div class="text-muted mt-3 text-center" style="font-size: 0.8rem;">
+                        <i class="bi bi-info-circle me-1"></i>Klik pada slot yang tersedia (biru outline) untuk langsung mengajukan reservasi.
+                    </div>
+                @endif
             </div>
         </div>
     </div>

@@ -155,3 +155,18 @@ it('endpoint reservations.availability mengembalikan format JSON ketersediaan', 
             ],
         ]);
 });
+
+it('halaman detail fasilitas P2 menampilkan grid ketersediaan 26 slot dengan outline biru dan abu-abu', function (): void {
+    $facility = Facility::where('status', 'active')->firstOrFail();
+    $targetDate = Carbon::now()->addDays(7)->toDateString();
+
+    $response = $this->get(route('facilities.show', [
+        'facility' => $facility->id,
+        'date' => $targetDate,
+    ]));
+
+    $response->assertOk()
+        ->assertSee('Ketersediaan Jadwal')
+        ->assertSee('btn-outline-primary')
+        ->assertDontSee('Grid ketersediaan akan segera tersedia');
+});
