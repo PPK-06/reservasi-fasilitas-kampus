@@ -106,10 +106,11 @@
 @endsection
 
 @push('scripts')
-{{-- Umpan balik lebih cepat, bukan penjaga. Saat role bukan pengguna, NIM/NIP
-     dan tipe pengguna disembunyikan sekaligus di-disable: field yang hanya
-     disembunyikan tetap ikut terkirim. Controller juga mengosongkan keduanya
-     untuk petugas, jadi tanpa JavaScript hasilnya tetap benar. --}}
+{{-- Umpan balik lebih cepat, bukan penjaga. Saat role petugas, NIM/NIP dan
+     tipe pengguna disembunyikan sekaligus di-disable: field yang hanya
+     disembunyikan tetap ikut terkirim. StoreUserRequest juga mengosongkan
+     keduanya untuk petugas sebelum validasi, jadi tanpa JavaScript hasilnya
+     tetap benar. --}}
 <script>
     (function () {
         const role = document.getElementById('role');

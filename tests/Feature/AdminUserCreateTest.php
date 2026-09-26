@@ -192,6 +192,30 @@ it('menolak role admin (bagian 24)', function (): void {
         ->and(User::where('email', 'uji.tambah.akun@kampus.test')->exists())->toBeFalse();
 });
 
+it('mempertahankan NIM/NIP dan tipe pengguna yang sudah diketik saat role belum dipilih', function (): void {
+    $sebelum = User::count();
+    $isian = isianTambahAkunSah();
+    unset($isian['role']);
+
+    $this->actingAs(adminPembuatAkun())
+        ->from(route('admin.users.create'))
+        ->post(route('admin.users.store'), $isian)
+        ->assertRedirect(route('admin.users.create'))
+        ->assertSessionHasErrors('role')
+        ->assertSessionDoesntHaveErrors(['identity_number', 'user_type'])
+        // Kesalahannya di role, jadi isian identitas tidak boleh ikut hilang.
+        ->assertSessionHasInput('identity_number', '2399666001')
+        ->assertSessionHasInput('user_type', 'dosen');
+
+    // Dan benar-benar kembali terisi di form lewat old().
+    $this->actingAs(adminPembuatAkun())->get(route('admin.users.create'))
+        ->assertOk()
+        ->assertSee('value="2399666001"', false)
+        ->assertSee('<option value="dosen" selected', false);
+
+    expect(User::count())->toBe($sebelum);
+});
+
 it('mewajibkan NIM/NIP dan tipe pengguna saat role pengguna (C4)', function (): void {
     $sebelum = User::count();
 

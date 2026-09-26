@@ -18,7 +18,7 @@ class StoreUserRequest extends FormRequest
     }
 
     /**
-     * Kosongkan NIM/NIP dan tipe pengguna saat role bukan `pengguna` (C4).
+     * Kosongkan NIM/NIP dan tipe pengguna saat role `petugas` (C4).
      *
      * Kontrak bagian 24 hanya mewajibkan keduanya untuk pengguna, tidak
      * melarangnya untuk petugas — dan field yang disembunyikan JavaScript tetap
@@ -30,12 +30,18 @@ class StoreUserRequest extends FormRequest
      * berjalan atas nilai yang toh akan dibuang, dan admin bisa mendapat error
      * "NIM/NIP sudah terpakai" saat membuat akun petugas.
      *
+     * Kondisinya hanya `petugas`, sama dengan JavaScript di A4 yang
+     * menyembunyikan dan men-disable kedua field hanya untuk role itu. Tidak
+     * perlu melebarkannya ke role lain: nilai selain `pengguna` dan `petugas`,
+     * termasuk role kosong, sudah ditolak `in:pengguna,petugas` dan akunnya
+     * tidak pernah tersimpan.
+     *
      * Kontraknya sendiri tidak diubah: `prohibited_unless` sengaja tidak
      * dipakai, karena ia menolak request alih-alih membersihkannya.
      */
     protected function prepareForValidation(): void
     {
-        if ($this->input('role') !== 'pengguna') {
+        if ($this->input('role') === 'petugas') {
             $this->merge([
                 'identity_number' => null,
                 'user_type' => null,
