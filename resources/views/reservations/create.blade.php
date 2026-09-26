@@ -164,34 +164,38 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let startIndex = null;
     let endIndex = null;
+    let isPickingEnd = false;
     let availabilityData = {};
 
     function updateHighlight() {
         slotButtons.forEach((btn, idx) => {
             const isBooked = btn.dataset.status === 'booked';
             const isPastLimit = btn.dataset.status === 'past_limit';
+            const label = btn.querySelector('.slot-status-label');
 
             btn.classList.remove('btn-primary', 'text-white', 'btn-outline-primary', 'btn-outline-secondary', 'btn-danger', 'btn-secondary');
+            label.classList.remove('text-muted', 'text-white-50');
 
             if (isBooked) {
                 btn.classList.add('btn-danger');
                 btn.disabled = true;
-                btn.querySelector('.slot-status-label').textContent = 'Terisi';
+                label.classList.add('text-white-50');
+                label.textContent = 'Terisi';
             } else if (isPastLimit) {
                 btn.classList.add('btn-secondary');
                 btn.disabled = true;
-                btn.querySelector('.slot-status-label').textContent = 'Lewat';
+                label.classList.add('text-white-50');
+                label.textContent = 'Lewat';
             } else {
                 btn.disabled = false;
                 if (startIndex !== null && endIndex !== null && idx >= startIndex && idx <= endIndex) {
                     btn.classList.add('btn-primary', 'text-white');
-                    btn.querySelector('.slot-status-label').textContent = idx === startIndex ? 'Mulai' : (idx === endIndex ? 'Selesai' : 'Dipilih');
-                } else if (startIndex !== null && endIndex === null && idx === startIndex) {
-                    btn.classList.add('btn-primary', 'text-white');
-                    btn.querySelector('.slot-status-label').textContent = 'Mulai';
+                    label.classList.add('text-white-50');
+                    label.textContent = (idx === startIndex) ? 'Mulai' : ((idx === endIndex) ? 'Selesai' : 'Dipilih');
                 } else {
                     btn.classList.add('btn-outline-secondary');
-                    btn.querySelector('.slot-status-label').textContent = 'Tersedia';
+                    label.classList.add('text-muted');
+                    label.textContent = 'Tersedia';
                 }
             }
         });
@@ -205,16 +209,13 @@ document.addEventListener('DOMContentLoaded', function () {
             if (selectStart) selectStart.value = sTime;
             if (selectEnd) selectEnd.value = eTime;
 
-            infoText.innerHTML = `Terpilih: <strong>${sTime}</strong> – <strong>${eTime}</strong>`;
+            if (isPickingEnd) {
+                infoText.innerHTML = `Mulai: <strong>${sTime}</strong>. Klik slot jam selesai untuk blok rentang waktu.`;
+            } else {
+                infoText.innerHTML = `Terpilih: <strong>${sTime}</strong> – <strong>${eTime}</strong>`;
+            }
             badgeCount.textContent = `${count} Slot (${(count * 0.5)} Jam)`;
             badgeCount.classList.remove('d-none');
-        } else if (startIndex !== null) {
-            const sTime = startTimes[startIndex];
-            hiddenStart.value = sTime;
-            hiddenEnd.value = '';
-            if (selectStart) selectStart.value = sTime;
-            infoText.innerHTML = `Mulai: <strong>${sTime}</strong>. Klik slot selesai berikutnya.`;
-            badgeCount.classList.add('d-none');
         } else {
             hiddenStart.value = '';
             hiddenEnd.value = '';
@@ -240,13 +241,15 @@ document.addEventListener('DOMContentLoaded', function () {
             if (this.disabled) return;
             const clickedIdx = parseInt(this.dataset.index, 10);
 
-            if (startIndex === null || (startIndex !== null && endIndex !== null)) {
+            if (!isPickingEnd || startIndex === null) {
                 startIndex = clickedIdx;
                 endIndex = clickedIdx;
-            } else if (startIndex !== null && endIndex === null) {
+                isPickingEnd = true;
+            } else {
                 if (clickedIdx >= startIndex) {
                     if (checkSlotRangeValidity(startIndex, clickedIdx)) {
                         endIndex = clickedIdx;
+                        isPickingEnd = false;
                     } else {
                         alert('Rentang slot melewati jadwal yang sudah terisi.');
                         return;
@@ -254,15 +257,47 @@ document.addEventListener('DOMContentLoaded', function () {
                 } else {
                     startIndex = clickedIdx;
                     endIndex = clickedIdx;
+                    isPickingEnd = true;
                 }
             }
             updateHighlight();
         });
+
+        btn.addEventListener('mouseenter', function () {
+            if (!isPickingEnd || startIndex === null) return;
+            const hoverIdx = parseInt(this.dataset.index, 10);
+            if (hoverIdx >= startIndex && checkSlotRangeValidity(startIndex, hoverIdx)) {
+                slotButtons.forEach((b, idx) => {
+                    if (b.disabled) return;
+                    const label = b.querySelector('.slot-status-label');
+                    if (idx >= startIndex && idx <= hoverIdx) {
+                        b.classList.add('btn-primary', 'text-white');
+                        b.classList.remove('btn-outline-secondary');
+                        label.classList.add('text-white-50');
+                        label.classList.remove('text-muted');
+                        label.textContent = idx === startIndex ? 'Mulai' : (idx === hoverIdx ? 'Selesai' : 'Dipilih');
+                    } else if (idx < startIndex || idx > hoverIdx) {
+                        b.classList.remove('btn-primary', 'text-white');
+                        b.classList.add('btn-outline-secondary');
+                        label.classList.remove('text-white-50');
+                        label.classList.add('text-muted');
+                        label.textContent = 'Tersedia';
+                    }
+                });
+            }
+        });
+    });
+
+    document.getElementById('slot-grid-container')?.addEventListener('mouseleave', function () {
+        if (isPickingEnd) {
+            updateHighlight();
+        }
     });
 
     btnReset?.addEventListener('click', function () {
         startIndex = null;
         endIndex = null;
+        isPickingEnd = false;
         updateHighlight();
     });
 
@@ -274,6 +309,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (endIndex === null || endIndex < idx) {
                 endIndex = idx;
             }
+            isPickingEnd = false;
             updateHighlight();
         }
     });
@@ -286,6 +322,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (startIndex === null || startIndex > idx) {
                 startIndex = idx;
             }
+            isPickingEnd = false;
             updateHighlight();
         }
     });
