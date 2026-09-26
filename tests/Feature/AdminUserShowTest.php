@@ -96,10 +96,10 @@ it('menampilkan tombol Aktifkan hanya untuk akun rejected dan suspended', functi
         ->assertDontSee(route('admin.users.activate', $pending), false);
 });
 
-it('menampilkan modal Reset Password untuk setiap status akun', function (): void {
+it('menampilkan modal Reset Password hanya untuk akun verified dan suspended', function (): void {
     daftarkanRouteNavbarAdmin();
 
-    foreach (['pending', 'verified', 'rejected', 'suspended'] as $status) {
+    foreach (['verified', 'suspended'] as $status) {
         $user = akunBerstatus($status);
 
         $this->actingAs(adminPenguji())->get(route('admin.users.show', $user))
@@ -107,6 +107,16 @@ it('menampilkan modal Reset Password untuk setiap status akun', function (): voi
             ->assertSee('Reset Password')
             ->assertSee(route('admin.users.reset-password', $user), false)
             ->assertSee('name="password_confirmation"', false);
+    }
+
+    foreach (['pending', 'rejected'] as $status) {
+        $user = akunBerstatus($status);
+
+        $this->actingAs(adminPenguji())->get(route('admin.users.show', $user))
+            ->assertOk()
+            ->assertDontSee('Reset Password')
+            ->assertDontSee(route('admin.users.reset-password', $user), false)
+            ->assertDontSee('resetPasswordModal', false);
     }
 });
 
@@ -311,7 +321,7 @@ it('hanya mengubah status saat activate (C2)', function (): void {
 });
 
 it('mereset password sebagai hash tunggal tanpa mengubah status (C5)', function (): void {
-    foreach (['pending', 'verified', 'rejected', 'suspended'] as $status) {
+    foreach (['verified', 'suspended'] as $status) {
         $user = akunBerstatus($status);
 
         $this->actingAs(adminPenguji())
@@ -326,6 +336,30 @@ it('mereset password sebagai hash tunggal tanpa mengubah status (C5)', function 
 
         // Hash::check hanya lolos kalau hash-nya tunggal; hash ganda gagal di sini.
         expect(Hash::check('passwordbaru123', $segar->password))->toBeTrue()
+            ->and($segar->status)->toBe($status);
+    }
+});
+
+it('menolak reset password untuk akun pending dan rejected tanpa mengubah password', function (): void {
+    foreach (['pending', 'rejected'] as $status) {
+        $user = akunBerstatus($status);
+        $hashLama = $user->password;
+
+        // Isian password sah, supaya yang menolak adalah pengecekan status,
+        // bukan validasi.
+        $this->actingAs(adminPenguji())
+            ->patch(route('admin.users.reset-password', $user), [
+                'password' => 'passwordbaru123',
+                'password_confirmation' => 'passwordbaru123',
+            ])
+            ->assertRedirect(route('admin.users.show', $user))
+            ->assertSessionHas('error')
+            ->assertSessionHasNoErrors();
+
+        $segar = $user->fresh();
+
+        expect($segar->password)->toBe($hashLama)
+            ->and(Hash::check('passwordbaru123', $segar->password))->toBeFalse()
             ->and($segar->status)->toBe($status);
     }
 });

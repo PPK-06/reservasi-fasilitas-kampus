@@ -51,12 +51,17 @@
      * Suspend belum dikerjakan (menunggu komponen peringatan D4), jadi akun
      * `verified` untuk sementara tanpa tombol transisi.
      *
+     * Reset Password bukan transisi C2, tapi cakupannya juga dibatasi: hanya
+     * akun `verified` dan `suspended`, yang punya akses atau akan dipulihkan
+     * aksesnya (alasannya di komentar Admin\UserController@resetPassword).
+     *
      * Penjagaan yang sesungguhnya tetap ada di controller; tombol yang tidak
      * dirender bukan penjaga.
      */
     $bolehVerifikasi = $user->status === 'pending';
     $bolehTolak = $user->status === 'pending';
     $bolehAktifkan = in_array($user->status, ['rejected', 'suspended'], true);
+    $bolehResetPassword = in_array($user->status, ['verified', 'suspended'], true);
 @endphp
 
 <div class="row justify-content-center">
@@ -101,8 +106,8 @@
 
             {{-- Tombol aksi mengikuti matriks transisi C2 (peta 2.4). Nonaktifkan
                  belum dikerjakan, jadi sengaja tidak dirender sama sekali.
-                 Reset Password bukan transisi status (C5), jadi tersedia untuk
-                 semua status dan dipisah ke sisi kanan. --}}
+                 Reset Password bukan transisi status (C5), jadi dipisah ke
+                 sisi kanan. --}}
             <div class="card-footer bg-white border-top py-3">
                 <div class="d-flex flex-wrap gap-2">
                     @if ($bolehVerifikasi)
@@ -138,10 +143,12 @@
                         </form>
                     @endif
 
-                    <button type="button" class="btn btn-outline-secondary btn-sm ms-auto"
-                            data-bs-toggle="modal" data-bs-target="#resetPasswordModal">
-                        <i class="bi bi-key me-1"></i>Reset Password
-                    </button>
+                    @if ($bolehResetPassword)
+                        <button type="button" class="btn btn-outline-secondary btn-sm ms-auto"
+                                data-bs-toggle="modal" data-bs-target="#resetPasswordModal">
+                            <i class="bi bi-key me-1"></i>Reset Password
+                        </button>
+                    @endif
                 </div>
             </div>
         </div>
@@ -155,6 +162,7 @@
      seluruhnya lewat banner $errors->any() (D8). Field password tidak diisi
      ulang dengan old() karena password tidak pernah dikembalikan ke browser.
      ════════════════════════════════════════════ --}}
+@if ($bolehResetPassword)
 <div class="modal fade" id="resetPasswordModal" tabindex="-1"
      aria-labelledby="resetPasswordModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -200,8 +208,10 @@
         </div>
     </div>
 </div>
+@endif
 @endsection
 
+@if ($bolehResetPassword)
 @push('scripts')
 {{-- Umpan balik lebih cepat untuk kecocokan password, pola yang sama dengan P4.
      Aturan `confirmed` di server tetap sumber kebenaran. Kalau server menolak,
@@ -225,3 +235,4 @@
     })();
 </script>
 @endpush
+@endif

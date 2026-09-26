@@ -194,6 +194,17 @@ class UserController extends Controller
     /**
      * A5 — reset password oleh admin (C5), tujuan A5 (bagian 11).
      *
+     * Cakupannya hanya akun `verified` dan `suspended`. Fitur ini ada sebagai
+     * konsekuensi C5 — tidak ada lupa password mandiri — jadi maknanya hanya
+     * bagi akun yang punya akses atau akan dipulihkan aksesnya. Akun `pending`
+     * dan `rejected` belum pernah diberi akses; kalau nanti diverifikasi atau
+     * diaktifkan, pemiliknya tetap memakai password buatannya sendiri saat
+     * registrasi.
+     *
+     * Status diperiksa di server lebih dulu, sebelum validasi, supaya PATCH
+     * yang dikirim langsung untuk status lain ditolak dengan alasan yang
+     * benar, bukan dengan pesan validasi password.
+     *
      * Validasi ditulis di sini, bukan di Form Request: kontrak bagian 25 hanya
      * punya satu field, dan bagian 6 tidak mendaftarkan Form Request untuknya.
      * Gagal validasi kembali ke A5, tempat modalnya berada.
@@ -204,6 +215,17 @@ class UserController extends Controller
      */
     public function resetPassword(Request $request, User $user): RedirectResponse
     {
+        if (! in_array($user->status, ['verified', 'suspended'], true)) {
+            $alasan = match ($user->status) {
+                'pending' => 'Akun yang masih menunggu belum pernah diberi akses, jadi passwordnya tidak direset. Pemilik akun tetap memakai password yang dibuatnya saat registrasi.',
+                default => 'Akun yang ditolak tidak punya akses, jadi passwordnya tidak direset. Pakai aksi Aktifkan lebih dulu bila aksesnya perlu dipulihkan.',
+            };
+
+            return redirect()
+                ->route('admin.users.show', $user)
+                ->with('error', $alasan);
+        }
+
         $validated = $request->validate([
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
