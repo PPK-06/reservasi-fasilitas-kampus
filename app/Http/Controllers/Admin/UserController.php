@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreUserRequest;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -59,15 +60,39 @@ class UserController extends Controller
      */
     public function create(): View
     {
-        abort(501);
+        return view('admin.users.create');
     }
 
     /**
-     * A4 — simpan akun baru.
+     * A4 — simpan akun baru, langsung berstatus `verified` (C2), tujuan A3
+     * (bagian 11).
+     *
+     * `status` tidak fillable (F10), jadi diisi sebagai properti setelah
+     * konstruktor. Lewat mass assignment ia akan ditolak penjaga F11.
+     *
+     * NIM/NIP dan tipe pengguna dikosongkan untuk petugas (C4). Kontrak bagian
+     * 24 hanya mewajibkan keduanya untuk pengguna, tidak melarangnya untuk
+     * petugas — dan field yang disembunyikan JavaScript tetap bisa ikut
+     * terkirim. Petugas tidak punya NIM, jadi nilai apa pun di sana dibuang.
+     *
+     * Password tidak di-hash di sini: kolomnya punya cast `hashed` di model,
+     * dan hashing dua kali membuat akun tidak bisa login.
      */
-    public function store(): RedirectResponse
+    public function store(StoreUserRequest $request): RedirectResponse
     {
-        abort(501);
+        $user = new User($request->validated());
+
+        if ($user->role !== 'pengguna') {
+            $user->identity_number = null;
+            $user->user_type = null;
+        }
+
+        $user->status = 'verified';
+        $user->save();
+
+        return redirect()
+            ->route('admin.users.index')
+            ->with('success', 'Akun '.$user->name.' berhasil dibuat.');
     }
 
     /**
