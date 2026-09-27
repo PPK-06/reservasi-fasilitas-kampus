@@ -73,8 +73,8 @@ class UserController extends Controller
      * NIM/NIP dan tipe pengguna untuk petugas sudah dikosongkan
      * StoreUserRequest sebelum validasi (C4), jadi tidak diurus lagi di sini.
      *
-     * Password tidak di-hash di sini: kolomnya punya cast `hashed` di model,
-     * dan hashing dua kali membuat akun tidak bisa login.
+     * Password tidak di-hash di sini: cast `hashed` di model User sudah
+     * menangani hashing, jadi controller tidak perlu memanggil Hash::make.
      */
     public function store(StoreUserRequest $request): RedirectResponse
     {
@@ -226,8 +226,8 @@ class UserController extends Controller
      * punya satu field, dan bagian 6 tidak mendaftarkan Form Request untuknya.
      * Gagal validasi kembali ke A5, tempat modalnya berada.
      *
-     * Password tidak di-hash di sini: kolomnya punya cast `hashed` di model,
-     * dan hashing dua kali membuat akun tidak bisa login. Status akun tidak
+     * Password tidak di-hash di sini: cast `hashed` di model User sudah
+     * menangani hashing, jadi controller tidak perlu memanggil Hash::make. Status akun tidak
      * disentuh — reset password bukan transisi C2.
      */
     public function resetPassword(Request $request, User $user): RedirectResponse

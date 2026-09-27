@@ -347,7 +347,7 @@ it('hanya mengubah status saat activate (C2)', function (): void {
     expect($user->fresh()->only(array_keys($asli)))->toBe($asli);
 });
 
-it('mereset password sebagai hash tunggal tanpa mengubah status (C5)', function (): void {
+it('mereset password sebagai hash, bukan teks polos, tanpa mengubah status (C5)', function (): void {
     foreach (['verified', 'suspended'] as $status) {
         $user = akunBerstatus($status);
 
@@ -361,7 +361,7 @@ it('mereset password sebagai hash tunggal tanpa mengubah status (C5)', function 
 
         $segar = $user->fresh();
 
-        // Hash::check hanya lolos kalau hash-nya tunggal; hash ganda gagal di sini.
+        // Membuktikan password tidak tersimpan sebagai teks polos, dan hash-nya cocok.
         expect(Hash::check('passwordbaru123', $segar->password))->toBeTrue()
             ->and($segar->status)->toBe($status);
     }

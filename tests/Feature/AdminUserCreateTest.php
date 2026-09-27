@@ -89,13 +89,13 @@ it('membuat akun pengguna berstatus verified lalu kembali ke A3 (C2, bagian 11)'
         ->and($user->user_type)->toBe('dosen');
 });
 
-it('menyimpan password sebagai hash tunggal (C5)', function (): void {
+it('menyimpan password sebagai hash, bukan teks polos (C5)', function (): void {
     $this->actingAs(adminPembuatAkun())
         ->post(route('admin.users.store'), isianTambahAkunSah());
 
     $user = User::where('email', 'uji.tambah.akun@kampus.test')->firstOrFail();
 
-    // Hash::check hanya lolos kalau hash-nya tunggal; hash ganda gagal di sini.
+    // Membuktikan password tidak tersimpan sebagai teks polos, dan hash-nya cocok.
     expect($user->password)->not->toBe('rahasia123')
         ->and(Hash::check('rahasia123', $user->password))->toBeTrue();
 });
