@@ -7,6 +7,7 @@ use App\Models\Facility;
 use App\Models\Reservation;
 use App\Support\Slot;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -29,9 +30,28 @@ class ReservationController extends Controller
             : null;
 
         $startSlots = Slot::startTimes();
-        $endSlots   = Slot::endTimes();
+        $endSlots = Slot::endTimes();
 
         return view('reservations.create', compact('facilities', 'selectedFacility', 'startSlots', 'endSlots'));
+    }
+
+    /**
+     * Ketersediaan slot untuk form U1 (JSON).
+     */
+    public function availability(Request $request): JsonResponse
+    {
+        $request->validate([
+            'facility_id' => ['required', 'exists:facilities,id'],
+            'date' => ['required', 'date_format:Y-m-d'],
+        ]);
+
+        $slots = Slot::availability((int) $request->input('facility_id'), $request->input('date'));
+
+        return response()->json([
+            'facility_id' => (int) $request->input('facility_id'),
+            'date' => $request->input('date'),
+            'slots' => $slots,
+        ]);
     }
 
     /**
@@ -41,18 +61,18 @@ class ReservationController extends Controller
     public function store(StoreReservationRequest $request): RedirectResponse
     {
         $validated = $request->validated();
-        $date  = $validated['date'];
+        $date = $validated['date'];
         $start = Carbon::createFromFormat('Y-m-d H:i', "{$date} {$validated['start_slot']}");
-        $end   = Carbon::createFromFormat('Y-m-d H:i', "{$date} {$validated['end_slot']}");
+        $end = Carbon::createFromFormat('Y-m-d H:i', "{$date} {$validated['end_slot']}");
 
         $reservation = new Reservation([
             'facility_id' => $validated['facility_id'],
-            'purpose'     => $validated['purpose'],
+            'purpose' => $validated['purpose'],
         ]);
-        $reservation->user_id    = auth()->id();
+        $reservation->user_id = auth()->id();
         $reservation->start_time = $start;
-        $reservation->end_time   = $end;
-        $reservation->status     = 'pending';
+        $reservation->end_time = $end;
+        $reservation->status = 'pending';
         $reservation->save();
 
         return redirect()->route('reservations.show', $reservation)
