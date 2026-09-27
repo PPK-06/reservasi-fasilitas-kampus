@@ -16,13 +16,21 @@
 
 ## Perubahan dari v1.1
 
-## Perubahan dari v1.1
-
 | Bagian | Perubahan |
 |---|---|
 | D18 | Baru. Reset password dibatasi ke akun `verified` dan `suspended` |
 | D19 | Baru. Field khusus pengguna dikosongkan sebelum validasi, bukan ditolak |
 | D20 | Baru. Pesan "Tidak ada aksi yang tersedia" di A5 dihapus |
+
+## Perubahan dari v1.0
+
+| Bagian | Perubahan |
+|---|---|
+| Judul | "Filter dan Bentuk Halaman A3" diganti "Tahap 2". Isi berkas sudah melampaui satu halaman sejak D17 dan catatan A5 masuk |
+| D15 | Alasan kedua dicabut. Versi 1.0 menulis bahwa verifikasi bisa dilakukan dari tombol di baris A3 tanpa masuk ke A5; A3 tidak pernah punya tombol semacam itu. Keputusannya sendiri tidak berubah |
+| D17 | Baru. Pesan validasi Bahasa Indonesia disediakan lewat berkas `lang/id`, bukan `messages()` per Form Request |
+| Catatan A5 | Baru. Pembagian `verify` dan `activate` terhadap matriks C2, beserta kekeliruan yang sempat terjadi karena C2 dibaca tanpa catatan bagian 11 |
+| D16 | Alasan angka 15 menyebut "tujuh akun demo"; seeder sekarang membuat sembilan. Keputusannya sendiri tidak berubah |
 
 ---
 
@@ -223,6 +231,10 @@ Bagian 25 `route-dan-kontrak-form.md` hanya menetapkan aturan validasi satu fiel
 `suspended` tetap disertakan karena pemulihannya sudah dalam jangkauan: begitu diaktifkan, pemiliknya langsung bisa login.
 
 **Konsisten dengan pola M1 yang lain.** Sama seperti `verify`, `reject`, dan `activate`, pemeriksaan status dilakukan di server, bukan sekadar menyembunyikan tombol. PATCH yang dikirim langsung untuk status lain tetap ditolak. Status diperiksa **sebelum** validasi, supaya akun `pending` tidak menerima pesan kesalahan password yang menyesatkan.
+
+**Admin tetap bisa mereset password akun admin, termasuk akunnya sendiri.** Kontrak tidak melarangnya, dan sistem ini tidak punya halaman ubah password untuk pengguna yang sedang login. Tanpa ini, admin tidak punya cara mengganti passwordnya sendiri.
+
+**Yang diketahui dan diterima:** reset password tidak memutus sesi aktif pemilik akun. Kalau pemiliknya sedang login di perangkat lain, sesinya tetap berlaku sampai ia logout atau sesinya kedaluwarsa. Risikonya kecil karena sistem ini tidak memakai remember-me.
 
 ---
 
