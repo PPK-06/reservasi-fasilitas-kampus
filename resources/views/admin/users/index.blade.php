@@ -5,7 +5,8 @@
 @section('page-title', 'Daftar Akun')
 
 @section('page-actions')
-    {{-- Peta 2.4: A3 "Tambah Akun" → A4. A4 masih abort(501) sampai potongan 7 --}}
+    {{-- Peta 2.4: A3 "Tambah Akun" → A4. Satu tombol di header, bukan per baris —
+         A3 tidak punya tombol aksi per baris (bagian 1.4) --}}
     <a href="{{ route('admin.users.create') }}" class="btn btn-primary btn-sm">
         <i class="bi bi-person-plus me-1"></i>Tambah Akun
     </a>
@@ -125,8 +126,7 @@
                     @forelse ($users as $user)
                         @php $rowUrl = route('admin.users.show', $user); @endphp
                         {{-- Peta 2.4: A3 klik baris → A5. Seluruh sel jadi tautan
-                             supaya barisnya bisa diklik tanpa JavaScript. A5 masih
-                             abort(501) sampai potongan 5. --}}
+                             supaya barisnya bisa diklik tanpa JavaScript. --}}
                         <tr>
                             <td class="p-0">
                                 <a href="{{ $rowUrl }}" class="d-block text-decoration-none text-reset fw-semibold ps-3 pe-2 py-2">

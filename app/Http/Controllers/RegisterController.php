@@ -23,8 +23,8 @@ class RegisterController extends Controller
      * `status` tidak fillable (F10), jadi diisi sebagai properti setelah
      * konstruktor. Lewat mass assignment ia akan ditolak penjaga F11.
      *
-     * Password tidak di-hash di sini: kolomnya punya cast `hashed` di model,
-     * dan hashing dua kali membuat akun tidak bisa login.
+     * Password tidak di-hash di sini: cast `hashed` di model User sudah
+     * menangani hashing, jadi controller tidak perlu memanggil Hash::make.
      *
      * Tidak ada Auth::login setelah ini — akun `pending` belum boleh masuk (C1).
      */

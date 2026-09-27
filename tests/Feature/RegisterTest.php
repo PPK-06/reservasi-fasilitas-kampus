@@ -9,8 +9,8 @@ use Illuminate\Support\Facades\Schema;
  * P4 Registrasi mandiri — kontrak form bagian 16 `route-dan-kontrak-form.md`,
  * ditambah C1, C4, C5, F10, dan F11 `dasar-proyek.md`.
  *
- * Tiga hal yang diuji di sini gagal secara diam-diam kalau salah: hash ganda
- * (akun tidak bisa login, tanpa pesan error), `status` lewat mass assignment
+ * Tiga hal yang diuji di sini gagal secara diam-diam kalau salah: password
+ * tersimpan sebagai teks polos, `status` lewat mass assignment
  * (tertahan F11 hanya di luar production), dan auto-login setelah registrasi
  * (akun `pending` masuk padahal C1 melarangnya). Ketiganya tidak terlihat dari
  * pemeriksaan manual halaman.
@@ -119,7 +119,7 @@ it('membuat akun pengguna berstatus pending dan mengembalikan ke login dengan pe
     $this->assertGuest();
 });
 
-it('menyimpan password sebagai hash tunggal, bukan plaintext dan bukan hash ganda', function (): void {
+it('menyimpan password sebagai hash, bukan teks polos (C5)', function (): void {
     $this->post(route('register.store'), isianRegistrasiSah());
 
     $user = User::where('email', 'uji.registrasi@kampus.test')->firstOrFail();
