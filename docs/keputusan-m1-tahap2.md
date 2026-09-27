@@ -2,7 +2,7 @@
 ## Sistem Reservasi & Pelaporan Fasilitas Kampus
 
 **Mata kuliah:** Pengembangan Platform Khusus (PPK)
-**Versi dokumen:** 1.1 — 23 September 2026
+**Versi dokumen:** 1.2 — 27 September 2026
 **Ditetapkan oleh:** Elang (pemegang M1)
 
 **Dokumen induk:** `dasar-proyek.md` — aturan bisnis yang mengikat
@@ -14,15 +14,15 @@
 
 ---
 
-## Perubahan dari v1.0
+## Perubahan dari v1.1
+
+## Perubahan dari v1.1
 
 | Bagian | Perubahan |
 |---|---|
-| Judul | "Filter dan Bentuk Halaman A3" diganti "Tahap 2". Isi berkas sudah melampaui satu halaman sejak D17 dan catatan A5 masuk |
-| D15 | Alasan kedua dicabut. Versi 1.0 menulis bahwa verifikasi bisa dilakukan dari tombol di baris A3 tanpa masuk ke A5; A3 tidak pernah punya tombol semacam itu. Keputusannya sendiri tidak berubah |
-| D17 | Baru. Pesan validasi Bahasa Indonesia disediakan lewat berkas `lang/id`, bukan `messages()` per Form Request |
-| Catatan A5 | Baru. Pembagian `verify` dan `activate` terhadap matriks C2, beserta kekeliruan yang sempat terjadi karena C2 dibaca tanpa catatan bagian 11 |
-| D16 | Alasan angka 15 menyebut "tujuh akun demo"; seeder sekarang membuat sembilan. Keputusannya sendiri tidak berubah |
+| D18 | Baru. Reset password dibatasi ke akun `verified` dan `suspended` |
+| D19 | Baru. Field khusus pengguna dikosongkan sebelum validasi, bukan ditolak |
+| D20 | Baru. Pesan "Tidak ada aksi yang tersedia" di A5 dihapus |
 
 ---
 
@@ -55,6 +55,9 @@ Delapan keputusan pertama di bawah (D9 sampai D16) mengisi kekosongan itu. Tiga 
 | **D15** | Filter tidak dibawa melewati A5. `verify` dan `reject` kembali ke A3 tanpa query string |
 | **D16** | Paginasi 15 baris per halaman, dengan `withQueryString()` |
 | **D17** | Pesan validasi Bahasa Indonesia lewat berkas `lang/id`, bukan `messages()` per Form Request |
+| **D18** | Reset password hanya tersedia untuk akun `verified` dan `suspended` |
+| **D19** | Field khusus pengguna dikosongkan sebelum validasi lewat `prepareForValidation()`, bukan ditolak |
+| **D20** | Pesan "Tidak ada aksi yang tersedia" di A5 dihapus, karena tiap status selalu punya minimal satu tombol |
 
 Ditambah satu catatan tanpa nomor: pembagian `verify` dan `activate` di A5 terhadap matriks C2. Bukan keputusan baru, melainkan penegasan atas catatan bagian 11 `route-dan-kontrak-form.md`.
 
@@ -209,6 +212,53 @@ Gejala kalau terlewat: pesan tetap Bahasa Inggris **tanpa error apa pun**. Berka
 
 ---
 
+## D18 — Batas status untuk reset password
+
+**Keputusan:** aksi reset password hanya tersedia untuk akun berstatus `verified` dan `suspended`. Akun `pending` dan `rejected` ditolak di server, dan tombolnya tidak dirender.
+
+Bagian 25 `route-dan-kontrak-form.md` hanya menetapkan aturan validasi satu field `password`, tanpa menyebut status asal mana yang boleh. Keputusan ini mengisi kekosongan itu, bukan mengubah kontraknya.
+
+**Alasan.** Bagian 25 menyebut fitur ini sebagai konsekuensi C5 — tidak ada fitur "lupa password" di sistem ini, sehingga admin adalah satu-satunya jalan pemulihan. Jalur pemulihan itu hanya bermakna untuk akun yang punya atau akan punya akses. Akun `pending` belum pernah dinilai siapa pun dan pemiliknya tetap memakai password yang ia buat sendiri saat registrasi; akun `rejected` sudah dinilai dan ditolak, dan memulihkannya adalah pekerjaan `activate`, bukan reset password. Mengganti password akun yang tidak bisa login tidak menolong siapa pun.
+
+`suspended` tetap disertakan karena pemulihannya sudah dalam jangkauan: begitu diaktifkan, pemiliknya langsung bisa login.
+
+**Konsisten dengan pola M1 yang lain.** Sama seperti `verify`, `reject`, dan `activate`, pemeriksaan status dilakukan di server, bukan sekadar menyembunyikan tombol. PATCH yang dikirim langsung untuk status lain tetap ditolak. Status diperiksa **sebelum** validasi, supaya akun `pending` tidak menerima pesan kesalahan password yang menyesatkan.
+
+---
+
+## D19 — Perlakuan field khusus pengguna di A4
+
+**Keputusan:** `identity_number` dan `user_type` yang ikut terkirim untuk akun petugas dikosongkan di `prepareForValidation()` pada `StoreUserRequest`, sebelum aturan validasi berjalan. Bukan ditolak dengan `prohibited_unless`.
+
+Tabel aturan bagian 24 `route-dan-kontrak-form.md` tidak berubah sama sekali. Ini normalisasi input, bukan aturan validasi baru.
+
+**Kenapa perlu.** Kedua field itu disembunyikan JavaScript saat role petugas dipilih, tapi field yang hanya disembunyikan CSS tetap terkirim. Tanpa penanganan, admin yang sempat mengisi NIM lalu mengganti role ke petugas akan menghasilkan akun petugas ber-NIM, dan itu melanggar C4.
+
+**Kenapa dikosongkan, bukan ditolak.** Field-nya tidak terlihat di layar saat role petugas dipilih, jadi pesan "NIM/NIP tidak boleh diisi" akan menunjuk ke sesuatu yang tidak bisa dilihat admin. Maksud admin juga bukan mengisi NIM untuk petugas — itu cuma sisa ketikan sebelum ia berganti pikiran. Menolaknya berarti menghukum orang atas sesuatu yang tidak ia niatkan.
+
+**Kenapa sebelum validasi, bukan di `store()`.** Kalau dibersihkan setelah validasi, aturan `unique:users,identity_number` sempat berjalan atas nilai yang sebentar lagi dibuang. Akibatnya admin bisa menerima "NIM/NIP sudah terpakai" saat membuat akun petugas, padahal petugas memang tidak punya NIM. Membersihkannya lebih dulu membuat aturan itu tidak pernah melihat nilai yang tidak relevan.
+
+**Kondisinya `role === 'petugas'`, bukan "bukan pengguna"**, supaya sama persis dengan kondisi di JavaScript A4. Role di luar kedua nilai itu sudah ditolak `in:pengguna,petugas`, jadi tidak ada celah yang terbuka.
+
+---
+
+## D20 — Pesan "Tidak ada aksi yang tersedia" di A5 dihapus
+
+**Keputusan:** blok pesan "Tidak ada aksi yang tersedia" di A5 dihapus.
+
+**Alasan.** Pesan itu dibuat saat A5 baru punya `verify` dan `reject`, sehingga akun `verified` dan `rejected` benar-benar tidak punya tombol apa pun. Setelah D18 dan `activate` masuk, setiap status selalu punya minimal satu tombol:
+
+| Status | Tombol yang tersedia |
+|---|---|
+| `pending` | Verifikasi, Tolak |
+| `verified` | Reset Password (Nonaktifkan menyusul setelah `suspend` selesai) |
+| `rejected` | Aktifkan |
+| `suspended` | Aktifkan, Reset Password |
+
+Pesannya jadi tidak pernah muncul. Membiarkannya berarti meninggalkan cabang kode yang tidak bisa dicapai, dan siapa pun yang membacanya nanti akan menyangka ada keadaan yang belum tertangani.
+
+---
+
 ## Catatan — pembagian `verify` dan `activate` di A5
 
 Bukan keputusan baru. Ini penegasan atas apa yang sudah ditulis catatan bagian 11 `route-dan-kontrak-form.md`, karena pembacaan yang keliru sempat terjadi saat A5 dikoding.
@@ -241,6 +291,9 @@ Penerapan di kode: `verify()` menolak status asal apa pun selain `pending` dan m
 | D15 | `Admin\UserController@verify` dan `@reject` |
 | D17 | `lang/id/validation.php`, `lang/id/pagination.php`, dan baris `locale` di `config/app.php` |
 | Catatan A5 | `Admin\UserController@verify` dan `@activate`, serta tombol aksi di `resources/views/admin/users/show.blade.php` |
+| D18 | `Admin\UserController@resetPassword` dan tombol Reset Password di `resources/views/admin/users/show.blade.php` |
+| D19 | `app/Http/Requests/StoreUserRequest.php` — method `prepareForValidation`, dan JavaScript di `resources/views/admin/users/create.blade.php` |
+| D20 | `resources/views/admin/users/show.blade.php` |
 
 Tidak ada satu pun keputusan di atas yang menyentuh model, migration, atau `#[Fillable]`. Filter hanya membaca, dan D17 hanya menyentuh berkas bahasa dan satu baris konfigurasi.
 
@@ -255,6 +308,10 @@ Filter A3 sengaja **tidak** dimasukkan ke Bagian III. Bagian itu berisi kontrak 
 Yang diusulkan adalah satu baris di catatan bagian 11, naik ke v1.2:
 
 > - `admin.users.index` menerima query string opsional `?status=` dan `?role=`. Ini filter baca, bukan kontrak form — tidak ada Form Request dan tidak ada penolakan validasi. Bentuk dan alasannya ada di `keputusan-m1-tahap2.md` D9–D16
+
+Ditambah satu baris di bagian 25, naik ke v1.2:
+
+> - Aksi ini hanya tersedia untuk akun berstatus `verified` dan `suspended`. Status lain ditolak di server. Alasannya ada di `keputusan-m1-tahap2.md` D18.
 
 **`pembagian-modul-dan-urutan-kerja.md` — tidak perlu diubah.**
 
