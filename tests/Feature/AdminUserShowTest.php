@@ -97,30 +97,37 @@ it('menampilkan tombol Aktifkan hanya untuk akun rejected dan suspended', functi
 });
 
 it('tidak membiarkan nama akun keluar dari string JS di konfirmasi Tolak', function (): void {
-    $user = User::factory()->create([
-        'status' => 'pending',
-        'role' => 'pengguna',
-        'name' => "x');alert(1);('",
-    ]);
+    /*
+     * Varian kedua yang benar-benar berbahaya sebelum perbaikan: rangkaian
+     * `+alert(1)+` dievaluasi sebagai argumen confirm(), jadi berjalan sebelum
+     * return dan tanpa admin menekan apa pun di dialog.
+     */
+    foreach (["x');alert(1);('", "x'+alert(1)+'"] as $payload) {
+        $user = User::factory()->create([
+            'status' => 'pending',
+            'role' => 'pengguna',
+            'name' => $payload,
+        ]);
 
-    $html = $this->actingAs(adminPenguji())->get(route('admin.users.show', $user))
-        ->assertOk()
-        ->getContent();
+        $html = $this->actingAs(adminPenguji())->get(route('admin.users.show', $user))
+            ->assertOk()
+            ->getContent();
 
-    expect(preg_match('/onsubmit="([^"]*)"/', $html, $cocok))->toBe(1);
+        expect(preg_match('/onsubmit="([^"]*)"/', $html, $cocok))->toBe(1);
 
-    // Browser mendekode entitas HTML di atribut sebelum JavaScript berjalan,
-    // jadi yang diperiksa adalah hasil dekodenya, bukan HTML mentahnya.
-    $js = html_entity_decode($cocok[1], ENT_QUOTES | ENT_HTML5);
+        // Browser mendekode entitas HTML di atribut sebelum JavaScript berjalan,
+        // jadi yang diperiksa adalah hasil dekodenya, bukan HTML mentahnya.
+        $js = html_entity_decode($cocok[1], ENT_QUOTES | ENT_HTML5);
 
-    expect($js)->toStartWith("return confirm('")
-        ->and($js)->toEndWith("');");
+        expect($js)->toStartWith("return confirm('")
+            ->and($js)->toEndWith("');");
 
-    $literal = substr($js, strlen('return confirm('), -strlen(');'));
+        $literal = substr($js, strlen('return confirm('), -strlen(');'));
 
-    // Satu literal string utuh: tanda kutip hanya di kedua ujungnya.
-    expect(substr_count($literal, "'"))->toBe(2)
-        ->and($js)->not->toContain("alert(1);('");
+        // Satu literal string utuh: tanda kutip hanya di kedua ujungnya.
+        expect(substr_count($literal, "'"))->toBe(2)
+            ->and($js)->not->toContain($payload);
+    }
 });
 
 it('menampilkan modal Reset Password hanya untuk akun verified dan suspended', function (): void {

@@ -227,8 +227,8 @@ class UserController extends Controller
      * Gagal validasi kembali ke A5, tempat modalnya berada.
      *
      * Password tidak di-hash di sini: cast `hashed` di model User sudah
-     * menangani hashing, jadi controller tidak perlu memanggil Hash::make. Status akun tidak
-     * disentuh — reset password bukan transisi C2.
+     * menangani hashing, jadi controller tidak perlu memanggil Hash::make.
+     * Status akun tidak disentuh — reset password bukan transisi C2.
      */
     public function resetPassword(Request $request, User $user): RedirectResponse
     {
