@@ -216,6 +216,70 @@ it('mempertahankan NIM/NIP dan tipe pengguna yang sudah diketik saat role belum 
     expect(User::count())->toBe($sebelum);
 });
 
+/**
+ * Email sepanjang $panjang karakter yang tetap sah formatnya: bagian lokal 64
+ * karakter (batas RFC), sisanya domain dengan label tidak lebih dari 63.
+ */
+function emailSepanjang(int $panjang): string
+{
+    $domain = str_repeat('b', $panjang - 64 - 1 - 46).'.'.str_repeat('c', 40).'.test';
+
+    return str_repeat('a', 64).'@'.$domain;
+}
+
+it('menerima name, email, dan NIM/NIP tepat di batas panjang (bagian 24)', function (): void {
+    $email = emailSepanjang(150);
+
+    expect(strlen($email))->toBe(150);
+
+    $this->actingAs(adminPembuatAkun())
+        ->post(route('admin.users.store'), isianTambahAkunSah([
+            'name' => str_repeat('n', 100),
+            'email' => $email,
+            'identity_number' => str_repeat('9', 30),
+        ]))
+        ->assertRedirect(route('admin.users.index'))
+        ->assertSessionHasNoErrors();
+
+    expect(User::where('email', $email)->exists())->toBeTrue();
+});
+
+it('menolak name, email, dan NIM/NIP yang melewati batas panjang (bagian 24)', function (): void {
+    $sebelum = User::count();
+    $email = emailSepanjang(151);
+
+    expect(strlen($email))->toBe(151);
+
+    $this->actingAs(adminPembuatAkun())
+        ->post(route('admin.users.store'), isianTambahAkunSah(['name' => str_repeat('n', 101)]))
+        ->assertSessionHasErrors('name')
+        ->assertSessionDoesntHaveErrors(['email', 'identity_number']);
+
+    $this->actingAs(adminPembuatAkun())
+        ->post(route('admin.users.store'), isianTambahAkunSah(['email' => $email]))
+        ->assertSessionHasErrors('email')
+        ->assertSessionDoesntHaveErrors(['name', 'identity_number']);
+
+    $this->actingAs(adminPembuatAkun())
+        ->post(route('admin.users.store'), isianTambahAkunSah(['identity_number' => str_repeat('9', 31)]))
+        ->assertSessionHasErrors('identity_number')
+        ->assertSessionDoesntHaveErrors(['name', 'email']);
+
+    expect(User::count())->toBe($sebelum);
+});
+
+it('menolak tipe pengguna di luar mahasiswa, dosen, dan staf untuk role pengguna', function (): void {
+    $sebelum = User::count();
+
+    foreach (['admin', 'petugas', 'mahasiswi', 'MAHASISWA'] as $tipe) {
+        $this->actingAs(adminPembuatAkun())
+            ->post(route('admin.users.store'), isianTambahAkunSah(['user_type' => $tipe]))
+            ->assertSessionHasErrors('user_type');
+    }
+
+    expect(User::count())->toBe($sebelum);
+});
+
 it('mewajibkan NIM/NIP dan tipe pengguna saat role pengguna (C4)', function (): void {
     $sebelum = User::count();
 
