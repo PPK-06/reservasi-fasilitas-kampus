@@ -2,7 +2,7 @@
 ## Sistem Reservasi & Pelaporan Fasilitas Kampus
 
 **Mata kuliah:** Pengembangan Platform Khusus (PPK)
-**Versi dokumen:** 1.4 — 23 September 2026
+**Versi dokumen:** 1.5 — 27 September 2026
 
 **Dokumen pendamping:**
 - `dasar-proyek.md` — aturan bisnis dan keputusan teknis
@@ -14,6 +14,21 @@
 Ketiga dokumen pertama menjawab **apa yang dibangun**. Dokumen ini menjawab **siapa mengerjakan yang mana, dalam urutan apa, dan file mana yang tidak boleh disentuh sembarangan**.
 
 Dokumen ini **tidak memuat tanggal**. Urutannya yang mengikat, bukan kalendernya.
+
+---
+
+## Perubahan dari v1.4
+
+Seluruhnya di **bagian 2 dan 3**, mencatat keadaan nyata setelah tahap 2 selesai. Ada satu pemindahan pekerjaan antar anggota.
+
+| Bagian | Perubahan |
+|---|---|
+| 2 | Bentuk U1 dicatat sudah diputuskan: **opsi B**, pemilihan rentang slot langsung di grid. Tabel perbandingannya dipertahankan sebagai alasan, bukan lagi pertanyaan terbuka |
+| 2 | Tabel komponen bersama: pemilik **komponen peringatan D4** berubah dari Dhimas ke Ferdy |
+| 3 | Tabel tahap 2 diberi penanda selesai per orang |
+| 3 | **P2 Detail Fasilitas + Grid pindah dari Ferdy ke Dhimas.** Alasannya di subbagian baru di bawah tabel tahap 3 |
+| 3 | **Komponen peringatan D4 pindah dari Dhimas ke Ferdy**, sebagai penyeimbang pemindahan di atas |
+| 3 | A5 `suspend` (Elang) dan peringatan reservasi terdampak di O5 (Fazl) dicatat eksplisit di tahap 3, karena keduanya menunggu komponen D4 |
 
 ---
 
@@ -174,7 +189,7 @@ Lima hal dipakai lintas modul. Kalau tidak ditunjuk pemiliknya, akan ditulis dua
 | Layout induk + navbar | Semua halaman | **Ferdy** (M2) |
 | Class konstanta `Slot` | U1, P2, validasi reservasi | **Dhimas** (M3) |
 | **Query ketersediaan** | P2, validasi U1 | **Dhimas** (M3) |
-| Komponen peringatan D4 | O5, O6, A1, A5 | **Dhimas** (M3) |
+| Komponen peringatan D4 | O5, O6, A1, A5 | **Ferdy** (M2) — sebelumnya Dhimas, lihat bagian 3 tahap 3 |
 
 Empat baris pertama sudah ditetapkan dokumen route bagian 7. Baris keempat baru.
 
@@ -182,17 +197,19 @@ Empat baris pertama sudah ditetapkan dokumen route bagian 7. Baris keempat baru.
 
 P2 milik Ferdy, tapi isi grid-nya data reservasi. Kalau dibiarkan, Ferdy menulis query ketersediaan versinya sendiri dan Dhimas menulis versi lain untuk validasi U1 — lalu tampilan grid dan hasil validasi bisa berbeda, dan bedanya baru ketahuan saat modul digabung.
 
-**Keputusan: query ketersediaan milik Dhimas.** Satu method yang menerima fasilitas dan tanggal, mengembalikan status per slot. Ferdy memanggilnya dari `FacilityController@show` dan me-render hasilnya.
+**Keputusan: query ketersediaan milik Dhimas.** Satu method yang menerima fasilitas dan tanggal, mengembalikan status per slot.
 
-**Ferdy tidak menyentuh tabel `reservations` sama sekali.**
+**Penerapannya: `Slot::availability()`**, dengan alias `Reservation::availability()` dan `$facility->slotAvailability()`. `FacilityController@show` memanggilnya untuk mengisi grid P2, dan U1 memanggilnya lewat route `reservations.availability`.
+
+**Tidak ada yang menyentuh tabel `reservations` di luar modul M3.** Sejak P2 pindah ke Dhimas (lihat bagian 3 tahap 3), `FacilityController@show` tetap tidak menulis query sendiri — ia hanya memanggil `Slot::availability()`.
 
 Prinsip di baliknya sama dengan `Slot`: semua yang membaca `reservations` ada di satu orang. Ini juga yang menjaga F4 — query publik hanya mengambil `facility_id`, `start_time`, `end_time` dari reservasi `approved`; `user_id` dan `purpose` tidak di-`select` sama sekali, bukan sekadar tidak dicetak di Blade.
 
-### Prasyarat: bentuk U1 harus diputuskan lebih dulu
+### Bentuk U1 — sudah diputuskan: opsi B
 
-**Diputuskan Dhimas dan Ferdy bersama, sebelum Dhimas menulis query ketersediaan.** Ini keputusan pertama yang harus diambil di tahap 2.
+**Keputusan: slot dipilih langsung di grid**, bukan lewat dua dropdown. Dropdown tetap disediakan di U1 sebagai pilihan manual, dan keduanya menyorot rentang yang sama.
 
-Dokumen skema bagian 4 meninggalkan satu pertanyaan terbuka: **U1 memakai dua dropdown slot, atau slot dipilih langsung di grid P2?** Pertanyaan itu terlihat seperti soal tampilan, padahal ia menentukan bentuk method yang menghubungkan dua modul.
+Dokumen skema bagian 4 meninggalkan pertanyaan ini terbuka: **U1 memakai dua dropdown slot, atau slot dipilih langsung di grid P2?** Pertanyaan itu terlihat seperti soal tampilan, padahal ia menentukan bentuk method yang menghubungkan dua modul. Tabel di bawah adalah alasan di balik pilihan itu, disimpan supaya konsekuensinya tetap terbaca.
 
 | | Dua dropdown | Pilih langsung di grid |
 |---|---|---|
@@ -202,9 +219,7 @@ Dokumen skema bagian 4 meninggalkan satu pertanyaan terbuka: **U1 memakai dua dr
 | P2 sebagai halaman publik | Tidak ada masalah | Tamu yang mengklik grid harus diarahkan ke login |
 | Beban Ferdy | Kecil | Bertambah, dan bergantung pada bentuk form Dhimas |
 
-Kalau query ketersediaan ditulis dengan asumsi dropdown lalu belakangan diputuskan grid interaktif, method-nya ditulis ulang — dan P2 sudah terlanjur dibangun di atasnya.
-
-**Keputusannya ditulis di grup dan masuk versi berikutnya dokumen ini.**
+Kolom kanan itulah yang dipilih, dan konsekuensinya memang terjadi: grid menjadi input di P2 maupun U1, JavaScript ditulis tangan, dan tamu yang mengklik grid diarahkan ke login. Karena logikanya menyatu dengan pemilihan slot di U1, P2 ikut dikerjakan Dhimas — pemindahannya dicatat di bagian 3 tahap 3.
 
 ### Aturan navbar
 
@@ -353,14 +368,16 @@ Yang **tidak** boleh: mendaftarkan route milik modul orang lain ke `main`, atau 
 
 Empat orang jalan bersamaan, masing-masing di modulnya.
 
-| Orang | Kerjakan |
-|---|---|
-| Elang | **`DatabaseSeeder`** *(selesai)* · A3, A4, A5 · P4 Registrasi |
-| Ferdy | P1, A1, A2, O6 |
-| Dhimas | **Putuskan bentuk U1 bersama Ferdy** → class `Slot` → query ketersediaan → U1, U2, U3 → O1, O2, O3 |
-| Fazl | U4, U5, U6 → O4, O5 |
+| Orang | Kerjakan | Status |
+|---|---|---|
+| Elang | **`DatabaseSeeder`** · A3, A4, A5 · P4 Registrasi | Selesai, kecuali A5 `suspend` |
+| Ferdy | P1, A1, A2, O6 | Selesai |
+| Dhimas | **Bentuk U1 diputuskan: opsi B** → class `Slot` → query ketersediaan → U1, U2, U3 → O1, O2, O3 | Selesai |
+| Fazl | U4, U5, U6 → O4, O5 | Selesai |
 
-**Class `Slot` dan query ketersediaan didahulukan Dhimas**, karena Ferdy menunggu keduanya untuk P2.
+**Class `Slot` dan query ketersediaan didahulukan Dhimas**, karena P2 menunggu keduanya.
+
+**A5 `suspend` tidak terlambat, melainkan terblokir.** C6 mewajibkan daftar reservasi terdampak ditampilkan saat suspend ditekan, dan komponen itu baru ditulis di tahap 3. Alasan lengkapnya di `keputusan-m1-tahap2.md`.
 
 **Tiga route didahulukan karena menahan render halaman orang lain**, bukan karena halamannya penting:
 
@@ -378,11 +395,38 @@ Dhimas dan Fazl boleh **memulai controller dan Form Request** sebelum login jadi
 
 ### Tahap 3 — Yang bergantung pada tahap 2
 
-| Pekerjaan | Menunggu |
+| Pekerjaan | Pemilik | Menunggu |
+|---|---|---|
+| **P2 Detail Fasilitas + Grid** | Dhimas | — (selesai, menunggu merge) |
+| **Komponen peringatan D4** | Ferdy | Dipakai O5, O6, A1, A5 — bentuk method-nya disepakati dengan Dhimas sebelum ditulis |
+| **A5 `suspend`** | Elang | Komponen D4 |
+| **Peringatan reservasi terdampak di O5** | Fazl | Komponen D4 |
+| **Perapian peringatan inline di A1 dan O6** | Ferdy | Komponen D4 buatannya sendiri |
+| **M5 Rekap & Export** | Fazl | — (selesai lebih awal) |
+
+#### P2 pindah dari Ferdy ke Dhimas
+
+Sejak bentuk U1 diputuskan opsi B, grid ketersediaan di P2 bukan lagi tampilan pasif melainkan tempat pengguna memilih rentang jam. Logikanya menyatu dengan pemilihan slot di U1, dan keduanya memanggil `Slot::availability()` milik modul Reservasi. Memisahkannya ke dua orang berarti menulis perilaku yang sama dua kali — persis masalah yang bagian 2 dokumen ini hendak cegah.
+
+Yang berubah di file M2:
+
+| File | Perubahan |
 |---|---|
-| **P2 Detail Fasilitas + Grid** (Ferdy) | `Slot` dan query ketersediaan dari Dhimas |
-| **Komponen peringatan D4** (Dhimas) | Dipakai O5, O6, A1, A5 — disepakati bentuknya sebelum ditulis |
-| **M5 Rekap & Export** (Fazl) | M4 selesai; datanya dari modul lain |
+| `FacilityController@show` | Membaca query string `?date=`, memanggil `Slot::availability()`, mengirim slot ke view. Default tanggal: besok |
+| `facilities/show.blade.php` | Grid 26 slot, pemilih tanggal, dan modal pengajuan yang POST ke `reservations.store`. Tamu diarahkan ke login; tombol pengajuan hanya untuk role `pengguna` |
+
+Aturan "tidak menyentuh tabel `reservations` di luar M3" tetap dipatuhi: controller hanya memanggil `Slot::availability()`.
+
+#### Komponen peringatan D4 pindah dari Dhimas ke Ferdy
+
+Ini penyeimbang pemindahan di atas, sekaligus penempatan yang lebih masuk akal. Saat tahap 2, Ferdy sudah menulis versi inline komponen ini di A1 dan O6 — dua dari empat pemakainya — jadi ia paling tahu bentuk yang dibutuhkan. Tugasnya mengangkat versi itu menjadi **satu Blade component dan satu method di model**, lalu memasangnya di A1 dan O6 miliknya sendiri.
+
+Dua syarat supaya komponen itu bisa dipakai keempat halaman:
+
+- Method di model harus bisa disaring per fasilitas **maupun per user**, karena A5 menyaring berdasarkan pemilik akun, bukan fasilitas
+- Kolom yang ditampilkan harus bisa diatur. A1, O6, dan O5 membutuhkan kolom "Pemohon"; A5 membutuhkan kolom "Fasilitas", karena semua barisnya milik orang yang sama
+
+Method-nya hidup di model `Reservation` milik Dhimas, jadi bentuknya disepakati Ferdy dan Dhimas sebelum ditulis. Selama komponen ini belum masuk `main`, A5 `suspend` dan peringatan di O5 tetap terblokir.
 
 ---
 

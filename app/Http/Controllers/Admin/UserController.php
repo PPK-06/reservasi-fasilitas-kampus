@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreUserRequest;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -59,15 +60,31 @@ class UserController extends Controller
      */
     public function create(): View
     {
-        abort(501);
+        return view('admin.users.create');
     }
 
     /**
-     * A4 — simpan akun baru.
+     * A4 — simpan akun baru, langsung berstatus `verified` (C2), tujuan A3
+     * (bagian 11).
+     *
+     * `status` tidak fillable (F10), jadi diisi sebagai properti setelah
+     * konstruktor. Lewat mass assignment ia akan ditolak penjaga F11.
+     *
+     * NIM/NIP dan tipe pengguna untuk petugas sudah dikosongkan
+     * StoreUserRequest sebelum validasi (C4), jadi tidak diurus lagi di sini.
+     *
+     * Password tidak di-hash di sini: cast `hashed` di model User sudah
+     * menangani hashing, jadi controller tidak perlu memanggil Hash::make.
      */
-    public function store(): RedirectResponse
+    public function store(StoreUserRequest $request): RedirectResponse
     {
-        abort(501);
+        $user = new User($request->validated());
+        $user->status = 'verified';
+        $user->save();
+
+        return redirect()
+            ->route('admin.users.index')
+            ->with('success', 'Akun '.$user->name.' berhasil dibuat.');
     }
 
     /**
@@ -156,18 +173,85 @@ class UserController extends Controller
     }
 
     /**
-     * A5 — transisi `rejected` | `suspended` → `verified` (C2).
+     * A5 — transisi `rejected` → `verified` dan `suspended` → `verified` (C2),
+     * tujuan A5 (bagian 11).
+     *
+     * Pasangan verify, bukan duplikatnya. Verify adalah penilaian pertama atas
+     * akun `pending`; activate adalah pemulihan akses akun yang sudah pernah
+     * dinilai lalu ditolak atau dinonaktifkan (catatan A5, keputusan M1 tahap 2).
+     * Karena itu `pending` ditolak di sini dan diarahkan ke Verifikasi.
+     *
+     * Diperiksa di server, bukan hanya disembunyikan di tampilan: PATCH yang
+     * dikirim langsung untuk status lain tetap harus ditolak.
+     *
+     * Berbeda dengan verify dan reject, tujuannya A5, bukan A3 — admin tetap
+     * di halaman akun yang baru dipulihkan.
      */
     public function activate(User $user): RedirectResponse
     {
-        abort(501);
+        if (! in_array($user->status, ['rejected', 'suspended'], true)) {
+            $alasan = match ($user->status) {
+                'verified' => 'Akun ini sudah berstatus terverifikasi, tidak ada yang perlu diaktifkan.',
+                default => 'Akun yang masih menunggu tidak diaktifkan. Pakai aksi Verifikasi untuk menilai pendaftarannya.',
+            };
+
+            return redirect()
+                ->route('admin.users.show', $user)
+                ->with('error', $alasan);
+        }
+
+        $user->status = 'verified';
+        $user->save();
+
+        return redirect()
+            ->route('admin.users.show', $user)
+            ->with('success', 'Akun '.$user->name.' berhasil diaktifkan kembali.');
     }
 
     /**
-     * A5 — reset password akun.
+     * A5 — reset password oleh admin (C5), tujuan A5 (bagian 11).
+     *
+     * Cakupannya hanya akun `verified` dan `suspended`. Fitur ini ada sebagai
+     * konsekuensi C5 — tidak ada lupa password mandiri — jadi maknanya hanya
+     * bagi akun yang punya akses atau akan dipulihkan aksesnya. Akun `pending`
+     * dan `rejected` belum pernah diberi akses; kalau nanti diverifikasi atau
+     * diaktifkan, pemiliknya tetap memakai password buatannya sendiri saat
+     * registrasi.
+     *
+     * Status diperiksa di server lebih dulu, sebelum validasi, supaya PATCH
+     * yang dikirim langsung untuk status lain ditolak dengan alasan yang
+     * benar, bukan dengan pesan validasi password.
+     *
+     * Validasi ditulis di sini, bukan di Form Request: kontrak bagian 25 hanya
+     * punya satu field, dan bagian 6 tidak mendaftarkan Form Request untuknya.
+     * Gagal validasi kembali ke A5, tempat modalnya berada.
+     *
+     * Password tidak di-hash di sini: cast `hashed` di model User sudah
+     * menangani hashing, jadi controller tidak perlu memanggil Hash::make.
+     * Status akun tidak disentuh — reset password bukan transisi C2.
      */
-    public function resetPassword(User $user): RedirectResponse
+    public function resetPassword(Request $request, User $user): RedirectResponse
     {
-        abort(501);
+        if (! in_array($user->status, ['verified', 'suspended'], true)) {
+            $alasan = match ($user->status) {
+                'pending' => 'Akun yang masih menunggu belum pernah diberi akses, jadi passwordnya tidak direset. Pemilik akun tetap memakai password yang dibuatnya saat registrasi.',
+                default => 'Akun yang ditolak tidak punya akses, jadi passwordnya tidak direset. Pakai aksi Aktifkan lebih dulu bila aksesnya perlu dipulihkan.',
+            };
+
+            return redirect()
+                ->route('admin.users.show', $user)
+                ->with('error', $alasan);
+        }
+
+        $validated = $request->validate([
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        $user->password = $validated['password'];
+        $user->save();
+
+        return redirect()
+            ->route('admin.users.show', $user)
+            ->with('success', 'Password akun '.$user->name.' berhasil direset.');
     }
 }
