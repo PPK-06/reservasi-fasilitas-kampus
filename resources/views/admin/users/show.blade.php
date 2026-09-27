@@ -122,9 +122,13 @@
 
                     @if ($bolehTolak)
                         {{-- Dari `rejected` tidak ada jalan kembali ke `pending` (C2),
-                             jadi penolakan dikonfirmasi lebih dulu. --}}
+                             jadi penolakan dikonfirmasi lebih dulu.
+                             Seluruh pesan dibentuk lewat @js, bukan {{ }} di dalam
+                             string JS: browser mendekode entitas HTML di atribut
+                             sebelum JavaScript berjalan, sehingga &#039; hasil {{ }}
+                             kembali jadi ' dan nama akun bisa keluar dari string. --}}
                         <form method="POST" action="{{ route('admin.users.reject', $user) }}"
-                              onsubmit="return confirm('Tolak registrasi {{ $user->name }}? Akun yang ditolak tidak dapat dikembalikan ke status menunggu.');">
+                              onsubmit="return confirm(@js('Tolak registrasi '.$user->name.'? Akun yang ditolak tidak dapat dikembalikan ke status menunggu.'));">
                             @csrf
                             @method('PATCH')
                             <button type="submit" class="btn btn-outline-danger btn-sm">
