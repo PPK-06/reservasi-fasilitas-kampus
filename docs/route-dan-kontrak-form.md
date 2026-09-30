@@ -2,17 +2,39 @@
 ## Sistem Reservasi & Pelaporan Fasilitas Kampus
 
 **Mata kuliah:** Pengembangan Platform Khusus (PPK)
-**Versi dokumen:** 1.1 — 18 September 2026
+**Versi dokumen:** 1.2 — 30 September 2026
 
 **Dokumen induk:** `dasar-proyek.md` — aturan bisnis yang mengikat
 **Dokumen pendamping:**
 - `halaman-navigasi-dan-skema.md` — daftar halaman, navigasi, skema tabel
 - `pembagian-modul-dan-urutan-kerja.md` — kepemilikan file dan urutan kerja
 - `keputusan-m1-tahap1.md` — keputusan perilaku middleware role dan alur login
+- `keputusan-m1-tahap2.md` — filter A3, bahasa pesan validasi, dan batas aksi A5
 
 Dokumen ini menerjemahkan keduanya ke **route, nama file, dan aturan validasi**. Kalau ada yang terasa bertentangan, dokumen induk yang menang, dan perbedaannya dilaporkan ke tim supaya salah satunya diperbaiki.
 
 Kode halaman (P1, U1, O1, A1, …) mengacu ke dokumen pendamping.
+
+---
+
+## Perubahan dari v1.1
+
+Seluruhnya mencatat keadaan `main` setelah tahap 2 selesai. Tidak ada nama route, URI, atau aturan validasi lama yang berubah; yang ada hanya satu route baru dan penyesuaian kepemilikan.
+
+| Bagian | Perubahan |
+|---|---|
+| Header | + `keputusan-m1-tahap2.md` masuk daftar dokumen pendamping |
+| Cara memakai | Kalimat "tombol di P2 mengarah ke U1" diperbaiki. Sejak opsi B, P2 mengirim pengajuan langsung ke `reservations.store` |
+| 2 | `FacilityController` dipegang dua orang: `index` (P1) oleh Ferdy, `show` (P2) oleh Dhimas. Kalimat "tidak ada controller yang dipegang dua orang" diubah jadi aturan dengan satu pengecualian yang disebut beserta alasannya |
+| 6 | + `UpdateReportRequest` (O5) dan `RecapRequest` (A6), yang sudah ada di kode. Tujuh class jadi sembilan |
+| 7 | Pemilik komponen peringatan D4 berubah dari Reservasi ke **Fasilitas (Ferdy)**. + dua baris milik Reservasi: class `Slot` dan query ketersediaan. Tiga baris jadi lima, sama dengan bagian 2 dokumen pembagian modul |
+| II, 9 | + route `reservations.availability`. **45 route jadi 46** |
+| 9 | Catatan `?facility=` disesuaikan: P2 tidak lagi memakainya |
+| 11 | + satu catatan filter A3 (`?status=`, `?role=`), usulan dari `keputusan-m1-tahap2.md` |
+| 17.1 | Bentuk UI U1 dicatat sudah diputuskan: **opsi B**. Kontrak field tidak berubah |
+| III | "Dua belas form, dilayani tujuh Form Request" disesuaikan jadi sembilan |
+| 25 | + batas status reset password (D18), usulan dari `keputusan-m1-tahap2.md` |
+| 30 | Ditulis ulang mengikuti keadaan setelah tahap 2. Isi lama sudah seluruhnya terlewati, dan poin 5 masih menyebut D4 milik Reservasi |
 
 ---
 
@@ -33,7 +55,7 @@ Semuanya lahir saat P3 Login dikerjakan, dari hal yang ternyata belum tercakup.
 
 Dua dokumen sebelumnya adalah **bacaan** — dibaca sekali, jadi rujukan saat ragu. Dokumen ini **acuan kerja** — dibuka berkali-kali sambil ngoding, oleh empat orang sekaligus.
 
-**Untuk anggota tim:** nama route di Bagian II bersifat final. Kamu akan memakai nama route milik modul orang lain (tombol di P2 mengarah ke U1 dan U4), jadi jangan menunggu modul itu jadi — nama route-nya sudah bisa dipakai sekarang. Kalau ada yang terasa keliru, bahas di grup, jangan diam-diam memakai nama sendiri.
+**Untuk anggota tim:** nama route di Bagian II bersifat final. Kamu akan memakai nama route milik modul orang lain (P2 mengirim pengajuan ke `reservations.store` dan menautkan ke U4), jadi jangan menunggu modul itu jadi — nama route-nya sudah bisa dipakai sekarang. Kalau ada yang terasa keliru, bahas di grup, jangan diam-diam memakai nama sendiri.
 
 **Untuk AI/asisten coding:** perlakukan isi dokumen ini sebagai keputusan yang mengikat. Jangan menawarkan konvensi penamaan atau struktur route alternatif. Kalau sebuah kebutuhan tidak tercakup, tanyakan ke pengguna.
 
@@ -67,7 +89,7 @@ Pola: `{Entitas}Controller`, **singular**, PascalCase. Dua belas controller untu
 |---|---|---|
 | `AuthController` | P3 | Auth & Akun |
 | `RegisterController` | P4 | Auth & Akun |
-| `FacilityController` | P1, P2 | Fasilitas |
+| `FacilityController` | P1, P2 | Fasilitas (`index`, P1) · Reservasi (`show`, P2) |
 | `ReservationController` | U1, U2, U3 | Reservasi |
 | `ReportController` | U4, U5, U6 | Laporan & Rekap |
 | `Officer\DashboardController` | O1 | Reservasi |
@@ -80,7 +102,9 @@ Pola: `{Entitas}Controller`, **singular**, PascalCase. Dua belas controller untu
 
 Nama boleh sama asal beda namespace — `FacilityController`, `Officer\FacilityController`, dan `Admin\FacilityController` adalah tiga kelas berbeda. Ini justru disengaja: nama yang sama menandakan mereka mengurus entitas yang sama dari sudut wewenang yang berbeda.
 
-**Tidak ada satu pun controller yang dipegang dua orang.** Itu syarat supaya commit tiap orang tidak bertabrakan, dan supaya kontribusi per anggota terlihat jelas saat penilaian.
+**Setiap controller dipegang satu orang, dengan satu pengecualian.** Itu syarat supaya commit tiap orang tidak bertabrakan, dan supaya kontribusi per anggota terlihat jelas saat penilaian.
+
+**Pengecualiannya `FacilityController`**, ditetapkan v1.2: method `index` (P1) dipegang Ferdy, method `show` (P2) dipegang Dhimas. Sejak bentuk U1 diputuskan opsi B, grid di P2 menjadi tempat pengguna memilih rentang slot, dan logikanya menyatu dengan pemilihan slot di U1 milik modul Reservasi. Pembagiannya per method, sehingga kontribusi masing-masing tetap terbaca dari `git log`. Alasan lengkapnya di bagian 3 `pembagian-modul-dan-urutan-kerja.md`.
 
 ## 3. Method controller
 
@@ -176,21 +200,29 @@ StoreReportRequest            ← U4
 StoreFacilityRequest          ← A2 mode tambah
 UpdateFacilityRequest         ← A2 mode edit
 StoreUserRequest              ← A4
+UpdateReportRequest           ← O5
+RecapRequest                  ← A6 filter rekap
 ```
+
+Dua baris terakhir ditambahkan v1.2 mengikuti kode yang sudah ada. `RecapRequest` menyimpang dari pola `{Store|Update}{Entitas}Request` karena filter rekap tidak menyimpan entitas apa pun.
 
 Aturan validasi jadi terkumpul di satu tempat dan bisa dibaca tanpa mengurai controller. Saat tanya jawab, pertanyaan "mana validasi sisi server-nya?" dijawab dengan membuka satu file.
 
 ## 7. Komponen bersama dan pemiliknya
 
-Tiga hal berikut dipakai lintas modul. Kalau tidak ditunjuk pemiliknya, akan ditulis dua kali oleh dua orang lalu bentrok saat merge.
+Lima hal berikut dipakai lintas modul. Kalau tidak ditunjuk pemiliknya, akan ditulis dua kali oleh dua orang lalu bentrok saat merge.
 
 | Komponen | Dipakai di | Pemilik |
 |---|---|---|
 | Middleware role (`role:pengguna`, `role:petugas`, `role:admin`) | Semua route pengguna, officer, admin | Auth & Akun |
 | Layout induk `layouts/app.blade.php` + navbar | Semua halaman | Fasilitas |
-| Komponen peringatan D4 | O5, O6, A1, A5 | Reservasi |
+| Class konstanta `Slot` | U1, P2, validasi reservasi | Reservasi |
+| Query ketersediaan (`Slot::availability()`) | P2, U1 lewat `reservations.availability` | Reservasi |
+| Komponen peringatan D4 | O5, O6, A1, A5 | Fasilitas (Ferdy) — bentuk method-nya disepakati dengan Reservasi (Dhimas) |
 
-Dokumen pendamping sudah menandai komponen D4 sebagai hal yang harus disepakati di awal. Dua yang lain ditambahkan di sini karena masalahnya sama persis.
+Dokumen pendamping sudah menandai komponen D4 sebagai hal yang harus disepakati di awal. Middleware dan layout ditambahkan di sini karena masalahnya sama persis.
+
+**Dua perubahan di v1.2**, mengikuti bagian 2 dan 3 `pembagian-modul-dan-urutan-kerja.md`. `Slot` dan query ketersediaan dicatat sebagai baris sendiri, karena keduanya ternyata dipakai lintas modul sejak P2 memanggilnya. Pemilik komponen D4 pindah dari Reservasi ke Fasilitas: Ferdy sudah menulis versi inline-nya di A1 dan O6, dua dari empat pemakainya. Method datanya tetap hidup di model `Reservation`, sehingga bentuknya disepakati Ferdy dan Dhimas sebelum ditulis.
 
 **Navbar perlu perhatian ekstra.** Isinya berbeda per role, dan keempat orang akan ingin menambahkan link modulnya sendiri. Sepakati bahwa pemilik layout menyiapkan kerangkanya **lengkap di awal**, dengan semua link mengarah ke nama route di Bagian II — termasuk route yang belum dibuat. Dengan begitu tiga orang lain tidak perlu menyentuh file itu sama sekali.
 
@@ -198,7 +230,7 @@ Dokumen pendamping sudah menandai komponen D4 sebagai hal yang harus disepakati 
 
 # BAGIAN II — DAFTAR ROUTE
 
-**22 halaman menghasilkan 45 route.** Satu halaman form menghasilkan dua route (GET menampilkan, POST menyimpan), dan halaman detail sering punya beberapa tombol aksi.
+**22 halaman menghasilkan 46 route.** Satu halaman form menghasilkan dua route (GET menampilkan, POST menyimpan), dan halaman detail sering punya beberapa tombol aksi. Route ke-46, `reservations.availability`, ditambahkan v1.2 dan satu-satunya yang mengembalikan JSON — lihat catatan bagian 9.
 
 Kolom **Tujuan** adalah ke mana pengguna berakhir setelah aksi berhasil.
 
@@ -227,6 +259,7 @@ Kolom **Tujuan** adalah ke mana pengguna berakhir setelah aksi berhasil.
 | Halaman | Method | URI | Nama route | Controller@method | Tujuan |
 |---|---|---|---|---|---|
 | U1 | GET | `/reservations/create` | `reservations.create` | `ReservationController@create` | U1 |
+| U1 | GET | `/reservations/availability` | `reservations.availability` | `ReservationController@availability` | JSON status slot |
 | U1 | POST | `/reservations` | `reservations.store` | `ReservationController@store` | U3 (reservasi baru) |
 | U2 | GET | `/reservations` | `reservations.index` | `ReservationController@index` | U2 |
 | U3 | GET | `/reservations/{reservation}` | `reservations.show` | `ReservationController@show` | U3 |
@@ -239,7 +272,8 @@ Kolom **Tujuan** adalah ke mana pengguna berakhir setelah aksi berhasil.
 **Catatan:**
 
 - Seluruh blok memakai `role:pengguna`, bukan sekadar `auth`. Petugas dan admin tidak boleh mengajukan reservasi — C3 menetapkan role eksklusif
-- `reservations.create` dan `reports.create` menerima query string opsional `?facility=3` saat datang dari P2. Ini penerapan "U1 harus berfungsi dalam dua keadaan" — satu kondisi di Blade, bukan dua halaman
+- `reservations.create` dan `reports.create` menerima query string opsional `?facility=3`. Ini penerapan "U1 harus berfungsi dalam dua keadaan" — satu kondisi di Blade, bukan dua halaman. P2 memakainya untuk tautan ke U4; untuk reservasi, P2 sejak opsi B mengirim langsung ke `reservations.store` lewat modal
+- **`reservations.availability`** (baru di v1.2) dipanggil JavaScript di U1 setiap kali fasilitas atau tanggal berganti, supaya grid U1 menampilkan slot yang sudah terisi. Query string-nya `facility_id` dan `date` (`Y-m-d`); isinya hasil `Slot::availability()`, yaitu status per slot tanpa `user_id`, `purpose`, maupun ID reservasi (F4). Route statis ini harus berada di atas `/reservations/{reservation}` (bagian 13)
 - `reservations.show` dan `reports.show` **wajib dijaga Laravel Policy**, bukan `if` di controller (F4). Route-nya sendiri tidak tahu soal kepemilikan
 - **Tidak ada `edit` dan `update`** untuk reservasi dan laporan. Tidak ada user story yang membolehkan pengguna mengubah pengajuan yang sudah masuk — kalau salah, batalkan lalu ajukan ulang
 
@@ -301,6 +335,8 @@ Kolom **Tujuan** adalah ke mana pengguna berakhir setelah aksi berhasil.
 
   Tidak ada satu pun yang mengembalikan akun ke `pending`, sesuai larangan C2. Setiap method **wajib memeriksa status asal di server** — tombol yang tidak ditampilkan di Blade bukan penjaga.
 
+- `admin.users.index` menerima query string opsional `?status=` dan `?role=`. Ini filter baca, bukan kontrak form — tidak ada Form Request dan tidak ada penolakan validasi. Bentuk dan alasannya ada di `keputusan-m1-tahap2.md` D9–D16
+
 - `admin.facilities.status` menangani `active` ↔ `inactive` (wewenang admin), sementara `officer.facilities.status` menangani `active` ↔ `under_maintenance` (wewenang bersama). **Dua route terpisah untuk dua wewenang berbeda** — penerapan matriks D3. Kalau digabung jadi satu route, petugas memperoleh wewenang milik admin
 - **Tidak ada `admin.facilities.destroy`.** D6 hanya menyebut tambah/edit/nonaktifkan
 - `admin.recap.export` memakai GET karena tidak mengubah apa pun: ia membaca dengan filter yang sama lalu mengirim file. Query string-nya identik dengan `admin.recap.index`, dan itulah yang menjamin export memakai rentang tanggal yang sama persis (E1)
@@ -359,7 +395,7 @@ Kalau terbalik, Laravel menganggap `create` sebagai ID dan mencari `Reservation:
 
 # BAGIAN III — KONTRAK FORM
 
-Dua belas form, dilayani tujuh Form Request class. Sisanya validasinya terlalu ringan untuk butuh class tersendiri.
+Dua belas form, dilayani sembilan Form Request class (bagian 6). Sisanya validasinya terlalu ringan untuk butuh class tersendiri.
 
 ## 14. Prinsip
 
@@ -427,7 +463,9 @@ Form terpenting di sistem ini.
 
 ### 17.1 Bentuk field
 
-Dokumen pendamping bagian 4 menyebut bentuk UI-nya belum diputuskan (dua dropdown slot atau pemilihan langsung di grid). **Keputusan itu tidak memengaruhi kontrak ini** — apa pun UI-nya, yang dikirim ke server tetap nilai yang sama; grid hanya mengisi hidden input lewat JavaScript. Pemegang modul Reservasi bebas memutuskan bentuk UI belakangan.
+**Bentuk UI-nya sudah diputuskan: opsi B** (diperbarui v1.2). Slot dipilih langsung di grid, dan dropdown tetap tersedia di U1 sebagai pilihan manual; keduanya menyorot rentang yang sama. Alasannya ada di bagian 2 `pembagian-modul-dan-urutan-kerja.md`.
+
+**Keputusan itu tidak mengubah kontrak ini**, persis seperti yang diperkirakan v1.1: yang dikirim ke server tetap nilai yang sama, grid hanya mengisi hidden input lewat JavaScript. Modal pengajuan di P2 mengirim kelima field yang sama ke `reservations.store`, jadi P2 dan U1 dilayani satu Form Request.
 
 | Field | Tipe | Isi |
 |---|---|---|
@@ -606,6 +644,8 @@ Dua `required_if` di sini adalah aturan ketiga dari daftar bagian 7.10 dokumen p
 |---|---|---|
 | `password` | `required\|string\|min:8\|confirmed` | `required minlength="8"` |
 
+- Aksi ini hanya tersedia untuk akun berstatus `verified` dan `suspended`. Status lain ditolak di server. Alasannya ada di `keputusan-m1-tahap2.md` D18.
+
 Satu-satunya elemen di seluruh sistem yang tidak punya dasar user story. Konsekuensi C5, dan H2 meminta keberadaannya **disebut eksplisit di dokumen Word** supaya tidak terlihat sebagai fitur yang muncul tanpa alasan.
 
 ## 26. A6 — Filter rekap
@@ -654,15 +694,13 @@ Sudah diperbaiki dan ikut git, sehingga anggota tim otomatis mendapatkannya. **W
 
 ## 30. Langkah berikutnya
 
-Diperbarui di v1.1 mengikuti keadaan sekarang. Urutan lengkapnya ada di bagian 3 `pembagian-modul-dan-urutan-kerja.md`; di sini hanya yang menyangkut route.
+Diperbarui di v1.2 mengikuti keadaan setelah tahap 2. Urutan lengkapnya ada di bagian 3 `pembagian-modul-dan-urutan-kerja.md`; di sini hanya yang menyangkut route.
 
-**Sudah selesai:** layout induk dan navbar lengkap, middleware role beserta alias `role` dan kerangka ketiga grup di `routes/web.php`, serta P3 Login dan logout.
+**Sudah selesai:** seluruh 46 route di Bagian II terdaftar di `routes/web.php`, masing-masing di blok modulnya. Periksa sendiri dengan `php artisan route:list --except-vendor`.
+
+**Satu-satunya method yang belum berisi** adalah `Admin\UserController@suspend`. Route `admin.users.suspend` sudah terdaftar, tapi method-nya masih `abort(501)` karena C6 mewajibkan daftar reservasi terdampak ditampilkan saat suspend ditekan.
 
 **Yang berikutnya:**
 
-1. Pemegang modul **Fasilitas** mendaftarkan `facilities.index`, walau controller-nya masih seadanya. Link brand navbar memanggilnya tanpa syarat, sehingga **setiap halaman yang extends layout gagal dirender** sampai route itu ada — bukan cuma link-nya yang mati. Sekalian mengganti baris `/` bawaan Laravel dengan `Route::redirect('/', '/facilities')` sesuai catatan bagian 8
-2. Pemegang modul **Reservasi** mendaftarkan `officer.dashboard`, dengan alasan yang sama: itu landing petugas
-3. Pemegang modul **Auth & Akun** mendaftarkan `admin.users.index`, landing admin
-4. Setiap orang mengisi blok route modulnya **di dalam grup yang sudah ada** di `routes/web.php`, tanpa membuat grup baru dan tanpa menyentuh blok orang lain
-5. Pemegang modul **Reservasi** menulis class konstanta `Slot` dan komponen peringatan D4
-6. `DatabaseSeeder` dilengkapi dengan fasilitas, reservasi, dan laporan — bagian akunnya sudah ada
+1. Pemegang komponen **peringatan D4** (Ferdy) menulis satu Blade component dan satu method di model `Reservation`, dengan bentuk method yang disepakati bersama Dhimas. Tidak ada route baru — cara pengambilan datanya tetap bagian 12
+2. Setelah komponen itu masuk `main`: `admin.users.suspend` diisi (Elang), peringatan D4 dipasang di O5 sebelum `officer.facilities.status` disubmit (Fazl), dan versi inline di A1 dan O6 diganti komponennya (Ferdy)
