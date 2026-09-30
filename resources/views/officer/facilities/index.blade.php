@@ -278,55 +278,7 @@
                         </p>
 
                         {{-- D4: Peringatan reservasi terdampak --}}
-                        @if ($upcoming->isNotEmpty())
-                            <div class="alert alert-warning mb-0">
-                                <div class="fw-semibold mb-2">
-                                    <i class="bi bi-exclamation-triangle me-1"></i>
-                                    Terdapat {{ $upcoming->count() }} reservasi yang sudah disetujui
-                                    dan belum dilaksanakan:
-                                </div>
-                                <div class="table-responsive" style="max-height: 220px; overflow-y: auto;">
-                                    <table class="table table-sm table-borderless mb-0" style="font-size: 0.82rem;">
-                                        <thead>
-                                            <tr class="text-muted">
-                                                <th>Tanggal</th>
-                                                <th>Waktu</th>
-                                                <th>Pemohon</th>
-                                                <th></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($upcoming as $res)
-                                                <tr>
-                                                    <td>{{ $res->start_time->format('d M Y') }}</td>
-                                                    <td>{{ $res->start_time->format('H:i') }} – {{ $res->end_time->format('H:i') }}</td>
-                                                    <td>{{ $res->user->name ?? '-' }}</td>
-                                                    <td>
-                                                        {{-- Link ke O3 (officer.reservations.show) --}}
-                                                        @if (Route::has('officer.reservations.show'))
-                                                            <a href="{{ route('officer.reservations.show', $res->id) }}"
-                                                               class="text-primary text-decoration-none"
-                                                               title="Lihat di antrian petugas">
-                                                                <i class="bi bi-box-arrow-up-right"></i>
-                                                            </a>
-                                                        @else
-                                                            <span class="text-muted" title="Route petugas belum terdaftar">
-                                                                <i class="bi bi-box-arrow-up-right"></i>
-                                                            </span>
-                                                        @endif
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <small class="text-muted d-block mt-2">
-                                    <i class="bi bi-info-circle me-1"></i>
-                                    Reservasi ini <strong>tidak dibatalkan otomatis</strong>. Pembatalan
-                                    dilakukan lewat halaman antrian (US 10).
-                                </small>
-                            </div>
-                        @endif
+                        <x-d4-warning :reservations="$upcoming" />
 
                     @else
                         <p class="text-muted mb-0">
