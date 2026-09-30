@@ -2,7 +2,7 @@
 ## Sistem Reservasi & Pelaporan Fasilitas Kampus
 
 **Mata kuliah:** Pengembangan Platform Khusus (PPK)
-**Versi dokumen:** 1.5 — 27 September 2026
+**Versi dokumen:** 1.6 — 30 September 2026
 
 **Dokumen pendamping:**
 - `dasar-proyek.md` — aturan bisnis dan keputusan teknis
@@ -10,10 +10,28 @@
 - `route-dan-kontrak-form.md` — route, konvensi penamaan, kontrak form
 - `onboarding-tim.md` — setup lokal dan git workflow
 - `keputusan-m1-tahap1.md` — keputusan perilaku middleware role dan alur login
+- `keputusan-m1-tahap2.md` — keputusan M1 tahap 2: filter A3, bahasa pesan validasi, batas aksi A5
 
 Ketiga dokumen pertama menjawab **apa yang dibangun**. Dokumen ini menjawab **siapa mengerjakan yang mana, dalam urutan apa, dan file mana yang tidak boleh disentuh sembarangan**.
 
 Dokumen ini **tidak memuat tanggal**. Urutannya yang mengikat, bukan kalendernya.
+
+---
+
+## Perubahan dari v1.5
+
+v1.5 mencatat pemindahan P2 dan komponen D4 di bagian 2 dan 3, tapi tidak meneruskannya ke bagian 0 dan 1. Akibatnya dokumen ini bertentangan dengan dirinya sendiri soal siapa memegang P2 dan D4. Versi ini menyelaraskannya.
+
+| Bagian | Perubahan |
+|---|---|
+| Header | + `keputusan-m1-tahap2.md` masuk daftar dokumen pendamping |
+| 0 | P2 pindah dari baris M2 ke M3. Jumlah route M2 jadi 9, M3 jadi 13. **Total 46 route**, bertambah satu karena `reservations.availability` |
+| 1 | Lingkup M2: P2 dikeluarkan, komponen D4 masuk. Lingkup M3: P2 dan `FacilityController@show` masuk, D5 masuk aturan mengikat karena mengatur tampilan grid, komponen D4 keluar. Titik rawan P2 dipindah ke M3 |
+| 2 | Kalimat "Empat baris pertama sudah ditetapkan dokumen route bagian 7" diperbaiki. Bagian 7 v1.1 hanya punya tiga baris; sejak dokumen route v1.2 kelimanya tercantum di sana |
+| 2 | "P2 milik Ferdy" diberi keterangan waktu, karena kalimat itu alasan keputusan, bukan keadaan sekarang |
+| 3 | P2 di tabel tahap 3: "menunggu merge" jadi selesai — sudah masuk `main` lewat PR #8 |
+| 4 | Baris "Model" + satu pengecualian yang disengaja: alias `slotAvailability()` yang ditulis Dhimas di model `Facility` |
+| 7 | Baris rancangan empat layar sulit ditandai sudah dikoding |
 
 ---
 
@@ -81,13 +99,15 @@ Pembagian per modul (irisan vertikal), bukan per layer. Setiap orang mengerjakan
 | Modul | Halaman | Route | Pemegang |
 |---|---|---|---|
 | **M1 — Auth & Akun** | P3, P4, A3, A4, A5 | 14 | **Elang** (PM) |
-| **M2 — Fasilitas** | P1, P2, O6, A1, A2 | 10 | **Ferdy** |
-| **M3 — Reservasi** | U1, U2, U3, O1, O2, O3 | 11 | **Dhimas** |
+| **M2 — Fasilitas** | P1, O6, A1, A2 | 9 | **Ferdy** |
+| **M3 — Reservasi** | P2, U1, U2, U3, O1, O2, O3 | 13 | **Dhimas** |
 | **M4 — Laporan** | U4, U5, U6, O4, O5 | 7 | **Fazl** |
 | **M5 — Rekap & Export** | A6 | 2 | **Fazl** |
 | **`DatabaseSeeder`** | — | — | **Elang** |
 
-Total 22 halaman, 45 route (44 di tabel + satu redirect `/` → `/facilities`).
+Total 22 halaman, 46 route (45 di tabel + satu redirect `/` → `/facilities`).
+
+**P2 dihitung di M3 sejak v1.6**, mengikuti pemindahannya di bagian 3 tahap 3. Route `facilities.show` tetap tertulis di blok M2 `routes/web.php`, tapi method yang dilayaninya, `FacilityController@show`, dipegang Dhimas. M3 juga mendapat route ke-46, `reservations.availability`.
 
 **Jumlah route bukan ukuran kesulitan.** M1 punya route terbanyak tapi paling repetitif — lima aksi PATCH mengikuti satu matriks transisi yang sama. M5 punya route paling sedikit tapi harus menerjemahkan tiga definisi metrik jadi query yang benar.
 
@@ -117,13 +137,13 @@ A4 punya field bersyarat: `identity_number` dan `user_type` hanya untuk role `pe
 
 | | |
 |---|---|
-| **Halaman** | P1 Daftar Fasilitas · P2 Detail + Grid · O6 Kelola Ketersediaan · A1 Daftar Fasilitas (Admin) · A2 Form Fasilitas |
-| **Controller** | `FacilityController`, `Officer\FacilityController`, `Admin\FacilityController` |
+| **Halaman** | P1 Daftar Fasilitas · O6 Kelola Ketersediaan · A1 Daftar Fasilitas (Admin) · A2 Form Fasilitas |
+| **Controller** | `FacilityController@index`, `Officer\FacilityController`, `Admin\FacilityController` |
 | **Model** | `Facility` |
 | **Aturan mengikat** | D1–D6, F6 (`type` dan `location` VARCHAR + konstanta PHP, bukan ENUM) |
-| **Komponen bersama** | Layout induk + navbar |
+| **Komponen bersama** | Layout induk + navbar · komponen peringatan D4 |
 
-**Titik rawan:** P2 adalah layar tersulit di seluruh proyek — 26 slot × banyak tanggal, tiga tingkat visibilitas data (F4), tiga status visual slot (D5), plus banner fasilitas dalam perbaikan. **Data grid-nya datang dari M3**, lihat bagian 2.
+P2 semula ada di modul ini dan pindah ke M3 — lihat bagian 3 tahap 3.
 
 Dua route status **sengaja dipisah**: `admin.facilities.status` menangani `active` ↔ `inactive`, `officer.facilities.status` menangani `active` ↔ `under_maintenance`. Kalau digabung, petugas memperoleh wewenang milik admin.
 
@@ -133,11 +153,13 @@ Dua route status **sengaja dipisah**: `admin.facilities.status` menangani `activ
 
 | | |
 |---|---|
-| **Halaman** | U1 Form Ajukan · U2 Riwayat Saya · U3 Detail Saya · O1 Dashboard Antrian · O2 Antrian Reservasi · O3 Detail (Petugas) |
-| **Controller** | `ReservationController`, `Officer\ReservationController`, `Officer\DashboardController` |
+| **Halaman** | P2 Detail + Grid · U1 Form Ajukan · U2 Riwayat Saya · U3 Detail Saya · O1 Dashboard Antrian · O2 Antrian Reservasi · O3 Detail (Petugas) |
+| **Controller** | `FacilityController@show`, `ReservationController`, `Officer\ReservationController`, `Officer\DashboardController` |
 | **Model** | `Reservation` |
-| **Aturan mengikat** | A1–A8, F1 (penyimpanan slot), F2 (pencegahan bentrok), F4 (tingkat visibilitas) |
-| **Komponen bersama** | Class konstanta `Slot`, **query ketersediaan**, komponen peringatan D4 |
+| **Aturan mengikat** | A1–A8, D5 (tampilan grid), F1 (penyimpanan slot), F2 (pencegahan bentrok), F4 (tingkat visibilitas) |
+| **Komponen bersama** | Class konstanta `Slot`, **query ketersediaan** |
+
+**P2 adalah layar tersulit di seluruh proyek** — 26 slot × banyak tanggal, tiga tingkat visibilitas data (F4), tiga status visual slot (D5), plus banner fasilitas dalam perbaikan. Sejak opsi B, grid-nya juga menjadi input. Pindah ke modul ini dari M2, lihat bagian 3 tahap 3.
 
 **Modul tersulit.** Tiga hal yang kalau salah, salahnya tidak memunculkan error:
 
@@ -191,11 +213,11 @@ Lima hal dipakai lintas modul. Kalau tidak ditunjuk pemiliknya, akan ditulis dua
 | **Query ketersediaan** | P2, validasi U1 | **Dhimas** (M3) |
 | Komponen peringatan D4 | O5, O6, A1, A5 | **Ferdy** (M2) — sebelumnya Dhimas, lihat bagian 3 tahap 3 |
 
-Empat baris pertama sudah ditetapkan dokumen route bagian 7. Baris keempat baru.
+Sejak dokumen route v1.2, kelima baris ini juga tercantum di bagian 7 dokumen route. Sebelumnya bagian 7 hanya memuat tiga: middleware, layout, dan komponen D4.
 
 ### Query ketersediaan — keputusan baru
 
-P2 milik Ferdy, tapi isi grid-nya data reservasi. Kalau dibiarkan, Ferdy menulis query ketersediaan versinya sendiri dan Dhimas menulis versi lain untuk validasi U1 — lalu tampilan grid dan hasil validasi bisa berbeda, dan bedanya baru ketahuan saat modul digabung.
+Saat keputusan ini diambil, P2 masih milik Ferdy, tapi isi grid-nya data reservasi. Kalau dibiarkan, Ferdy menulis query ketersediaan versinya sendiri dan Dhimas menulis versi lain untuk validasi U1 — lalu tampilan grid dan hasil validasi bisa berbeda, dan bedanya baru ketahuan saat modul digabung.
 
 **Keputusan: query ketersediaan milik Dhimas.** Satu method yang menerima fasilitas dan tanggal, mengembalikan status per slot.
 
@@ -397,7 +419,7 @@ Dhimas dan Fazl boleh **memulai controller dan Form Request** sebelum login jadi
 
 | Pekerjaan | Pemilik | Menunggu |
 |---|---|---|
-| **P2 Detail Fasilitas + Grid** | Dhimas | — (selesai, menunggu merge) |
+| **P2 Detail Fasilitas + Grid** | Dhimas | — (selesai, masuk `main` lewat PR #8) |
 | **Komponen peringatan D4** | Ferdy | Dipakai O5, O6, A1, A5 — bentuk method-nya disepakati dengan Dhimas sebelum ditulis |
 | **A5 `suspend`** | Elang | Komponen D4 |
 | **Peringatan reservasi terdampak di O5** | Fazl | Komponen D4 |
@@ -441,7 +463,7 @@ Di luar daftar ini, setiap file dimiliki satu orang dan tidak disentuh yang lain
 | `DatabaseSeeder.php` | Hanya Elang. Permintaan data lewat grup, jangan edit langsung |
 | `AppServiceProvider.php` | **Hanya Elang.** Isinya perilaku seluruh aplikasi, bukan kode modul — isi wajibnya ditetapkan F11. Permintaan baris baru lewat grup, jangan edit langsung |
 | `bootstrap/app.php` | **Hanya Elang.** Alasannya sama dengan baris di atas: satu file untuk seluruh aplikasi. Isinya pendaftaran alias middleware dan tujuan redirect. Sejak Laravel 11 `app/Http/Kernel.php` dihapus dan seluruh konfigurasi middleware pindah ke sini |
-| Model | Ditulis lengkap di tahap 0. Setelah itu **tidak ada yang menyentuh model orang lain**. Bentuk dan isi `$fillable` mengikuti **F10**: attribute `#[Fillable]`, dan isinya ditentukan kontrak form — **pemegang tiap model memeriksa modelnya sendiri lalu lapor di grup** |
+| Model | Ditulis lengkap di tahap 0. Setelah itu **tidak ada yang menyentuh model orang lain**. Bentuk dan isi `$fillable` mengikuti **F10**: attribute `#[Fillable]`, dan isinya ditentukan kontrak form — **pemegang tiap model memeriksa modelnya sendiri lalu lapor di grup**. **Satu pengecualian yang disengaja:** alias `slotAvailability()` di model `Facility` ditulis Dhimas, sebagai bagian pemindahan P2. Isinya satu baris yang meneruskan ke `Slot::availability()`, sehingga query ketersediaan tetap ada di satu tempat milik M3. Commit yang sama juga merapikan format konstanta `TYPES`, `LOCATIONS`, dan `STATUSES` lewat Pint, tanpa mengubah isinya |
 | Registrasi Policy | **Umumnya tidak perlu.** Laravel menemukan policy otomatis lewat konvensi nama: `App\Models\Reservation` → `App\Policies\ReservationPolicy`. Selama nama dan lokasinya standar, tidak ada yang didaftarkan. Kalau ternyata butuh registrasi eksplisit, barisnya **diminta ke Elang lewat grup** |
 
 `DatabaseSeeder`, `AppServiceProvider`, dan `bootstrap/app.php` adalah masalah yang sama: satu file untuk seluruh proyek, yang kalau tidak ditunjuk pemiliknya akan diisi empat orang di tempat yang sama.
@@ -503,7 +525,7 @@ Disebut supaya tidak dikira terlupakan. Tidak satu pun menghambat tahap 0 sampai
 
 | Hal | Diputuskan kapan |
 |---|---|
-| **Rancangan empat layar sulit** — P2, O1, O5, A6. Dokumen skema bagian 4 menetapkan bentuknya perlu dipikirkan sebelum dikoding | Saat pemiliknya mulai mengerjakan halaman itu |
+| **Rancangan empat layar sulit** — P2, O1, O5, A6. Dokumen skema bagian 4 menetapkan bentuknya perlu dipikirkan sebelum dikoding | Saat pemiliknya mulai mengerjakan halaman itu. **Keempatnya sudah dikoding di tahap 2** |
 | **Panduan komponen UI selebihnya** — format tampilan tanggal, pola paginasi, tampilan state kosong | Menyusul setelah tiga contoh Ferdy ada; ditambahkan saat benar-benar dibutuhkan |
 | **Skenario demo** untuk presentasi | Sebelum `DatabaseSeeder` difinalkan, karena data demo harus mendukung alurnya |
 | **Jadwal dengan tanggal** | Setelah tahap 2 berjalan dan kecepatan tiap orang terlihat |
