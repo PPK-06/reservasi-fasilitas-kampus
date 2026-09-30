@@ -2,10 +2,24 @@
 
 **Untuk:** 3 anggota tim selain PM
 **Repo:** https://github.com/PPK-06/reservasi-fasilitas-kampus
-**Versi dokumen:** 1.5 — 23 September 2026
+**Versi dokumen:** 1.6 — 30 September 2026
 **Tujuan:** dari nol sampai aplikasi jalan di komputermu, lalu siap mulai ngoding modul masing-masing.
 
 Baca sampai habis sebelum mulai. Kalau ada langkah yang gagal, lapor di grup — jangan cari solusi sendiri lalu diam-diam mengubah konfigurasi, karena konfigurasi yang berbeda antar anggota adalah sumber masalah paling mahal di proyek ini.
+
+---
+
+## Perubahan dari v1.5
+
+Tiga langkah yang kalau diikuti apa adanya menghasilkan keadaan yang salah, ditambah dua perbaikan kecil.
+
+| Bagian | Perubahan |
+|---|---|
+| 7 | Tanda berhasil diganti. Kotak "Setup berhasil" sudah tidak pernah muncul, karena `/` sekarang diarahkan ke `/facilities` (dokumen route bagian 8) |
+| 8 | Nama branch Reservasi dikoreksi dari `feature/reservasi` jadi `feature/reservation`, sesuai branch yang benar-benar ada di GitHub. P2 dipindah dari baris Fasilitas ke baris Reservasi, mengikuti bagian 3 dokumen pembagian modul |
+| 12 | Deskripsi `keputusan-m1-tahap2.md` ditambah D18–D20 (batas aksi A5) |
+| 13 | "Kelima dokumen di bagian 12" jadi keenam |
+| Ringkasan cepat | `php artisan migrate` diganti `php artisan migrate:fresh --seed`, sama dengan bagian 6. Versi lama menghasilkan database kosong |
 
 ---
 
@@ -264,7 +278,7 @@ php artisan serve
 
 Buka `http://127.0.0.1:8000`.
 
-**Berhasil kalau:** muncul navbar gelap dan kotak hijau bertuliskan "Setup berhasil" beserta versi Laravel dan PHP.
+**Berhasil kalau:** alamat berubah jadi `/facilities` dan muncul halaman **Daftar Fasilitas** berisi kartu fasilitas dari data demo. Kalau halamannya muncul tapi kosong, berarti `migrate:fresh --seed` di bagian 6 belum dijalankan.
 
 Hentikan server dengan Ctrl+C.
 
@@ -277,8 +291,8 @@ Nama branch sudah ditentukan per modul. Cari punyamu:
 | Modul | Branch | Halaman yang dikerjakan |
 |---|---|---|
 | Auth & Akun | `feature/auth-akun` | P3, P4, A3, A4, A5 |
-| Fasilitas | `feature/fasilitas` | P1, P2, A1, A2, O6 |
-| Reservasi | `feature/reservasi` | U1, U2, U3, O1, O2, O3 |
+| Fasilitas | `feature/fasilitas` | P1, A1, A2, O6 |
+| Reservasi | `feature/reservation` | P2, U1, U2, U3, O1, O2, O3 |
 | Laporan & Rekap | `feature/laporan-rekap` | U4, U5, U6, O4, O5, A6 |
 
 Kode halaman (P1, U1, dst) mengacu ke dokumen `halaman-navigasi-dan-skema.md`.
@@ -379,7 +393,7 @@ Enam dokumen di folder **`docs/`** di dalam repo, jadi ikut ter-clone dan ikut t
 | `halaman-navigasi-dan-skema.md` | 22 halaman, peta navigasi, spesifikasi tabel, ERD | Saat merancang halamanmu |
 | `route-dan-kontrak-form.md` | Nama route, konvensi penamaan, aturan validasi tiap form | **Setiap hari saat ngoding** |
 | `keputusan-m1-tahap1.md` | Perilaku middleware role dan alur login, beserta alasannya | Saat menulis blok route modulmu, atau saat heran kenapa kamu dilempar ke halaman login |
-| `keputusan-m1-tahap2.md` | Keputusan M1 tahap 2: bentuk halaman A3, bahasa pesan validasi, dan catatan pembagian aksi status akun di A5 | Saat menulis Form Request modulmu, atau saat pesan validasimu muncul dalam Bahasa Inggris |
+| `keputusan-m1-tahap2.md` | Keputusan M1 tahap 2: bentuk halaman A3, bahasa pesan validasi, catatan pembagian aksi status akun di A5, dan batas aksi A5 (D18–D20) | Saat menulis Form Request modulmu, atau saat pesan validasimu muncul dalam Bahasa Inggris |
 
 `route-dan-kontrak-form.md` paling sering dibuka. Nama route di situ final, dan kamu akan memakai nama route milik modul orang lain (tombol di P2 mengarah ke U1 dan U4) — jangan menunggu modul itu jadi, nama route-nya sudah bisa dipakai sekarang.
 
@@ -397,7 +411,7 @@ Repo ini sudah berisi guidelines Laravel 13 dari Laravel Boost (`CLAUDE.md`, `AG
 - **Pakai Cursor / Copilot / lainnya?** Jalankan `php artisan boost:install` lalu pilih tool-mu. File-nya ditambahkan berdampingan, tidak menimpa punya orang lain. `AGENTS.md` juga sudah dibaca banyak tool secara default.
 - **Tidak pakai AI sama sekali?** Tidak masalah, file-file itu diabaikan saja.
 
-Kalau kamu pakai AI, **tunjuk folder `docs/` sebagai konteks.** Kelima dokumen di bagian 12 ada di situ dan ikut ter-clone, jadi kamu tidak perlu mengunggahnya satu per satu tiap sesi. Tanpa konteks itu, AI akan mengarang asumsi sendiri yang berbeda dari asumsi anggota tim lain — dan itu masalah utama yang dokumen-dokumen tersebut cegah.
+Kalau kamu pakai AI, **tunjuk folder `docs/` sebagai konteks.** Keenam dokumen di bagian 12 ada di situ dan ikut ter-clone, jadi kamu tidak perlu mengunggahnya satu per satu tiap sesi. Tanpa konteks itu, AI akan mengarang asumsi sendiri yang berbeda dari asumsi anggota tim lain — dan itu masalah utama yang dokumen-dokumen tersebut cegah.
 
 Dua kalimat yang layak kamu tempel di tiap sesi, karena keduanya paling sering dilanggar AI:
 
@@ -421,7 +435,7 @@ copy .env.example .env
 php artisan key:generate
 # isi DB_PASSWORD di .env
 # pastikan php.ini: upload_max_filesize=3M, post_max_size=12M
-php artisan migrate
+php artisan migrate:fresh --seed
 php artisan serve
 ```
 
