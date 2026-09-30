@@ -55,13 +55,7 @@ it('mengarahkan tamu ke halaman login pada route terproteksi', function (string 
 ]);
 
 it('menolak role lain dengan 403', function (string $routeName, string $roleLain): void {
-    $user = match ($roleLain) {
-        'admin' => User::factory()->admin()->create(),
-        'petugas' => User::factory()->petugas()->create(),
-        'pengguna' => User::factory()->create(),
-    };
-
-    $this->actingAs($user)
+    $this->actingAs(buatAkunDenganRole($roleLain))
         ->get(route($routeName))
         ->assertForbidden();
 })->with([
@@ -74,13 +68,7 @@ it('menolak role lain dengan 403', function (string $routeName, string $roleLain
 ]);
 
 it('meloloskan akun verified ke route milik role-nya sendiri', function (string $role): void {
-    $user = match ($role) {
-        'admin' => User::factory()->admin()->create(),
-        'petugas' => User::factory()->petugas()->create(),
-        'pengguna' => User::factory()->create(),
-    };
-
-    $this->actingAs($user)
+    $this->actingAs(buatAkunDenganRole($role))
         ->get('/__test/role/'.$role)
         ->assertOk()
         ->assertSeeText('ok-'.$role);
@@ -94,15 +82,22 @@ it('menolak role lain dengan 403 pada route dummy, sama seperti route asli', fun
         ->assertForbidden();
 });
 
-it('mengeluarkan akun yang di-suspend saat session-nya masih hidup', function (): void {
-    $user = User::factory()->suspended()->create();
+it('mengeluarkan akun yang statusnya bukan verified dan mengosongkan session-nya yang masih hidup', function (string $status, string $pesan): void {
+    $user = buatAkunDenganStatus($status);
 
-    $response = $this->actingAs($user)->get(route('reservations.index'));
+    $response = $this->actingAs($user)
+        ->withSession(['penanda_session' => 'masih-ada'])
+        ->get(route('reservations.index'));
 
     $response->assertRedirect(route('login'))
-        ->assertSessionHasErrors(['email' => 'Akun Anda dinonaktifkan. Hubungi admin.']);
+        ->assertSessionHasErrors(['email' => $pesan])
+        ->assertSessionMissing('penanda_session');
     $this->assertGuest();
-});
+})->with([
+    'pending' => ['pending', 'Akun Anda masih menunggu verifikasi admin.'],
+    'rejected' => ['rejected', 'Registrasi Anda ditolak. Hubungi admin untuk klarifikasi.'],
+    'suspended' => ['suspended', 'Akun Anda dinonaktifkan. Hubungi admin.'],
+]);
 
 it('memeriksa status akun lebih dulu daripada role', function (): void {
     $petugasSuspended = User::factory()->petugas()->suspended()->create();

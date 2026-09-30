@@ -27,11 +27,7 @@ beforeEach(function (): void {
 });
 
 it('memasukkan akun verified dan mengarahkannya ke landing sesuai role (H1)', function (string $role, string $landingRoute): void {
-    $user = match ($role) {
-        'admin' => User::factory()->admin()->create(),
-        'petugas' => User::factory()->petugas()->create(),
-        'pengguna' => User::factory()->create(),
-    };
+    $user = buatAkunDenganRole($role);
 
     $response = $this->post(route('login.store'), [
         'email' => $user->email,
@@ -71,11 +67,7 @@ it('menolak email yang tidak terdaftar dengan pesan yang sama seperti password s
 });
 
 it('menolak login akun yang statusnya bukan verified walau password benar (C2)', function (string $status, string $pesan): void {
-    $user = match ($status) {
-        'pending' => User::factory()->pending()->create(),
-        'rejected' => User::factory()->rejected()->create(),
-        'suspended' => User::factory()->suspended()->create(),
-    };
+    $user = buatAkunDenganStatus($status);
 
     $response = $this->from(route('login'))->post(route('login.store'), [
         'email' => $user->email,
@@ -90,6 +82,33 @@ it('menolak login akun yang statusnya bukan verified walau password benar (C2)',
     'rejected' => ['rejected', 'Registrasi Anda ditolak. Hubungi admin untuk klarifikasi.'],
     'suspended' => ['suspended', 'Akun Anda dinonaktifkan. Hubungi admin.'],
 ]);
+
+it('memberi pesan generik untuk password salah pada akun suspended, bukan pesan status', function (): void {
+    $user = User::factory()->suspended()->create();
+
+    $response = $this->from(route('login'))->post(route('login.store'), [
+        'email' => $user->email,
+        'password' => 'bukan-password-yang-benar',
+    ]);
+
+    $response->assertRedirect(route('login'))
+        ->assertSessionHasErrors(['email' => 'Email atau password salah.']);
+    $this->assertGuest();
+});
+
+it('mengembalikan tamu ke URL terproteksi yang ditujunya setelah login', function (): void {
+    $user = User::factory()->create();
+
+    $this->get(route('reports.index'))->assertRedirect(route('login'));
+
+    $response = $this->post(route('login.store'), [
+        'email' => $user->email,
+        'password' => UserFactory::DEMO_PASSWORD,
+    ]);
+
+    $response->assertRedirect(route('reports.index'));
+    $this->assertAuthenticatedAs($user);
+});
 
 it('mengarahkan akun yang sudah login dari halaman login ke landing role-nya', function (): void {
     $petugas = User::factory()->petugas()->create();
@@ -111,6 +130,15 @@ it('mengeluarkan akun saat logout dan mengosongkan session-nya', function (): vo
     $this->assertGuest();
 
     $this->get(route('reservations.index'))->assertRedirect(route('login'));
+});
+
+it('menolak logout lewat GET dengan 405 dan akun tetap login', function (): void {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->get(route('logout'))
+        ->assertMethodNotAllowed();
+    $this->assertAuthenticatedAs($user);
 });
 
 it('mengarahkan tamu yang mencoba logout ke halaman login', function (): void {
