@@ -11,12 +11,13 @@ Baca sampai habis sebelum mulai. Kalau ada langkah yang gagal, lapor di grup —
 
 ## Perubahan dari v1.5
 
-Tiga langkah yang kalau diikuti apa adanya menghasilkan keadaan yang salah, ditambah dua perbaikan kecil.
+Tiga langkah yang kalau diikuti apa adanya menghasilkan keadaan yang salah, satu perubahan aturan branch, dan dua perbaikan kecil.
 
 | Bagian | Perubahan |
 |---|---|
 | 7 | Tanda berhasil diganti. Kotak "Setup berhasil" sudah tidak pernah muncul, karena `/` sekarang diarahkan ke `/facilities` (dokumen route bagian 8) |
 | 8 | Nama branch Reservasi dikoreksi dari `feature/reservasi` jadi `feature/reservation`, sesuai branch yang benar-benar ada di GitHub. P2 dipindah dari baris Fasilitas ke baris Reservasi, mengikuti bagian 3 dokumen pembagian modul |
+| 8 | **Aturan branch berubah: satu branch per pekerjaan, bukan per modul.** Format `feature/<nama-pekerjaan>`, dibuat dari `main` terbaru, boleh dihapus setelah di-merge. Tabel branch jadi contoh, bukan daftar tetap, dan `feature/ketersediaan` ditambahkan. Aturan lama bertentangan dengan bagian 6 dokumen pembagian modul, yang meminta satu PR per halaman atau fitur |
 | 12 | Deskripsi `keputusan-m1-tahap2.md` ditambah D18–D20 (batas aksi A5) |
 | 13 | "Kelima dokumen di bagian 12" jadi keenam |
 | Ringkasan cepat | `php artisan migrate` diganti `php artisan migrate:fresh --seed`, sama dengan bagian 6. Versi lama menghasilkan database kosong |
@@ -286,14 +287,17 @@ Hentikan server dengan Ctrl+C.
 
 ## 8. Mulai kerja: branch
 
-Nama branch sudah ditentukan per modul. Cari punyamu:
+**Satu branch per pekerjaan, bukan per modul.** Formatnya `feature/<nama-pekerjaan>`, selalu dibuat dari `main` terbaru, dan boleh dihapus setelah PR-nya di-merge. Satu pekerjaan = satu PR, sesuai protokol merge di bagian 6 `pembagian-modul-dan-urutan-kerja.md`.
 
-| Modul | Branch | Halaman yang dikerjakan |
-|---|---|---|
-| Auth & Akun | `feature/auth-akun` | P3, P4, A3, A4, A5 |
-| Fasilitas | `feature/fasilitas` | P1, A1, A2, O6 |
-| Reservasi | `feature/reservation` | P2, U1, U2, U3, O1, O2, O3 |
-| Laporan & Rekap | `feature/laporan-rekap` | U4, U5, U6, O4, O5, A6 |
+Contoh branch yang sudah pernah dipakai. Empat yang pertama lahir saat aturannya masih satu branch per modul, jadi namanya nama modul; yang terakhir sudah mengikuti aturan sekarang:
+
+| Branch | Pekerjaan yang dibawanya |
+|---|---|
+| `feature/auth-akun` | M1 — P3, P4, A3, A4, A5 |
+| `feature/fasilitas` | M2 — P1, A1, A2, O6, dan kerangka awal P2 |
+| `feature/reservation` | M3 — U1, U2, U3, O1, O2, O3 |
+| `feature/laporan-rekap` | M4 dan M5 — U4, U5, U6, O4, O5, A6 |
+| `feature/ketersediaan` | Query ketersediaan, grid U1, dan grid P2 (PR #8) |
 
 Kode halaman (P1, U1, dst) mengacu ke dokumen `halaman-navigasi-dan-skema.md`.
 
@@ -302,16 +306,18 @@ Alur kerjanya:
 ```bash
 git checkout main
 git pull
-git checkout -b feature/nama-modulmu
+git checkout -b feature/nama-pekerjaan
 ```
 
 Kerja, commit sesering mungkin, lalu:
 
 ```bash
-git push origin feature/nama-modulmu
+git push origin feature/nama-pekerjaan
 ```
 
 Buka **Pull Request** di GitHub ke `main`. Tunggu minimal satu orang lain melihat sebelum merge.
+
+Setelah di-merge, branch-nya boleh dihapus — di GitHub lewat tombol di halaman PR, di komputermu dengan `git branch -d feature/nama-pekerjaan`. Pekerjaan berikutnya dimulai dari branch baru, bukan melanjutkan branch lama.
 
 ### Jangan push langsung ke `main`
 

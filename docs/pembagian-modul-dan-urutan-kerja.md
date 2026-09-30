@@ -31,6 +31,7 @@ v1.5 mencatat pemindahan P2 dan komponen D4 di bagian 2 dan 3, tapi tidak meneru
 | 2 | "P2 milik Ferdy" diberi keterangan waktu, karena kalimat itu alasan keputusan, bukan keadaan sekarang |
 | 3 | P2 di tabel tahap 3: "menunggu merge" jadi selesai — sudah masuk `main` lewat PR #8 |
 | 4 | Baris "Model" + satu pengecualian yang disengaja: alias `slotAvailability()` yang ditulis Dhimas di model `Facility` |
+| 6 | "Branch per fitur" diganti "satu branch per pekerjaan", istilah yang sama dengan onboarding v1.6 bagian 8 |
 | 7 | Baris rancangan empat layar sulit ditandai sudah dikoding |
 
 ---
@@ -515,7 +516,7 @@ Baris terakhir ditambahkan di v1.3 setelah tiga hal lolos gerbang ini tanpa pern
 
 **Minimal satu orang lain melihat sebelum merge.** Berlaku juga untuk PR milik PM. Kalau kamu menggabungkan secara manual tanpa membuka PR, jejak review itu hilang — padahal onboarding bagian 8 menyebutnya sebagai jejak kontribusi yang ditunjuk saat presentasi. Pakai `git merge --no-ff` supaya potongan kerjanya tetap terlihat berkelompok di history, dan minta seseorang membaca commit-nya walau lewat grup.
 
-Selebihnya mengikuti `onboarding-tim.md` bagian 8–10: branch per fitur, format commit message, jangan push ke `main`, jangan edit migration yang sudah di-push.
+Selebihnya mengikuti `onboarding-tim.md` bagian 8–10: satu branch per pekerjaan (`feature/<nama-pekerjaan>`, dibuat dari `main` terbaru), format commit message, jangan push ke `main`, jangan edit migration yang sudah di-push.
 
 ---
 

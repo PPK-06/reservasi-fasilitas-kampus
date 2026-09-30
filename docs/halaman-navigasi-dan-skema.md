@@ -19,7 +19,7 @@ Dua sumber: bentuk U1 yang sudah diputuskan (opsi B), dan keputusan tim soal tab
 |---|---|
 | 1.1 | Tujuan P2 diperbarui: tiga status visual slot (D5), dan pengguna bisa mengajukan reservasi langsung dari grid |
 | 1.2 | U1 tidak lagi dimasuki dari tombol di P2. Sejak opsi B, P2 mengirim pengajuan sendiri lewat modal |
-| 2.2 | Jalur P2 → U1 diganti jalur P2 → modal → U3. Kegagalan validasi kembali ke halaman asal, bukan selalu ke U1 |
+| 2.2 | Jalur P2 → U1 diganti jalur P2 → modal → U3. + catatan bahwa pengajuan dari P2 memakai `StoreReservationRequest` yang sama dengan U1. Tampilan error setelah gagal validasi di modal P2 belum diuji, jadi jalur gagalnya tidak digambar |
 | 2.3 | Penulis komponen D4 dicatat: Ferdy (M2), bentuk method disepakati dengan Dhimas (M3) |
 | 4 | Pertanyaan terbuka U1 ditutup: **opsi B** |
 | 6.3, 6.4, 8.3 | **Nama index `reports` kembali ke `idx_queue`**, mengikuti migration yang ada di `main`. Migration tidak diubah. v1.2 mengganti namanya ke `idx_report_queue` di 6.4 tapi tidak di 8.3, sehingga dokumen bertentangan dengan dirinya sendiri dan dengan migration |
@@ -146,12 +146,14 @@ Query param buatan sendiri **tidak dipakai**, karena tujuannya harus divalidasi 
 P2 ──pilih slot + "Ajukan Reservasi"> modal tujuan penggunaan ──> U3 (reservasi baru, status pending)
 P2 ──"Laporkan Kerusakan"──────────> U4 (facility_id ter-prefill)
 U1 ──submit berhasil───────────────> U3 (reservasi baru, status pending)
-P2 | U1 ──gagal validasi server────> kembali ke halaman asal, input terisi + pesan spesifik
+U1 ──gagal validasi server─────────> kembali ke U1, input terisi + pesan spesifik
 U2 ──klik baris────────────────────> U3
 U3 ──"Batalkan"────────────────────> modal konfirmasi ──> U3 (cancelled_by_user)
 U4 ──submit berhasil───────────────> U6 (laporan baru, status baru)
 U5 ──klik baris────────────────────> U6
 ```
+
+**Pengajuan dari P2 divalidasi persis seperti dari U1.** Modal di P2 mengirim kelima field kontrak ke `reservations.store`, yang dilayani `StoreReservationRequest` yang sama dengan U1, jadi aturan dan pesan penolakannya identik. Yang **belum dipastikan** adalah tampilan error-nya: form itu ada di dalam modal, dan bagaimana pesan penolakan terlihat setelah redirect belum diuji. Karena itu peta di atas sengaja tidak menggambar jalur gagal untuk P2.
 
 **Konfirmasi dan peringatan:**
 
