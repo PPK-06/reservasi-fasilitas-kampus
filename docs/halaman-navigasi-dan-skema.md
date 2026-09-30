@@ -2,12 +2,28 @@
 ## Sistem Reservasi & Pelaporan Fasilitas Kampus
 
 **Mata kuliah:** Pengembangan Platform Khusus (PPK)
-**Versi dokumen:** 1.2 — 23 September 2026
+**Versi dokumen:** 1.3 — 30 September 2026
 **Dokumen induk:** `dasar-proyek.md`
 
 Dokumen induk berisi **aturan bisnis yang mengikat**. Dokumen ini berisi **penerapannya** ke halaman dan tabel. Kalau ada yang terasa bertentangan, dokumen induk yang menang, dan perbedaannya harus dilaporkan ke tim supaya salah satunya diperbaiki.
 
 Kode halaman (P1, U1, O1, A1, …) di dokumen ini bersifat final dan dipakai sebagai rujukan bersama.
+
+---
+
+## Perubahan dari v1.2
+
+Dua sumber: bentuk U1 yang sudah diputuskan (opsi B), dan keputusan tim soal tabrakan nama index yang dibiarkan terbuka di v1.2.
+
+| Bagian | Perubahan |
+|---|---|
+| 1.1 | Tujuan P2 diperbarui: tiga status visual slot (D5), dan pengguna bisa mengajukan reservasi langsung dari grid |
+| 1.2 | U1 tidak lagi dimasuki dari tombol di P2. Sejak opsi B, P2 mengirim pengajuan sendiri lewat modal |
+| 2.2 | Jalur P2 → U1 diganti jalur P2 → modal → U3. Kegagalan validasi kembali ke halaman asal, bukan selalu ke U1 |
+| 2.3 | Penulis komponen D4 dicatat: Ferdy (M2), bentuk method disepakati dengan Dhimas (M3) |
+| 4 | Pertanyaan terbuka U1 ditutup: **opsi B** |
+| 6.3, 6.4, 8.3 | **Nama index `reports` kembali ke `idx_queue`**, mengikuti migration yang ada di `main`. Migration tidak diubah. v1.2 mengganti namanya ke `idx_report_queue` di 6.4 tapi tidak di 8.3, sehingga dokumen bertentangan dengan dirinya sendiri dan dengan migration |
+| 6.4 | Catatan revisi ditulis ulang: keputusan sudah diambil, dan keadaan test suite dicatat apa adanya |
 
 ---
 
@@ -39,7 +55,7 @@ Kode halaman (P1, U1, O1, A1, …) di dokumen ini bersifat final dan dipakai seb
 | Kode | Halaman | Tujuan | Hak akses | Masuk dari |
 |---|---|---|---|---|
 | **P1** | Beranda / Daftar Fasilitas | Menampilkan seluruh fasilitas beserta status, dengan filter tipe, lokasi, dan kapasitas | Semua | URL root, navbar, landing pengguna |
-| **P2** | Detail Fasilitas + Grid Ketersediaan | Informasi fasilitas dan grid 26 slot per tanggal; hanya status terisi/kosong, tanpa identitas pemohon atau tujuan | Semua | Klik kartu di P1 |
+| **P2** | Detail Fasilitas + Grid Ketersediaan | Informasi fasilitas dan grid 26 slot per tanggal dengan tiga status visual (D5), tanpa identitas pemohon atau tujuan. Pengguna memilih rentang slot di grid dan mengajukan reservasi langsung dari sini | Semua | Klik kartu di P1 |
 | **P3** | Login | Autentikasi | Tamu | Navbar, redirect dari route terproteksi |
 | **P4** | Registrasi Mandiri | Membuat akun berstatus `pending` | Tamu | Tautan di P3 |
 
@@ -49,14 +65,16 @@ P1 dan P2 **dipakai ulang oleh pengguna yang sudah login**; yang berubah hanya m
 
 | Kode | Halaman | Tujuan | Hak akses | Masuk dari |
 |---|---|---|---|---|
-| **U1** | Form Ajukan Reservasi | Memilih fasilitas, tanggal, slot mulai dan selesai, serta tujuan penggunaan | `pengguna` | Tombol di P2 (fasilitas ter-prefill), navbar (dropdown kosong) |
+| **U1** | Form Ajukan Reservasi | Memilih fasilitas, tanggal, slot mulai dan selesai, serta tujuan penggunaan | `pengguna` | Navbar (dropdown kosong) |
 | **U2** | Riwayat Reservasi Saya | Daftar seluruh reservasi milik sendiri beserta statusnya | `pengguna` | Navbar |
 | **U3** | Detail Reservasi Saya | Detail lengkap satu reservasi, termasuk alasan penolakan atau pembatalan | `pengguna`, hanya miliknya | Klik baris di U2 |
 | **U4** | Form Lapor Kerusakan | Kategori, deskripsi, dan unggah 1–3 foto | `pengguna` | Tombol di P2 (fasilitas ter-prefill), navbar |
 | **U5** | Daftar Laporan Saya | Daftar laporan milik sendiri beserta statusnya | `pengguna` | Navbar |
 | **U6** | Detail Laporan Saya | Detail laporan, foto, dan catatan resolusi petugas | `pengguna`, hanya miliknya | Klik baris di U5 |
 
-U1 harus berfungsi dalam dua keadaan: `facility_id` sudah terisi (datang dari P2) atau belum (datang dari navbar). Ini satu kondisi di Blade, bukan dua halaman.
+U1 harus berfungsi dalam dua keadaan: `facility_id` sudah terisi (lewat `?facility=`) atau belum (datang dari navbar). Ini satu kondisi di Blade, bukan dua halaman.
+
+**Sejak opsi B (v1.3), P2 tidak lagi mengarah ke U1.** Pengguna yang sudah berada di P2 memilih rentang slot di grid lalu mengajukan lewat modal di P2 sendiri, yang mengirim field yang sama ke `reservations.store`. U1 tetap ada untuk pengguna yang datang dari navbar.
 
 Kepemilikan pada U3 dan U6 diperiksa lewat **Laravel Policy**, bukan lewat `if` di controller (F4).
 
@@ -125,10 +143,10 @@ Query param buatan sendiri **tidak dipakai**, karena tujuannya harus divalidasi 
 ### 2.2 Jalur pengguna
 
 ```
-P2 ──"Ajukan Reservasi"────────────> U1 (facility_id ter-prefill)
+P2 ──pilih slot + "Ajukan Reservasi"> modal tujuan penggunaan ──> U3 (reservasi baru, status pending)
 P2 ──"Laporkan Kerusakan"──────────> U4 (facility_id ter-prefill)
 U1 ──submit berhasil───────────────> U3 (reservasi baru, status pending)
-U1 ──gagal validasi server─────────> kembali ke U1, input terisi + pesan spesifik
+P2 | U1 ──gagal validasi server────> kembali ke halaman asal, input terisi + pesan spesifik
 U2 ──klik baris────────────────────> U3
 U3 ──"Batalkan"────────────────────> modal konfirmasi ──> U3 (cancelled_by_user)
 U4 ──submit berhasil───────────────> U6 (laporan baru, status baru)
@@ -168,7 +186,7 @@ O6 ──ubah status fasilitas─────────> peringatan D4 ──>
 | **Tab Terlewat di O2** | Read-only. Server menolak approve dan reject untuk reservasi `pending` yang `start_time`-nya sudah lewat |
 | **Catatan resolusi di O5** | Kewajibannya berubah mengikuti status yang dipilih di dropdown. Aturan lengkap di B3 |
 
-Peringatan D4 muncul di tiga tempat pada jalur petugas dan admin (O5, O6, A1) ditambah pola yang sama untuk suspend akun di A5. **Keempatnya memakai logika yang identik**, jadi dibuat sebagai satu Blade component + satu method di model. Sepakati di awal siapa yang menulisnya, karena dipakai lintas modul.
+Peringatan D4 muncul di tiga tempat pada jalur petugas dan admin (O5, O6, A1) ditambah pola yang sama untuk suspend akun di A5. **Keempatnya memakai logika yang identik**, jadi dibuat sebagai satu Blade component + satu method di model. Penulisnya Ferdy (M2); bentuk method-nya disepakati dengan Dhimas (M3), karena method itu hidup di model `Reservation`.
 
 ### 2.4 Jalur admin
 
@@ -243,7 +261,7 @@ Lima halaman ini bentuknya perlu dipikirkan sebelum dikoding. Sisanya mengikuti 
 | Halaman | Kenapa rumit |
 |---|---|
 | **P2** Detail Fasilitas + Grid | 26 slot × banyak tanggal, tiga tingkat visibilitas data (F4), tiga status visual slot (D5), dan banner fasilitas dalam perbaikan |
-| **U1** Form Ajukan Reservasi | Validasi client harus mencerminkan lima aturan server F1 tanpa menjadi sumber kebenaran kedua. Perlu diputuskan: dua dropdown slot atau pemilihan langsung di grid |
+| **U1** Form Ajukan Reservasi | Validasi client harus mencerminkan lima aturan server F1 tanpa menjadi sumber kebenaran kedua. **Sudah diputuskan (v1.3): opsi B** — slot dipilih langsung di grid, dropdown tetap ada sebagai pilihan manual. Alasannya di bagian 2 `pembagian-modul-dan-urutan-kerja.md` |
 | **O1** Dashboard Antrian | Menyatukan dua alur yang bentuk datanya berbeda, dan harus menjawab tuntutan US 8 "agar tidak ada yang terlewat" |
 | **O5** Detail Laporan (Petugas) | Kewajiban catatan resolusi berubah mengikuti status (B3), ditambah aksi US 12 yang memicu peringatan D4 |
 | **A6** Rekap & Export | Satu filter tanggal melayani dua tabel dengan definisi berbeda (E2, E3), ditambah satu metrik tunggal (E5), dan export yang wajib memakai filter yang sama persis |
@@ -383,7 +401,7 @@ $table->index(['user_id', 'status', 'start_time'], 'idx_user_history');
 $table->index(['status', 'start_time'], 'idx_queue');
 ```
 
-**Catatan (v1.2):** nama `idx_queue` di sini **tidak berubah**. Yang diganti adalah index bernama sama pada `reports`, lihat catatan revisi di 6.4.
+**Catatan (v1.3):** nama `idx_queue` dipakai di sini **dan** di `reports`, mengikuti migration yang ada di `main`. Lihat catatan revisi di 6.4.
 
 ### 6.4 `reports`
 
@@ -417,20 +435,29 @@ $table->enum('status', ['baru', 'diproses', 'selesai', 'ditolak'])->default('bar
 $table->text('resolution_note')->nullable();
 $table->timestamps();
 
-$table->index(['status', 'created_at'], 'idx_report_queue');
+$table->index(['status', 'created_at'], 'idx_queue');
 $table->index(['facility_id', 'status'], 'idx_facility_freq');
 $table->index(['user_id', 'status'], 'idx_reporter');
 ```
 
-**Catatan revisi (v1.2) — tabrakan nama index.**
+**Catatan revisi (v1.2, diperbarui v1.3) — tabrakan nama index.**
 
-Sampai v1.1 blok di atas menuliskan `idx_queue`, nama yang sama persis dengan index pada `reservations` di 6.3. Di MySQL ini sah karena nama index berlaku per tabel, jadi `migrate:fresh` di lingkungan pengembangan tidak pernah gagal. **Di SQLite nama index berlaku per database**, sehingga migration `reports` selalu gagal dengan `index idx_queue already exists`.
+Blok di atas menuliskan `idx_queue`, nama yang sama persis dengan index pada `reservations` di 6.3. Di MySQL ini sah karena nama index berlaku per tabel, jadi `migrate:fresh` di lingkungan pengembangan tidak pernah gagal. **Di SQLite nama index berlaku per database**, sehingga migration `reports` selalu gagal dengan `index idx_queue already exists`.
 
-Ini bukan masalah teoretis: `phpunit.xml` menyetel test suite ke `DB_CONNECTION=sqlite` dengan `DB_DATABASE=:memory:`. Selama belum ada feature test yang memakai `RefreshDatabase`, tidak ada yang terlihat rusak. Begitu ada satu saja test yang menyentuh database — dan modul mana pun akan membutuhkannya — seluruh suite mati di tahap migrasi, dengan pesan error yang menunjuk ke arah yang salah.
+v1.2 sempat mengganti nama di blok ini menjadi `idx_report_queue` sementara migration di `main` tetap `idx_queue`, dan membiarkan cara memperbaikinya terbuka. Penggantian itu hanya dilakukan di 6.4, tidak di 8.3, sehingga dokumen bertentangan dengan dirinya sendiri.
 
-**Keadaan saat ini:** migration yang sudah ada di `main` masih memakai `idx_queue`. Dokumen ini sudah memakai nama yang benar supaya siapa pun yang menulis skema dari sini tidak mengulang kesalahan yang sama.
+**Keputusan v1.3: dokumen mengikuti migration.** Nama `idx_queue` dipakai di kedua tabel, dan migration **tidak diubah**. Larangan mengedit migration yang sudah di-push (onboarding bagian 6 dan 10) tetap utuh, dan di MySQL — database yang dipakai proyek ini dan yang dikumpulkan — tidak ada yang gagal.
 
-**Cara memperbaikinya belum diputuskan tim.** Dua opsi yang ada, keduanya punya konsekuensi:
+**Harga yang diterima: test suite tidak bisa memakai SQLite.** `phpunit.xml` masih menyetel `DB_CONNECTION=sqlite` dengan `DB_DATABASE=:memory:`, dan migration `reports` tetap gagal di sana. Keadaan test suite saat v1.3 ditulis:
+
+- Setiap feature test yang butuh database memeriksa database lebih dulu dan melewati dirinya (`markTestSkipped`) kalau datanya tidak ada. Dijalankan dengan `php artisan test` biasa, test itu **di-skip, bukan gagal**
+- Untuk benar-benar menjalankannya, koneksinya ditimpa di baris perintah, di atas database lokal yang sudah diisi `DatabaseSeeder`. Test memakai `DatabaseTransactions`, sehingga datanya dikembalikan setelah tiap test:
+
+```bash
+DB_CONNECTION=mysql DB_DATABASE=reservasi_fasilitas php artisan test --compact
+```
+
+Dua opsi yang dipertimbangkan v1.2, dan **tidak satu pun yang diambil**:
 
 | Opsi | Konsekuensi |
 |---|---|
