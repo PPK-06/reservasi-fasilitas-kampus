@@ -2,7 +2,7 @@
 ## Sistem Reservasi & Pelaporan Fasilitas Kampus
 
 **Mata kuliah:** Pengembangan Platform Khusus (PPK)
-**Versi dokumen:** 1.2 — 27 September 2026
+**Versi dokumen:** 1.3 — 30 September 2026
 **Ditetapkan oleh:** Elang (pemegang M1)
 
 **Dokumen induk:** `dasar-proyek.md` — aturan bisnis yang mengikat
@@ -13,6 +13,13 @@
 - `keputusan-m1-tahap1.md` — D1 sampai D8, penomorannya dilanjutkan di sini
 
 ---
+
+## Perubahan dari v1.2
+
+| Bagian | Perubahan |
+|---|---|
+| Konsekuensi ke dokumen lain | Kedua usulan baris untuk `route-dan-kontrak-form.md` (catatan bagian 11 dan bagian 25) dicatat sudah diterapkan di v1.2 dokumen itu |
+| Yang belum diputuskan | Aksi `suspend` menunggu komponen D4 milik **Ferdy**, bukan Dhimas. Pemiliknya pindah di v1.5 `pembagian-modul-dan-urutan-kerja.md`, dan dokumen route v1.2 menyusul. Paragraf "Dhimas tetap perlu diberi tahu" ditulis ulang untuk Ferdy dan Dhimas |
 
 ## Perubahan dari v1.1
 
@@ -325,6 +332,8 @@ Ditambah satu baris di bagian 25, naik ke v1.2:
 
 > - Aksi ini hanya tersedia untuk akun berstatus `verified` dan `suspended`. Status lain ditolak di server. Alasannya ada di `keputusan-m1-tahap2.md` D18.
 
+**Keduanya sudah diterapkan** di `route-dan-kontrak-form.md` v1.2.
+
 **`pembagian-modul-dan-urutan-kerja.md` — tidak perlu diubah.**
 
 Bagian 3 tidak menetapkan urutan internal pekerjaan Elang di tahap 2, jadi pemindahan `DatabaseSeeder` di bawah ini adalah penerapan dokumen itu, bukan penyimpangan darinya.
@@ -367,8 +376,8 @@ Satu hal yang perlu disiasati: audit F10 untuk `Reservation`, `Report`, dan `Rep
 | Kolom apa saja yang ditampilkan di tabel A3 | Tidak ada dokumen yang mengikat, dan ini tidak memengaruhi orang lain. Diputuskan saat menulis Blade-nya |
 | Urutan baris (`ORDER BY`) | Sama. Kandidat awal: `pending` di atas, lalu `created_at` menurun |
 | Pencarian teks bebas (nama, email, NIM) | Tidak diminta bagian 1.4. Kalau ditambahkan, ia parameter ketiga dengan perlakuan D14 yang sama, dan dokumen ini dinaikkan versinya |
-| Aksi `suspend` di A5 | **Terblokir, bukan ditunda.** Bagian 7 `route-dan-kontrak-form.md` menugaskan komponen peringatan D4 ke modul Reservasi dan mendaftarkan A5 sebagai pemakainya, dan C6 mewajibkan daftar reservasi terdampak ditampilkan saat suspend ditekan. Menunggu komponen Dhimas |
+| Aksi `suspend` di A5 | **Terblokir, bukan ditunda.** Bagian 7 `route-dan-kontrak-form.md` mendaftarkan A5 sebagai pemakai komponen peringatan D4, dan C6 mewajibkan daftar reservasi terdampak ditampilkan saat suspend ditekan. Sejak v1.2 dokumen itu, komponennya milik modul Fasilitas. Menunggu komponen Ferdy |
 
 **Hanya `suspend` yang terblokir.** `activate` cuma transisi status biasa sesuai matriks C2, dan `reset-password` cuma modal satu field sesuai bagian 25 — keduanya tidak memanggil peringatan apa pun dan diselesaikan M1 sendiri. Versi awal dokumen ini sempat menulis ketiganya terblokir; itu keliru dan diperbaiki di sini.
 
-Dhimas tetap perlu diberi tahu sekarang, karena bagian 3 menempatkan komponen peringatan D4 di tahap 3 dan ia perlu tahu ada pemakai keempat sebelum menentukan bentuknya.
+Ferdy dan Dhimas perlu tahu kebutuhan A5 sebelum menyepakati bentuk method-nya: Ferdy menulis komponennya, sementara method datanya hidup di model `Reservation` milik Dhimas. A5 adalah satu-satunya pemakai yang menyaring **per user**, bukan per fasilitas, dan membutuhkan kolom "Fasilitas" alih-alih "Pemohon". Kedua syarat itu sudah tercatat di bagian 3 tahap 3 `pembagian-modul-dan-urutan-kerja.md`.
