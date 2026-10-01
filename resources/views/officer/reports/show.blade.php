@@ -300,7 +300,7 @@
                 <p class="mb-3">
                     Status saat ini:
                     <strong>
-                        {{ $report->facility->status }}
+                        {{ $report->facility->statusLabel() }}
                     </strong>
                 </p>
 
@@ -314,36 +314,24 @@
                     </div>
 
 
-                    @if (\Illuminate\Support\Facades\Route::has('officer.facilities.status'))
+                    <form method="POST"
+                          action="{{ route('officer.facilities.status', $report->facility) }}">
 
-                        <form method="POST"
-                              action="{{ route('officer.facilities.status', $report->facility) }}">
+                        @csrf
+                        @method('PATCH')
 
-                            @csrf
-                            @method('PATCH')
+                        <input type="hidden"
+                               name="status"
+                               value="under_maintenance">
 
-                            <input type="hidden"
-                                   name="status"
-                                   value="under_maintenance">
+                        <button type="submit"
+                                class="btn btn-warning w-100">
 
-                            <button type="submit"
-                                    class="btn btn-warning w-100">
+                            Tandai Dalam Perbaikan
 
-                                Tandai Dalam Perbaikan
+                        </button>
 
-                            </button>
-
-                        </form>
-
-                    @else
-
-                        <div class="alert alert-secondary mb-0">
-                            Aksi tandai fasilitas akan aktif setelah route
-                            <code>officer.facilities.status</code>
-                            dari modul fasilitas tersedia.
-                        </div>
-
-                    @endif
+                    </form>
 
 
                 @elseif ($report->facility->status === 'under_maintenance')
@@ -356,7 +344,7 @@
 
                     <div class="alert alert-secondary mb-0">
                         Status fasilitas:
-                        {{ $report->facility->status }}
+                        {{ $report->facility->statusLabel() }}
                     </div>
 
                 @endif
