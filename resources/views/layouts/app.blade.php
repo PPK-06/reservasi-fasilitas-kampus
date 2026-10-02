@@ -136,7 +136,7 @@
                                href="{{ route('reports.create') }}">Lapor Kerusakan</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('reports.*') ? 'active' : '' }}"
+                            <a class="nav-link {{ request()->routeIs('reports.index', 'reports.show') ? 'active' : '' }}"
                                href="{{ route('reports.index') }}">Laporan</a>
                         </li>
 
