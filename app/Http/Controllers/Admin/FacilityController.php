@@ -49,13 +49,7 @@ class FacilityController extends Controller
         // ── D4: reservasi approved mendatang, dikelompokkan per fasilitas ──
         // Diambil sekaligus saat halaman dibuka (bagian 12 dokumen route).
         // Dipakai untuk modal peringatan sebelum admin menonaktifkan fasilitas.
-        $upcomingReservations = Reservation::where('status', 'approved')
-            ->where('start_time', '>', now())
-            ->with('user:id,name')
-            ->select('id', 'facility_id', 'start_time', 'end_time', 'user_id')
-            ->orderBy('start_time')
-            ->get()
-            ->groupBy('facility_id');
+        $upcomingReservations = Reservation::upcomingApproved();
 
         return view('admin.facilities.index', compact('facilities', 'upcomingReservations'));
     }
