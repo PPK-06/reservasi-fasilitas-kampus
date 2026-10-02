@@ -3,8 +3,8 @@
 use App\Models\Facility;
 use App\Models\Report;
 use App\Models\Reservation;
-use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
 
 uses(DatabaseTransactions::class);
@@ -19,15 +19,8 @@ beforeEach(function (): void {
         $this->markTestSkipped('Database project belum siap.');
     }
 
-    $this->admin = User::factory()->create([
-        'role' => 'admin',
-        'status' => 'verified',
-    ]);
-
-    $this->pengguna = User::factory()->create([
-        'role' => 'pengguna',
-        'status' => 'verified',
-    ]);
+    $this->admin = buatAkunDenganRole('admin');
+    $this->pengguna = buatAkunDenganRole('pengguna');
 
     $this->facility = Facility::create([
         'name' => 'Ruang Rekap Test',
@@ -57,29 +50,32 @@ it('A6 admin dapat membuka halaman rekap', function (): void {
 });
 
 it('A6 menghitung rekap untuk rentang tanggal yang dipilih', function (): void {
-    $reservation = new Reservation();
+    // Data sebelum dan sesudah periode menjadi kontrol untuk kedua batas tanggal.
+    foreach (['2026-09-30', '2026-10-01', '2026-10-02'] as $date) {
+        $reservation = new Reservation();
 
-    $reservation->facility_id = $this->facility->id;
-    $reservation->user_id = $this->pengguna->id;
-    $reservation->start_time = '2026-10-01 08:00:00';
-    $reservation->end_time = '2026-10-01 10:00:00';
-    $reservation->purpose =
-        'Reservasi untuk pengujian rekap okupansi.';
-    $reservation->status = 'approved';
-    $reservation->save();
+        $reservation->facility_id = $this->facility->id;
+        $reservation->user_id = $this->pengguna->id;
+        $reservation->start_time = $date.' 08:00:00';
+        $reservation->end_time = $date.' 10:00:00';
+        $reservation->purpose =
+            'Reservasi untuk pengujian rekap okupansi.';
+        $reservation->status = 'approved';
+        $reservation->save();
 
-    $report = new Report([
-        'facility_id' => $this->facility->id,
-        'category' => 'kerusakan_alat',
-        'description' =>
-            'Laporan kerusakan untuk pengujian rekap admin.',
-        'status' => 'baru',
-    ]);
+        $report = new Report([
+            'facility_id' => $this->facility->id,
+            'category' => 'kerusakan_alat',
+            'description' =>
+                'Laporan kerusakan untuk pengujian rekap admin.',
+            'status' => 'baru',
+        ]);
 
-    $report->user_id = $this->pengguna->id;
-    $report->created_at = '2026-10-01 09:00:00';
-    $report->updated_at = '2026-10-01 09:00:00';
-    $report->save();
+        $report->user_id = $this->pengguna->id;
+        $report->created_at = $date.' 09:00:00';
+        $report->updated_at = $date.' 09:00:00';
+        $report->save();
+    }
 
     $this->actingAs($this->admin)
         ->get(route('admin.recap.index', [
@@ -87,7 +83,23 @@ it('A6 menghitung rekap untuk rentang tanggal yang dipilih', function (): void {
             'end_date' => '2026-10-01',
         ]))
         ->assertOk()
-        ->assertSee('Ruang Rekap Test');
+        ->assertViewHas('occupancyRows', function (Collection $rows): bool {
+            $row = $rows->firstWhere('facility_id', $this->facility->id);
+
+            expect($row)->not->toBeNull();
+            expect($row->reservation_count)->toBe(1)
+                ->and($row->used_slots)->toBe(4.0);
+
+            return true;
+        })
+        ->assertViewHas('damageRows', function (Collection $rows): bool {
+            $row = $rows->firstWhere('facility_id', $this->facility->id);
+
+            expect($row)->not->toBeNull();
+            expect($row->report_count)->toBe(1);
+
+            return true;
+        });
 });
 
 it('A6 admin dapat export CSV menggunakan filter tanggal', function (): void {

@@ -19,20 +19,9 @@ beforeEach(function (): void {
         $this->markTestSkipped('Database project belum siap.');
     }
 
-    $this->pengguna = User::factory()->create([
-        'role' => 'pengguna',
-        'status' => 'verified',
-    ]);
-
-    $this->penggunaLain = User::factory()->create([
-        'role' => 'pengguna',
-        'status' => 'verified',
-    ]);
-
-    $this->petugas = User::factory()->create([
-        'role' => 'petugas',
-        'status' => 'verified',
-    ]);
+    $this->pengguna = buatAkunDenganRole('pengguna');
+    $this->penggunaLain = buatAkunDenganRole('pengguna');
+    $this->petugas = buatAkunDenganRole('petugas');
 
     $this->facility = Facility::create([
         'name' => 'Ruang Test M4',
@@ -42,16 +31,31 @@ beforeEach(function (): void {
         'description' => 'Fasilitas untuk pengujian modul laporan.',
         'status' => 'active',
     ]);
-
-    $this->uploadedReportFiles = [];
 });
 
 afterEach(function (): void {
-    foreach ($this->uploadedReportFiles ?? [] as $fileName) {
-        $path = public_path('uploads/reports/'.$fileName);
+    try {
+        if (isset($this->temporaryReportImage) && File::exists($this->temporaryReportImage)) {
+            File::delete($this->temporaryReportImage);
+        }
 
-        if (File::exists($path)) {
-            File::delete($path);
+        if (isset($this->reportTestPublicPath) && File::isDirectory($this->reportTestPublicPath)) {
+            $path = realpath($this->reportTestPublicPath);
+            $testingPath = realpath(storage_path('framework/testing'));
+
+            if (
+                $path === false ||
+                $testingPath === false ||
+                ! str_starts_with($path, $testingPath.DIRECTORY_SEPARATOR)
+            ) {
+                throw new RuntimeException('Direktori upload test berada di luar storage testing.');
+            }
+
+            File::deleteDirectory($path);
+        }
+    } finally {
+        if (isset($this->originalPublicPath)) {
+            $this->app->usePublicPath($this->originalPublicPath);
         }
     }
 });
@@ -88,7 +92,17 @@ it('menolak role selain pengguna ketika membuka halaman laporan pengguna', funct
 });
 
 it('U4 pengguna dapat membuat laporan kerusakan', function (): void {
+    $this->originalPublicPath = public_path();
+    $this->reportTestPublicPath = storage_path('framework/testing/report-public-'.bin2hex(random_bytes(8)));
+    $this->app->usePublicPath($this->reportTestPublicPath);
+
     $tempImage = tempnam(sys_get_temp_dir(), 'report-test-');
+
+    if ($tempImage === false) {
+        throw new RuntimeException('Tidak dapat membuat file sementara untuk upload laporan.');
+    }
+
+    $this->temporaryReportImage = $tempImage;
 
     copy(
         database_path('seeders/sample-photos/foto1.jpg'),
@@ -128,8 +142,6 @@ it('U4 pengguna dapat membuat laporan kerusakan', function (): void {
     expect($report->photos)->toHaveCount(1);
 
     $fileName = $report->photos->first()->file_name;
-
-    $this->uploadedReportFiles[] = $fileName;
 
     expect(
         File::exists(public_path('uploads/reports/'.$fileName))
@@ -232,3 +244,47 @@ it('O5 petugas dapat mengubah laporan menjadi selesai dengan catatan resolusi', 
             'Kerusakan sudah diperbaiki dan fasilitas dapat digunakan kembali.',
     ]);
 });
+
+it('O5 pengguna biasa tidak dapat mengubah laporan', function (): void {
+    $report = createReportForM4Test(
+        $this->pengguna,
+        $this->facility,
+        ['status' => 'diproses']
+    );
+
+    $this->actingAs($this->pengguna)
+        ->patch(route('officer.reports.update', $report), [
+            'status' => 'selesai',
+            'resolution_note' =>
+                'Kerusakan sudah diperbaiki dan fasilitas dapat digunakan kembali.',
+        ])
+        ->assertForbidden();
+
+    $this->assertDatabaseHas('reports', [
+        'id' => $report->id,
+        'status' => 'diproses',
+        'resolution_note' => null,
+    ]);
+});
+
+it('O5 mewajibkan catatan resolusi untuk status akhir', function (string $status): void {
+    $report = createReportForM4Test(
+        $this->pengguna,
+        $this->facility,
+        ['status' => 'diproses']
+    );
+
+    $this->actingAs($this->petugas)
+        ->from(route('officer.reports.show', $report))
+        ->patch(route('officer.reports.update', $report), [
+            'status' => $status,
+        ])
+        ->assertRedirect(route('officer.reports.show', $report))
+        ->assertSessionHasErrors('resolution_note');
+
+    $this->assertDatabaseHas('reports', [
+        'id' => $report->id,
+        'status' => 'diproses',
+        'resolution_note' => null,
+    ]);
+})->with(['selesai', 'ditolak']);
