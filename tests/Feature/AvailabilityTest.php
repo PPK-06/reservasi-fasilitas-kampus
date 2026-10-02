@@ -41,11 +41,11 @@ it('mengisi slot dengan benar sesuai batas jam reservasi approved dan menyisakan
     // Buat reservasi approved: 08:00 - 10:00 (4 slot: 08:00, 08:30, 09:00, 09:30)
     $res = new Reservation([
         'facility_id' => $facility->id,
-        'start_time' => "{$targetDate} 08:00:00",
-        'end_time' => "{$targetDate} 10:00:00",
         'purpose' => 'Kegiatan seminar uji coba ketersediaan slot',
     ]);
     $res->user_id = $user->id;
+    $res->start_time = "{$targetDate} 08:00:00";
+    $res->end_time = "{$targetDate} 10:00:00";
     $res->status = 'approved';
     $res->save();
 
@@ -76,22 +76,22 @@ it('hanya memperhitungkan reservasi berstatus approved dan mengabaikan status pe
     // Pending tidak boleh membuat slot terisi
     $resPending = new Reservation([
         'facility_id' => $facility->id,
-        'start_time' => "{$targetDate} 11:00:00",
-        'end_time' => "{$targetDate} 13:00:00",
         'purpose' => 'Uji pending slot',
     ]);
     $resPending->user_id = $user->id;
+    $resPending->start_time = "{$targetDate} 11:00:00";
+    $resPending->end_time = "{$targetDate} 13:00:00";
     $resPending->status = 'pending';
     $resPending->save();
 
     // Cancelled juga tidak boleh membuat slot terisi
     $resCancelled = new Reservation([
         'facility_id' => $facility->id,
-        'start_time' => "{$targetDate} 14:00:00",
-        'end_time' => "{$targetDate} 16:00:00",
         'purpose' => 'Uji cancelled slot',
     ]);
     $resCancelled->user_id = $user->id;
+    $resCancelled->start_time = "{$targetDate} 14:00:00";
+    $resCancelled->end_time = "{$targetDate} 16:00:00";
     $resCancelled->status = 'cancelled_by_user';
     $resCancelled->save();
 
