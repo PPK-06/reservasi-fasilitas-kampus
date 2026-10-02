@@ -24,7 +24,7 @@
     <div class="alert alert-warning border-0 shadow-sm d-flex align-items-center mb-4" role="alert">
         <i class="bi bi-tools fs-5 me-3"></i>
         <div>
-            <strong>Fasilitas dalam perbaikan, reservasi baru ditutup.</strong>
+            <strong>Fasilitas dalam perbaikan, reservasi baru ditutup</strong>
             <div class="text-muted mt-1" style="font-size: 0.85rem;">
                 Fasilitas ini sedang menjalani perawatan. Silakan cek kembali nanti.
             </div>
@@ -574,6 +574,17 @@ document.addEventListener('DOMContentLoaded', function () {
     btnOpenModal?.addEventListener('click', openModal);
 
     @if ($errors->any() && old('facility_id') == $facility->id)
+        const oldStart = @json(old('start_slot'));
+        const oldEnd = @json(old('end_slot'));
+        if (oldStart && oldEnd) {
+            const sIdx = startTimes.indexOf(oldStart);
+            const eIdx = endTimes.indexOf(oldEnd);
+            if (sIdx !== -1 && eIdx !== -1) {
+                startIndex = sIdx;
+                endIndex = eIdx;
+                updateHighlight();
+            }
+        }
         if (reserveModal) {
             reserveModal.show();
         }
