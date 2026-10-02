@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -47,4 +48,28 @@ expect()->extend('toBeOne', function () {
 function something()
 {
     // ..
+}
+
+/**
+ * Akun verified dengan role tertentu, lewat state `UserFactory`.
+ */
+function buatAkunDenganRole(string $role): User
+{
+    return match ($role) {
+        'admin' => User::factory()->admin()->create(),
+        'petugas' => User::factory()->petugas()->create(),
+        'pengguna' => User::factory()->create(),
+    };
+}
+
+/**
+ * Akun pengguna yang statusnya bukan verified, lewat state `UserFactory`.
+ */
+function buatAkunDenganStatus(string $status): User
+{
+    return match ($status) {
+        'pending' => User::factory()->pending()->create(),
+        'rejected' => User::factory()->rejected()->create(),
+        'suspended' => User::factory()->suspended()->create(),
+    };
 }
