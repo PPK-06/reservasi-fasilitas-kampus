@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Facility;
 use App\Models\Reservation;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Schema;
@@ -71,7 +72,7 @@ it('petugas dapat melihat O3 detail reservasi', function (): void {
 
 it('petugas dapat menyetujui reservasi pending di O3', function (): void {
     $officer = buatAkunDenganRole('petugas');
-    $res = Reservation::factory()->create(['status' => 'pending']);
+    $res = Reservation::factory()->pending()->create();
 
     $this->actingAs($officer)
         ->patch(route('officer.reservations.approve', $res))
@@ -82,7 +83,7 @@ it('petugas dapat menyetujui reservasi pending di O3', function (): void {
 
 it('petugas dapat menolak reservasi pending dengan alasan di O3', function (): void {
     $officer = buatAkunDenganRole('petugas');
-    $res = Reservation::factory()->create(['status' => 'pending']);
+    $res = Reservation::factory()->pending()->create();
 
     $this->actingAs($officer)
         ->patch(route('officer.reservations.reject', $res), [
@@ -106,4 +107,48 @@ it('petugas dapat membatalkan reservasi approved dengan alasan di O3', function 
 
     expect($res->fresh()->status)->toBe('cancelled_by_officer')
         ->and($res->fresh()->status_reason)->toBe('Perbaikan darurat instalasi listrik ruangan');
+});
+
+it('petugas tidak dapat menyetujui reservasi pending yang waktu mulainya sudah lewat A8', function (): void {
+    $officer = buatAkunDenganRole('petugas');
+    $res = Reservation::factory()->pending()->create([
+        'start_time' => now()->subHours(2),
+        'end_time' => now()->subHour(),
+    ]);
+
+    $this->actingAs($officer)
+        ->patch(route('officer.reservations.approve', $res))
+        ->assertRedirect()
+        ->assertSessionHas('error', 'Reservasi ini sudah terlewat dan tidak dapat disetujui.');
+
+    expect($res->fresh()->status)->toBe('pending');
+});
+
+it('petugas tidak dapat menyetujui reservasi jika bertumpuk dengan reservasi approved lain F2', function (): void {
+    $officer = buatAkunDenganRole('petugas');
+    $facility = Facility::factory()->create();
+
+    $start = now()->addDays(3)->setTime(10, 0, 0);
+    $end = now()->addDays(3)->setTime(12, 0, 0);
+
+    // Reservasi yang sudah approved di fasilitas dan jam tersebut
+    Reservation::factory()->approved()->create([
+        'facility_id' => $facility->id,
+        'start_time' => $start,
+        'end_time' => $end,
+    ]);
+
+    // Reservasi pending baru yang bentrok pada jam yang sama
+    $resBentrok = Reservation::factory()->pending()->create([
+        'facility_id' => $facility->id,
+        'start_time' => $start,
+        'end_time' => $end,
+    ]);
+
+    $this->actingAs($officer)
+        ->patch(route('officer.reservations.approve', $resBentrok))
+        ->assertRedirect()
+        ->assertSessionHas('error', 'Gagal menyetujui: jadwal bertumpuk dengan reservasi lain yang baru saja disetujui.');
+
+    expect($resBentrok->fresh()->status)->toBe('pending');
 });

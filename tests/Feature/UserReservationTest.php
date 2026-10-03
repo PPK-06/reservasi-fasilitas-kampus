@@ -70,9 +70,8 @@ it('pemilik reservasi dapat melihat detail reservasinya di U3', function (): voi
 
 it('pemilik dapat membatalkan reservasi pending miliknya di U3', function (): void {
     $user = buatAkunDenganRole('pengguna');
-    $res = Reservation::factory()->for($user)->create([
+    $res = Reservation::factory()->for($user)->pending()->create([
         'purpose' => 'Rapat Koordinasi Batal',
-        'status' => 'pending',
     ]);
 
     $this->actingAs($user)
@@ -88,9 +87,7 @@ it('melarang pengguna lain membatalkan reservasi yang bukan miliknya di U3', fun
     $userA = buatAkunDenganRole('pengguna');
     $userB = buatAkunDenganRole('pengguna');
 
-    $res = Reservation::factory()->for($userA)->create([
-        'status' => 'pending',
-    ]);
+    $res = Reservation::factory()->for($userA)->pending()->create();
 
     $this->actingAs($userB)
         ->patch(route('reservations.cancel', $res), [
@@ -116,9 +113,12 @@ it('menolak pengajuan reservasi dengan tujuan kosong dan mempertahankan input la
             'purpose' => '',
         ])
         ->assertRedirect(route('facilities.show', ['facility' => $facility->id, 'date' => $targetDate]))
-        ->assertSessionHasErrors('purpose')
+        ->assertSessionHasErrors(['purpose' => 'Tujuan penggunaan wajib diisi.'])
+        ->assertSessionDoesntHaveErrors(['facility_id', 'date', 'start_slot', 'end_slot'])
         ->assertSessionHasInput('facility_id', $facility->id)
         ->assertSessionHasInput('date', $targetDate)
         ->assertSessionHasInput('start_slot', '08:00')
         ->assertSessionHasInput('end_slot', '10:00');
+
+    $this->assertDatabaseMissing('reservations', ['facility_id' => $facility->id]);
 });
