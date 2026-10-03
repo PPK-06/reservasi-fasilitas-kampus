@@ -5,12 +5,14 @@ namespace App\Models;
 use App\Support\Slot;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable(['name', 'type', 'location', 'capacity', 'description', 'status'])]
 class Facility extends Model
 {
+    use HasFactory;
     /*
     |----------------------------------------------------------------------
     | Konstanta enum tingkat aplikasi (D1, D2, D3 + F6)
