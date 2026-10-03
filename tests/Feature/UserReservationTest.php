@@ -2,15 +2,14 @@
 
 use App\Models\Facility;
 use App\Models\Reservation;
-use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Schema;
 
 uses(DatabaseTransactions::class);
 
 beforeEach(function (): void {
-    if (! Schema::hasTable('reservations') || User::where('role', 'pengguna')->doesntExist()) {
-        $this->markTestSkipped('Butuh database yang sudah diisi DatabaseSeeder.');
+    if (! Schema::hasTable('reservations')) {
+        $this->markTestSkipped('Butuh database yang sudah dimigrasi.');
     }
 });
 
@@ -20,14 +19,14 @@ it('mengarahkan tamu ke login saat mengakses riwayat reservasi U2', function ():
 });
 
 it('memberi 403 untuk role selain pengguna saat mengakses U2', function (): void {
-    $officer = User::where('role', 'petugas')->firstOrFail();
+    $officer = buatAkunDenganRole('petugas');
     $this->actingAs($officer)
         ->get(route('reservations.index'))
         ->assertForbidden();
 });
 
 it('pengguna dapat melihat riwayat reservasinya di U2', function (): void {
-    $user = User::where('role', 'pengguna')->where('status', 'verified')->firstOrFail();
+    $user = buatAkunDenganRole('pengguna');
     $this->actingAs($user)
         ->get(route('reservations.index'))
         ->assertOk()
@@ -36,7 +35,7 @@ it('pengguna dapat melihat riwayat reservasinya di U2', function (): void {
 });
 
 it('mengarahkan tamu ke login saat mengakses detail atau batalkan reservasi U3', function (): void {
-    $res = Reservation::firstOrFail();
+    $res = Reservation::factory()->create();
     $this->get(route('reservations.show', $res))
         ->assertRedirect(route('login'));
     $this->patch(route('reservations.cancel', $res))
@@ -44,18 +43,12 @@ it('mengarahkan tamu ke login saat mengakses detail atau batalkan reservasi U3',
 });
 
 it('melarang pengguna lain melihat reservasi yang bukan miliknya di U3', function (): void {
-    $userA = User::where('role', 'pengguna')->firstOrFail();
-    $userB = User::where('role', 'pengguna')->where('id', '!=', $userA->id)->firstOrFail();
+    $userA = buatAkunDenganRole('pengguna');
+    $userB = buatAkunDenganRole('pengguna');
 
-    $res = new Reservation([
-        'facility_id' => Facility::where('status', 'active')->firstOrFail()->id,
+    $res = Reservation::factory()->for($userA)->create([
         'purpose' => 'Seminar Komputasi',
     ]);
-    $res->user_id = $userA->id;
-    $res->start_time = now()->addDays(2)->setTime(9, 0);
-    $res->end_time = now()->addDays(2)->setTime(11, 0);
-    $res->status = 'pending';
-    $res->save();
 
     $this->actingAs($userB)
         ->get(route('reservations.show', $res))
@@ -63,16 +56,10 @@ it('melarang pengguna lain melihat reservasi yang bukan miliknya di U3', functio
 });
 
 it('pemilik reservasi dapat melihat detail reservasinya di U3', function (): void {
-    $user = User::where('role', 'pengguna')->where('status', 'verified')->firstOrFail();
-    $res = new Reservation([
-        'facility_id' => Facility::where('status', 'active')->firstOrFail()->id,
+    $user = buatAkunDenganRole('pengguna');
+    $res = Reservation::factory()->for($user)->create([
         'purpose' => 'Diskusi Proyek',
     ]);
-    $res->user_id = $user->id;
-    $res->start_time = now()->addDays(2)->setTime(13, 0);
-    $res->end_time = now()->addDays(2)->setTime(15, 0);
-    $res->status = 'pending';
-    $res->save();
 
     $this->actingAs($user)
         ->get(route('reservations.show', $res))
@@ -82,16 +69,11 @@ it('pemilik reservasi dapat melihat detail reservasinya di U3', function (): voi
 });
 
 it('pemilik dapat membatalkan reservasi pending miliknya di U3', function (): void {
-    $user = User::where('role', 'pengguna')->where('status', 'verified')->firstOrFail();
-    $res = new Reservation([
-        'facility_id' => Facility::where('status', 'active')->firstOrFail()->id,
+    $user = buatAkunDenganRole('pengguna');
+    $res = Reservation::factory()->for($user)->create([
         'purpose' => 'Rapat Koordinasi Batal',
+        'status' => 'pending',
     ]);
-    $res->user_id = $user->id;
-    $res->start_time = now()->addDays(3)->setTime(10, 0);
-    $res->end_time = now()->addDays(3)->setTime(12, 0);
-    $res->status = 'pending';
-    $res->save();
 
     $this->actingAs($user)
         ->patch(route('reservations.cancel', $res), [
@@ -100,4 +82,43 @@ it('pemilik dapat membatalkan reservasi pending miliknya di U3', function (): vo
         ->assertRedirect(route('reservations.show', $res));
 
     expect($res->fresh()->status)->toBe('cancelled_by_user');
+});
+
+it('melarang pengguna lain membatalkan reservasi yang bukan miliknya di U3', function (): void {
+    $userA = buatAkunDenganRole('pengguna');
+    $userB = buatAkunDenganRole('pengguna');
+
+    $res = Reservation::factory()->for($userA)->create([
+        'status' => 'pending',
+    ]);
+
+    $this->actingAs($userB)
+        ->patch(route('reservations.cancel', $res), [
+            'status_reason' => 'Mencoba batalkan milik orang lain',
+        ])
+        ->assertForbidden();
+
+    expect($res->fresh()->status)->toBe('pending');
+});
+
+it('menolak pengajuan reservasi dengan tujuan kosong dan mempertahankan input lama', function (): void {
+    $user = buatAkunDenganRole('pengguna');
+    $facility = Facility::factory()->create();
+    $targetDate = now()->addDays(2)->toDateString();
+
+    $this->actingAs($user)
+        ->from(route('facilities.show', ['facility' => $facility->id, 'date' => $targetDate]))
+        ->post(route('reservations.store'), [
+            'facility_id' => $facility->id,
+            'date' => $targetDate,
+            'start_slot' => '08:00',
+            'end_slot' => '10:00',
+            'purpose' => '',
+        ])
+        ->assertRedirect(route('facilities.show', ['facility' => $facility->id, 'date' => $targetDate]))
+        ->assertSessionHasErrors('purpose')
+        ->assertSessionHasInput('facility_id', $facility->id)
+        ->assertSessionHasInput('date', $targetDate)
+        ->assertSessionHasInput('start_slot', '08:00')
+        ->assertSessionHasInput('end_slot', '10:00');
 });

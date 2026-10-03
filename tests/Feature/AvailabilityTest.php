@@ -2,7 +2,6 @@
 
 use App\Models\Facility;
 use App\Models\Reservation;
-use App\Models\User;
 use App\Support\Slot;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -12,13 +11,13 @@ use Illuminate\Support\Facades\Schema;
 uses(DatabaseTransactions::class);
 
 beforeEach(function (): void {
-    if (! Schema::hasTable('facilities') || Facility::count() === 0) {
-        $this->markTestSkipped('Butuh database yang sudah diisi DatabaseSeeder.');
+    if (! Schema::hasTable('facilities')) {
+        $this->markTestSkipped('Butuh database yang sudah dimigrasi.');
     }
 });
 
 it('mengembalikan tepat 26 slot untuk fasilitas dan tanggal yang sah', function (): void {
-    $facility = Facility::where('status', 'active')->firstOrFail();
+    $facility = Facility::factory()->create();
     $targetDate = Carbon::now()->addDays(2)->toDateString();
 
     $slots = Slot::availability($facility, $targetDate);
@@ -34,20 +33,18 @@ it('mengembalikan tepat 26 slot untuk fasilitas dan tanggal yang sah', function 
 });
 
 it('mengisi slot dengan benar sesuai batas jam reservasi approved dan menyisakan batas akhir kosong', function (): void {
-    $facility = Facility::where('status', 'active')->firstOrFail();
-    $user = User::where('role', 'pengguna')->firstOrFail();
+    $facility = Facility::factory()->create();
+    $user = buatAkunDenganRole('pengguna');
     $targetDate = Carbon::now()->addDays(5)->toDateString();
 
     // Buat reservasi approved: 08:00 - 10:00 (4 slot: 08:00, 08:30, 09:00, 09:30)
-    $res = new Reservation([
+    Reservation::factory()->approved()->create([
         'facility_id' => $facility->id,
+        'user_id' => $user->id,
+        'start_time' => "{$targetDate} 08:00:00",
+        'end_time' => "{$targetDate} 10:00:00",
         'purpose' => 'Kegiatan seminar uji coba ketersediaan slot',
     ]);
-    $res->user_id = $user->id;
-    $res->start_time = "{$targetDate} 08:00:00";
-    $res->end_time = "{$targetDate} 10:00:00";
-    $res->status = 'approved';
-    $res->save();
 
     $slots = Slot::availability($facility, $targetDate);
 
@@ -69,31 +66,28 @@ it('mengisi slot dengan benar sesuai batas jam reservasi approved dan menyisakan
 });
 
 it('hanya memperhitungkan reservasi berstatus approved dan mengabaikan status pending atau lainnya', function (): void {
-    $facility = Facility::where('status', 'active')->firstOrFail();
-    $user = User::where('role', 'pengguna')->firstOrFail();
+    $facility = Facility::factory()->create();
+    $user = buatAkunDenganRole('pengguna');
     $targetDate = Carbon::now()->addDays(6)->toDateString();
 
     // Pending tidak boleh membuat slot terisi
-    $resPending = new Reservation([
+    Reservation::factory()->create([
         'facility_id' => $facility->id,
+        'user_id' => $user->id,
+        'start_time' => "{$targetDate} 11:00:00",
+        'end_time' => "{$targetDate} 13:00:00",
         'purpose' => 'Uji pending slot',
+        'status' => 'pending',
     ]);
-    $resPending->user_id = $user->id;
-    $resPending->start_time = "{$targetDate} 11:00:00";
-    $resPending->end_time = "{$targetDate} 13:00:00";
-    $resPending->status = 'pending';
-    $resPending->save();
 
     // Cancelled juga tidak boleh membuat slot terisi
-    $resCancelled = new Reservation([
+    Reservation::factory()->cancelledByUser()->create([
         'facility_id' => $facility->id,
+        'user_id' => $user->id,
+        'start_time' => "{$targetDate} 14:00:00",
+        'end_time' => "{$targetDate} 16:00:00",
         'purpose' => 'Uji cancelled slot',
     ]);
-    $resCancelled->user_id = $user->id;
-    $resCancelled->start_time = "{$targetDate} 14:00:00";
-    $resCancelled->end_time = "{$targetDate} 16:00:00";
-    $resCancelled->status = 'cancelled_by_user';
-    $resCancelled->save();
 
     $slots = Slot::availability($facility, $targetDate);
 
@@ -103,7 +97,7 @@ it('hanya memperhitungkan reservasi berstatus approved dan mengabaikan status pe
 });
 
 it('mematuhi privasi F4 dengan hanya men-select facility_id, start_time, dan end_time', function (): void {
-    $facility = Facility::where('status', 'active')->firstOrFail();
+    $facility = Facility::factory()->create();
     $targetDate = Carbon::now()->addDays(3)->toDateString();
 
     DB::enableQueryLog();
@@ -126,7 +120,7 @@ it('mematuhi privasi F4 dengan hanya men-select facility_id, start_time, dan end
 });
 
 it('memberikan status visual past_limit untuk tanggal yang sudah lewat batas A3', function (): void {
-    $facility = Facility::where('status', 'active')->firstOrFail();
+    $facility = Facility::factory()->create();
     $yesterday = Carbon::now()->subDay()->toDateString();
 
     $slots = Slot::availability($facility, $yesterday);
@@ -137,8 +131,8 @@ it('memberikan status visual past_limit untuk tanggal yang sudah lewat batas A3'
 });
 
 it('endpoint reservations.availability mengembalikan format JSON ketersediaan', function (): void {
-    $user = User::where('role', 'pengguna')->where('status', 'verified')->firstOrFail();
-    $facility = Facility::where('status', 'active')->firstOrFail();
+    $user = buatAkunDenganRole('pengguna');
+    $facility = Facility::factory()->create();
     $targetDate = Carbon::now()->addDays(4)->toDateString();
 
     $response = $this->actingAs($user)->getJson(route('reservations.availability', [
@@ -157,7 +151,7 @@ it('endpoint reservations.availability mengembalikan format JSON ketersediaan', 
 });
 
 it('halaman detail fasilitas P2 menampilkan grid ketersediaan 26 slot dengan outline biru dan abu-abu', function (): void {
-    $facility = Facility::where('status', 'active')->firstOrFail();
+    $facility = Facility::factory()->create();
     $targetDate = Carbon::now()->addDays(7)->toDateString();
 
     $response = $this->get(route('facilities.show', [
@@ -172,8 +166,8 @@ it('halaman detail fasilitas P2 menampilkan grid ketersediaan 26 slot dengan out
 });
 
 it('halaman detail fasilitas P2 menyediakan modal konfirmasi reservasi langsung dengan alasan penggunaan', function (): void {
-    $user = User::where('role', 'pengguna')->where('status', 'verified')->firstOrFail();
-    $facility = Facility::where('status', 'active')->firstOrFail();
+    $user = buatAkunDenganRole('pengguna');
+    $facility = Facility::factory()->create();
     $targetDate = Carbon::now()->addDays(8)->toDateString();
 
     $response = $this->actingAs($user)->get(route('facilities.show', [
