@@ -15,11 +15,13 @@ class FacilityFactory extends Factory
      */
     public function definition(): array
     {
+        $type = fake()->randomElement(array_keys(Facility::TYPES));
+
         return [
             'name' => fake()->words(3, true),
-            'type' => fake()->randomElement(array_keys(Facility::TYPES)),
+            'type' => $type,
             'location' => fake()->randomElement(array_keys(Facility::LOCATIONS)),
-            'capacity' => fake()->numberBetween(20, 100),
+            'capacity' => fn (array $attributes) => ($attributes['type'] ?? $type) === 'Alat' ? null : fake()->numberBetween(20, 100),
             'description' => fake()->sentence(),
             'status' => 'active',
         ];

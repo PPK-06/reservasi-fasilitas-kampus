@@ -2,15 +2,14 @@
 
 use App\Models\Facility;
 use App\Models\Reservation;
-use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Schema;
 
 uses(DatabaseTransactions::class);
 
 beforeEach(function (): void {
-    if (! Schema::hasTable('reservations') || User::where('role', 'petugas')->doesntExist()) {
-        $this->markTestSkipped('Butuh database yang sudah diisi DatabaseSeeder.');
+    if (! Schema::hasTable('reservations')) {
+        $this->markTestSkipped('Butuh database yang sudah dimigrasi.');
     }
 });
 
@@ -20,14 +19,14 @@ it('mengarahkan tamu ke login saat mengakses O1 dashboard petugas', function ():
 });
 
 it('memberi 403 untuk pengguna saat mengakses O1 dashboard petugas', function (): void {
-    $pengguna = User::where('role', 'pengguna')->firstOrFail();
+    $pengguna = buatAkunDenganRole('pengguna');
     $this->actingAs($pengguna)
         ->get(route('officer.dashboard'))
         ->assertForbidden();
 });
 
 it('petugas dapat mengakses O1 dashboard antrian', function (): void {
-    $officer = User::where('role', 'petugas')->firstOrFail();
+    $officer = buatAkunDenganRole('petugas');
     $this->actingAs($officer)
         ->get(route('officer.dashboard'))
         ->assertOk()
@@ -41,14 +40,14 @@ it('mengarahkan tamu ke login saat mengakses O2 daftar reservasi petugas', funct
 });
 
 it('memberi 403 untuk pengguna saat mengakses O2 daftar reservasi petugas', function (): void {
-    $pengguna = User::where('role', 'pengguna')->firstOrFail();
+    $pengguna = buatAkunDenganRole('pengguna');
     $this->actingAs($pengguna)
         ->get(route('officer.reservations.index'))
         ->assertForbidden();
 });
 
 it('petugas dapat mengakses O2 daftar antrian reservasi', function (): void {
-    $officer = User::where('role', 'petugas')->firstOrFail();
+    $officer = buatAkunDenganRole('petugas');
     $this->actingAs($officer)
         ->get(route('officer.reservations.index'))
         ->assertOk()
@@ -56,14 +55,14 @@ it('petugas dapat mengakses O2 daftar antrian reservasi', function (): void {
 });
 
 it('mengarahkan tamu ke login saat mengakses O3 detail reservasi petugas', function (): void {
-    $res = Reservation::firstOrFail();
+    $res = Reservation::factory()->create();
     $this->get(route('officer.reservations.show', $res))
         ->assertRedirect(route('login'));
 });
 
 it('petugas dapat melihat O3 detail reservasi', function (): void {
-    $officer = User::where('role', 'petugas')->firstOrFail();
-    $res = Reservation::firstOrFail();
+    $officer = buatAkunDenganRole('petugas');
+    $res = Reservation::factory()->create();
 
     $this->actingAs($officer)
         ->get(route('officer.reservations.show', $res))
@@ -72,19 +71,8 @@ it('petugas dapat melihat O3 detail reservasi', function (): void {
 });
 
 it('petugas dapat menyetujui reservasi pending di O3', function (): void {
-    $officer = User::where('role', 'petugas')->firstOrFail();
-    $facility = Facility::where('status', 'active')->firstOrFail();
-    $user = User::where('role', 'pengguna')->firstOrFail();
-
-    $res = new Reservation([
-        'facility_id' => $facility->id,
-        'purpose' => 'Uji coba approve petugas',
-    ]);
-    $res->user_id = $user->id;
-    $res->start_time = now()->addDays(5)->setTime(10, 0);
-    $res->end_time = now()->addDays(5)->setTime(12, 0);
-    $res->status = 'pending';
-    $res->save();
+    $officer = buatAkunDenganRole('petugas');
+    $res = Reservation::factory()->pending()->create();
 
     $this->actingAs($officer)
         ->patch(route('officer.reservations.approve', $res))
@@ -94,19 +82,8 @@ it('petugas dapat menyetujui reservasi pending di O3', function (): void {
 });
 
 it('petugas dapat menolak reservasi pending dengan alasan di O3', function (): void {
-    $officer = User::where('role', 'petugas')->firstOrFail();
-    $facility = Facility::where('status', 'active')->firstOrFail();
-    $user = User::where('role', 'pengguna')->firstOrFail();
-
-    $res = new Reservation([
-        'facility_id' => $facility->id,
-        'purpose' => 'Uji coba tolak petugas',
-    ]);
-    $res->user_id = $user->id;
-    $res->start_time = now()->addDays(5)->setTime(13, 0);
-    $res->end_time = now()->addDays(5)->setTime(15, 0);
-    $res->status = 'pending';
-    $res->save();
+    $officer = buatAkunDenganRole('petugas');
+    $res = Reservation::factory()->pending()->create();
 
     $this->actingAs($officer)
         ->patch(route('officer.reservations.reject', $res), [
@@ -119,19 +96,8 @@ it('petugas dapat menolak reservasi pending dengan alasan di O3', function (): v
 });
 
 it('petugas dapat membatalkan reservasi approved dengan alasan di O3', function (): void {
-    $officer = User::where('role', 'petugas')->firstOrFail();
-    $facility = Facility::where('status', 'active')->firstOrFail();
-    $user = User::where('role', 'pengguna')->firstOrFail();
-
-    $res = new Reservation([
-        'facility_id' => $facility->id,
-        'purpose' => 'Uji coba pembatalan approved petugas',
-    ]);
-    $res->user_id = $user->id;
-    $res->start_time = now()->addDays(7)->setTime(8, 0);
-    $res->end_time = now()->addDays(7)->setTime(10, 0);
-    $res->status = 'approved';
-    $res->save();
+    $officer = buatAkunDenganRole('petugas');
+    $res = Reservation::factory()->approved()->create();
 
     $this->actingAs($officer)
         ->patch(route('officer.reservations.cancel', $res), [
@@ -141,4 +107,48 @@ it('petugas dapat membatalkan reservasi approved dengan alasan di O3', function 
 
     expect($res->fresh()->status)->toBe('cancelled_by_officer')
         ->and($res->fresh()->status_reason)->toBe('Perbaikan darurat instalasi listrik ruangan');
+});
+
+it('petugas tidak dapat menyetujui reservasi pending yang waktu mulainya sudah lewat A8', function (): void {
+    $officer = buatAkunDenganRole('petugas');
+    $res = Reservation::factory()->pending()->create([
+        'start_time' => now()->subHours(2),
+        'end_time' => now()->subHour(),
+    ]);
+
+    $this->actingAs($officer)
+        ->patch(route('officer.reservations.approve', $res))
+        ->assertRedirect()
+        ->assertSessionHas('error', 'Reservasi ini sudah terlewat dan tidak dapat disetujui.');
+
+    expect($res->fresh()->status)->toBe('pending');
+});
+
+it('petugas tidak dapat menyetujui reservasi jika bertumpuk dengan reservasi approved lain F2', function (): void {
+    $officer = buatAkunDenganRole('petugas');
+    $facility = Facility::factory()->create();
+
+    $start = now()->addDays(3)->setTime(10, 0, 0);
+    $end = now()->addDays(3)->setTime(12, 0, 0);
+
+    // Reservasi yang sudah approved di fasilitas dan jam tersebut
+    Reservation::factory()->approved()->create([
+        'facility_id' => $facility->id,
+        'start_time' => $start,
+        'end_time' => $end,
+    ]);
+
+    // Reservasi pending baru yang bentrok pada jam yang sama
+    $resBentrok = Reservation::factory()->pending()->create([
+        'facility_id' => $facility->id,
+        'start_time' => $start,
+        'end_time' => $end,
+    ]);
+
+    $this->actingAs($officer)
+        ->patch(route('officer.reservations.approve', $resBentrok))
+        ->assertRedirect()
+        ->assertSessionHas('error', 'Gagal menyetujui: jadwal bertumpuk dengan reservasi lain yang baru saja disetujui.');
+
+    expect($resBentrok->fresh()->status)->toBe('pending');
 });
