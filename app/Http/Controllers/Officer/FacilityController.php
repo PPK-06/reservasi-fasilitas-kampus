@@ -41,10 +41,7 @@ class FacilityController extends Controller
 
         // Ambil data reservasi mendatang (D4)
         // Hanya yang status 'approved' dan belum dimulai
-        $upcomingReservations = Reservation::where('status', 'approved')
-            ->where('start_time', '>', now())
-            ->get()
-            ->groupBy('facility_id');
+        $upcomingReservations = Reservation::upcomingApproved();
 
         return view('officer.facilities.index', compact('facilities', 'upcomingReservations'));
     }
