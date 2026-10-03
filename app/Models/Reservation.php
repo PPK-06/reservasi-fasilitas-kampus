@@ -46,14 +46,17 @@ class Reservation extends Model
     /**
      * D4 — Reservasi approved mendatang, dikelompokkan per fasilitas.
      *
-     * Digunakan di halaman A1 (Master Fasilitas — Admin) dan
-     * O6 (Ketersediaan Fasilitas — Petugas) untuk menampilkan
-     * peringatan sebelum mengubah status fasilitas.
+     * Digunakan di halaman O5 (Detail Laporan — Petugas), O6 (Ketersediaan Fasilitas — Petugas),
+     * A1 (Master Fasilitas — Admin), dan A5 (Detail Akun — Admin) untuk menampilkan
+     * peringatan sebelum menonaktifkan akun atau mengubah status fasilitas.
      *
-     * @param  Facility|int|null  $facility  Saring hanya untuk satu fasilitas (opsional).
-     * @param  User|int|null      $user      Saring hanya untuk satu pengguna (opsional).
-     * @return \Illuminate\Support\Collection<int, \Illuminate\Support\Collection<int, Reservation>>
-     *         Kunci luar = facility_id, kunci dalam = indeks numerik.
+     * Hasil query selalu dikelompokkan per fasilitas (grouped by facility_id),
+     * termasuk saat disaring berdasarkan pengguna tertentu (filter user).
+     *
+     * @param  Facility|int|null  $facility  Saring hanya untuk satu fasilitas (opsional, model atau ID).
+     * @param  User|int|null  $user  Saring hanya untuk satu pengguna (opsional, model atau ID).
+     * @return Collection<int, Collection<int, Reservation>>
+     *                                                       Koleksi dikelompokkan per fasilitas: kunci luar = facility_id, kunci dalam = indeks numerik.
      */
     public static function upcomingApproved(
         Facility|int|null $facility = null,

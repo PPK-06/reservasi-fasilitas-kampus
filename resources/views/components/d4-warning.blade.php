@@ -35,8 +35,8 @@
                                 <td>{{ $res->user->name ?? '-' }}</td>
                             @endif
                             <td>
-                                {{-- Link ke antrian reservasi petugas (O3) --}}
-                                @if ($res->id)
+                                {{-- Link ke antrian reservasi petugas (O3) hanya untuk role petugas --}}
+                                @if ($res->id && auth()->user()?->role === 'petugas')
                                     <a href="{{ route('officer.reservations.show', $res) }}"
                                        class="text-primary text-decoration-none"
                                        title="Lihat di antrian petugas">
