@@ -30,10 +30,19 @@ class ReservationFactory extends Factory
         ];
     }
 
+    public function pending(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => 'pending',
+            'status_reason' => null,
+        ]);
+    }
+
     public function approved(): static
     {
         return $this->state(fn (array $attributes) => [
             'status' => 'approved',
+            'status_reason' => null,
         ]);
     }
 
