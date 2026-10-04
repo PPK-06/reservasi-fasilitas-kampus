@@ -4,7 +4,7 @@
 **Bentuk:** Proyek besar, dipresentasikan sebagai UTS
 **Tenggat pengumpulan:** 11 Oktober 2026, 12.00 WIB via Kulon
 **Tim:** 4 mahasiswa
-**Versi dokumen:** 1.6 — 23 September 2026
+**Versi dokumen:** 1.7 — 4 Oktober 2026
 
 **Dokumen pendamping:**
 - `halaman-navigasi-dan-skema.md` — daftar halaman, peta navigasi, spesifikasi tabel, relasi, index, ERD
@@ -12,6 +12,17 @@
 - `pembagian-modul-dan-urutan-kerja.md` — siapa memegang modul apa, urutan kerja, kepemilikan file
 
 Dokumen ini berisi **aturan**; kedua dokumen pendamping berisi **penerapannya**.
+
+---
+
+## Perubahan dari v1.6
+
+Tidak ada aturan bisnis yang berubah. F10 diperjelas dan status auditnya diperbarui mengikuti `main`.
+
+| Bagian | Perubahan |
+|---|---|
+| **F** | F10: + `reservations.status_reason` di tabel kasus — tidak fillable karena hanya berubah lewat aksi PATCH. "Tiga kasus" jadi empat |
+| **F** | F10: status audit — `Reservation` selesai lewat PR #12; `Report` dan `ReportPhoto` tampak sesuai, menunggu konfirmasi pemilik model |
 
 ---
 
@@ -785,21 +796,24 @@ Yang perlu disadari: attribute tidak terjaring kalau kamu mencari kata `fillable
 
 **Sebuah kolom masuk `$fillable` kalau dan hanya kalau ia muncul sebagai field di salah satu kontrak form** (Bagian III dokumen route).
 
-Kolom yang berubah lewat aksi khusus — status yang punya route PATCH tersendiri — **tidak masuk**, dan controllernya menetapkannya eksplisit (`$model->status = ...` lalu `save()`).
+Kolom yang berubah lewat aksi khusus — status yang punya route PATCH tersendiri — **tidak masuk**, dan controllernya menetapkannya eksplisit (`$model->status = ...` lalu `save()`). Termasuk kolom yang dikirim lewat form modal milik aksi PATCH itu sendiri, seperti `reservations.status_reason`.
 
-Tiga kasus yang sudah diperiksa, sebagai acuan membaca aturannya:
+Empat kasus yang sudah diperiksa, sebagai acuan membaca aturannya:
 
 | Kolom | Masuk? | Dasar |
 |---|---|---|
 | `facilities.status` | **ya** | field di form A2, bagian 23 — `required\|in:active,under_maintenance,inactive` |
 | `users.role` | **ya** | field di form A4, bagian 24 — `required\|in:pengguna,petugas` |
 | `users.status` | **tidak** | tidak pernah jadi field form. C2 menetapkan akun buatan admin langsung `verified`, dan lima transisinya punya route PATCH sendiri-sendiri |
+| `reservations.status_reason` | **tidak** | hanya berubah lewat aksi PATCH: approve mengosongkannya, reject dan cancel (petugas maupun pengguna) mengisinya. Field di modal U3 dan O3 (dokumen route bagian 18 dan 20) melayani aksi itu, bukan form pembuat reservasi |
 
 **Yang perlu ditegaskan:** `$fillable` menjaga **mass assignment**, bukan **wewenang**. Mengeluarkan `facilities.status` dari daftar tidak membuat petugas kehilangan akses ke `inactive` — dia tinggal menulis `$facility->status = 'inactive'; $facility->save();`. Penegak matriks D3 adalah daftar `in:` yang berbeda di dua Form Request (bagian 22), dan hanya itu. Mengeluarkan kolom dari `$fillable` demi "keamanan" memberi nol perlindungan sambil mematikan form yang sah.
 
 Konsekuensi turunannya: karena `status` fillable, controller **wajib** memakai `$request->validated()`, tidak pernah `$request->all()`.
 
 **Setiap pemegang model memeriksa modelnya sendiri terhadap aturan ini lalu melapor di grup.** Saat v1.5 ditulis, baru `Facility` dan `User` yang diperiksa; `Reservation`, `Report`, dan `ReportPhoto` belum.
+
+*Status 4 Oktober 2026:* audit F10 `Reservation` selesai lewat PR #12. Report dan ReportPhoto sudah dibaca terhadap F10 pada 4 Oktober 2026 dan tampak sesuai; menunggu konfirmasi pemilik model.
 
 Kenapa aturan ini perlu ditulis sama sekali: kolom yang hilang dari `$fillable` **dibuang tanpa error**. Lihat F11 baris kedua — kesalahan ini sudah benar-benar terjadi sekali di review PR pertama.
 

@@ -2,12 +2,20 @@
 ## Sistem Reservasi & Pelaporan Fasilitas Kampus
 
 **Mata kuliah:** Pengembangan Platform Khusus (PPK)
-**Versi dokumen:** 1.3 — 30 September 2026
+**Versi dokumen:** 1.4 — 4 Oktober 2026
 **Dokumen induk:** `dasar-proyek.md`
 
 Dokumen induk berisi **aturan bisnis yang mengikat**. Dokumen ini berisi **penerapannya** ke halaman dan tabel. Kalau ada yang terasa bertentangan, dokumen induk yang menang, dan perbedaannya harus dilaporkan ke tim supaya salah satunya diperbaiki.
 
 Kode halaman (P1, U1, O1, A1, …) di dokumen ini bersifat final dan dipakai sebagai rujukan bersama.
+
+---
+
+## Perubahan dari v1.3
+
+| Bagian | Perubahan |
+|---|---|
+| 2.3 | Peringatan D4: tautan ke O3 hanya tampil untuk role petugas. Admin tidak diberi tautan karena route `officer.*` menolaknya dengan 403 |
 
 ---
 
@@ -183,7 +191,7 @@ O6 ──ubah status fasilitas─────────> peringatan D4 ──>
 
 | Pemicu | Perlakuan |
 |---|---|
-| **Peringatan D4** | Modal berisi **daftar reservasi `approved` yang belum lewat** pada fasilitas tersebut, masing-masing dengan tautan ke O3. Bukan `confirm()` browser, karena isinya data. Tidak ada pembatalan otomatis |
+| **Peringatan D4** | Modal berisi **daftar reservasi `approved` yang belum lewat** pada fasilitas tersebut, masing-masing dengan tautan ke O3 **khusus untuk role petugas** — admin tidak diberi tautan karena route `officer.*` menolak admin dengan 403. Bukan `confirm()` browser, karena isinya data. Tidak ada pembatalan otomatis |
 | **Bentrok saat approve** | Pesan harus menyebut reservasi mana yang bentrok, bukan sekadar "gagal". Kondisi ini muncul ketika petugas lain baru saja menyetujui reservasi yang bertumpuk (F2) |
 | **Tab Terlewat di O2** | Read-only. Server menolak approve dan reject untuk reservasi `pending` yang `start_time`-nya sudah lewat |
 | **Catatan resolusi di O5** | Kewajibannya berubah mengikuti status yang dipilih di dropdown. Aturan lengkap di B3 |

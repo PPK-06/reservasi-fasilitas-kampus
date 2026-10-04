@@ -2,7 +2,7 @@
 ## Sistem Reservasi & Pelaporan Fasilitas Kampus
 
 **Mata kuliah:** Pengembangan Platform Khusus (PPK)
-**Versi dokumen:** 1.3 — 30 September 2026
+**Versi dokumen:** 1.4 — 4 Oktober 2026
 **Ditetapkan oleh:** Elang (pemegang M1)
 
 **Dokumen induk:** `dasar-proyek.md` — aturan bisnis yang mengikat
@@ -13,6 +13,12 @@
 - `keputusan-m1-tahap1.md` — D1 sampai D8, penomorannya dilanjutkan di sini
 
 ---
+
+## Perubahan dari v1.3
+
+| Bagian | Perubahan |
+|---|---|
+| Urutan kerja M1 di tahap 2 | + catatan status audit F10: `Reservation` selesai lewat PR #12; `Report` dan `ReportPhoto` tampak sesuai, menunggu konfirmasi pemilik model. Narasi lama tidak diubah |
 
 ## Perubahan dari v1.2
 
@@ -366,6 +372,8 @@ Seeder juga prasyarat pengujian A3 dan A5 milik M1 sendiri: tanpa akun yang menc
 Kelima model sudah selesai di tahap 0, dan **isi seeder tidak menunggu siapa pun.** Nilai tipe dan lokasi fasilitas sudah lengkap di D1 dan D2, statusnya di D3, dan konvensi path foto laporan di F5. Ditulis sebagai string biasa di seeder, bukan memanggil konstanta milik modul lain yang belum tentu sudah ada.
 
 Satu hal yang perlu disiasati: audit F10 untuk `Reservation`, `Report`, dan `ReportPhoto` masih terutang sejak tahap 1, dan `#[Fillable]` yang keliru akan melempar `MassAssignmentException` di seeder — pada model yang bukan milik M1. Karena itu seeder mengisi ketiga model itu lewat penetapan properti eksplisit (`new Report()` lalu `$r->kolom = ...`), bukan mass assignment. Utang auditnya tetap ditagih lewat grup, tapi seeder tidak menunggunya.
+
+*Status 4 Oktober 2026:* audit F10 `Reservation` selesai lewat PR #12. Report dan ReportPhoto sudah dibaca terhadap F10 pada 4 Oktober 2026 dan tampak sesuai; menunggu konfirmasi pemilik model.
 
 ---
 

@@ -2,10 +2,18 @@
 
 **Untuk:** 3 anggota tim selain PM
 **Repo:** https://github.com/PPK-06/reservasi-fasilitas-kampus
-**Versi dokumen:** 1.6 — 30 September 2026
+**Versi dokumen:** 1.7 — 4 Oktober 2026
 **Tujuan:** dari nol sampai aplikasi jalan di komputermu, lalu siap mulai ngoding modul masing-masing.
 
 Baca sampai habis sebelum mulai. Kalau ada langkah yang gagal, lapor di grup — jangan cari solusi sendiri lalu diam-diam mengubah konfigurasi, karena konfigurasi yang berbeda antar anggota adalah sumber masalah paling mahal di proyek ini.
+
+---
+
+## Perubahan dari v1.6
+
+| Bagian | Perubahan |
+|---|---|
+| 10 | "Sering `git pull` dari `main`" diganti urutan merge `main` ke branch sendiri, sama dengan bagian 6 dokumen pembagian modul. Bukan rebase |
 
 ---
 
@@ -367,7 +375,7 @@ Sertakan kode halaman kalau relevan — memudahkan menyusun bagian "pembagian tu
 - **Jangan jalankan `npm install` atau menambahkan `package.json`.** Build pipeline bawaan installer sudah sengaja dibuang dari repo ini.
 - **Jangan tambah dependency Composer** tanpa dibahas di grup dulu.
 - **Jangan menulis URL literal di Blade.** Selalu `route('nama.route')` — lihat dokumen route bagian 4.
-- **Sering `git pull` dari `main`** ke branch-mu. `routes/web.php` dan `layouts/app.blade.php` disentuh semua orang — konflik kecil yang sering jauh lebih mudah daripada satu konflik besar di akhir.
+- **Sering merge `main` ke branch-mu, dan wajib sebelum membuka PR:** `git checkout main`, `git pull origin main`, `git checkout <branch>`, `git merge main`. Bukan rebase — urutannya sama dengan bagian 6 dokumen pembagian modul. `routes/web.php` dan `layouts/app.blade.php` disentuh semua orang — konflik kecil yang sering jauh lebih mudah daripada satu konflik besar di akhir.
 - **Di `routes/web.php`, hanya tambah di blok modulmu sendiri.** Jangan merapikan blok orang lain; itu penyebab konflik merge paling sering.
 
 ---

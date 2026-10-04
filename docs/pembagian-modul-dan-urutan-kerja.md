@@ -2,7 +2,7 @@
 ## Sistem Reservasi & Pelaporan Fasilitas Kampus
 
 **Mata kuliah:** Pengembangan Platform Khusus (PPK)
-**Versi dokumen:** 1.6 — 30 September 2026
+**Versi dokumen:** 1.7 — 4 Oktober 2026
 
 **Dokumen pendamping:**
 - `dasar-proyek.md` — aturan bisnis dan keputusan teknis
@@ -15,6 +15,17 @@
 Ketiga dokumen pertama menjawab **apa yang dibangun**. Dokumen ini menjawab **siapa mengerjakan yang mana, dalam urutan apa, dan file mana yang tidak boleh disentuh sembarangan**.
 
 Dokumen ini **tidak memuat tanggal**. Urutannya yang mengikat, bukan kalendernya.
+
+---
+
+## Perubahan dari v1.6
+
+Menyamakan dokumen dengan `main`. Satu aturan tim dikoreksi, satu status audit diperbarui.
+
+| Bagian | Perubahan |
+|---|---|
+| 3 | Poin 3 "Yang perlu diketahui sebelum tahap 2" diberi status audit F10: `Reservation` selesai lewat PR #12; `Report` dan `ReportPhoto` tampak sesuai, menunggu konfirmasi pemilik model |
+| 6 | **"Rebase sebelum membuka PR" diganti merge `main` ke branch sendiri**, dengan urutan empat perintah. Aturan tim memang merge, bukan rebase. Alasannya tetap: konflik dibereskan pembuat PR di branch-nya sendiri |
 
 ---
 
@@ -350,6 +361,8 @@ Bukan `User::create($request->validated() + ['status' => 'pending'])`, yang akan
 
 **3. Pemeriksaan F10 untuk `Reservation`, `Report`, dan `ReportPhoto` masih terutang.** Momennya sekarang paling baik justru karena poin 1 — salah isi `#[Fillable]` sekarang berbunyi, bukan diam. Pemegang tiap model memeriksa modelnya sendiri lalu lapor di grup.
 
+*Status 4 Oktober 2026:* audit F10 `Reservation` selesai lewat PR #12. Report dan ReportPhoto sudah dibaca terhadap F10 pada 4 Oktober 2026 dan tampak sesuai; menunggu konfirmasi pemilik model.
+
 **4. `php artisan migrate:fresh --seed` sekarang berhasil, dan seeder-nya sudah lengkap.** Sebelumnya tidak pernah berhasil, karena `UserFactory` bawaan Laravel masih mengisi `email_verified_at` yang sudah dihapus dari migration (C1/F8). Jalankan sekali setelah `git pull`.
 
 Isi `DatabaseSeeder` sekarang, bukan lagi hanya akun:
@@ -497,10 +510,13 @@ Elang bertanggung jawab atas integrasi. Tiga aturan berikut mengurangi bebannya 
 
 **PR kecil dan sering.** Satu PR = satu halaman atau satu fitur, bukan "modul saya selesai". PR raksasa sulit di-review dan konfliknya paling parah. Jangan menahan PR sampai terasa rapi.
 
-**Rebase sebelum membuka PR, bukan merge.**
+**Merge `main` ke branch sendiri sebelum membuka PR, bukan rebase.**
 
 ```bash
-git pull --rebase origin main
+git checkout main
+git pull origin main
+git checkout <branch>
+git merge main
 ```
 
 Konflik jadi urusan pembuat PR di komputernya sendiri, bukan urusan Elang di `main`.

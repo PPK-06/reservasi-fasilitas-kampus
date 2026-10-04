@@ -2,7 +2,7 @@
 ## Sistem Reservasi & Pelaporan Fasilitas Kampus
 
 **Mata kuliah:** Pengembangan Platform Khusus (PPK)
-**Versi dokumen:** 1.2 — 30 September 2026
+**Versi dokumen:** 1.3 — 4 Oktober 2026
 
 **Dokumen induk:** `dasar-proyek.md` — aturan bisnis yang mengikat
 **Dokumen pendamping:**
@@ -14,6 +14,20 @@
 Dokumen ini menerjemahkan keduanya ke **route, nama file, dan aturan validasi**. Kalau ada yang terasa bertentangan, dokumen induk yang menang, dan perbedaannya dilaporkan ke tim supaya salah satunya diperbaiki.
 
 Kode halaman (P1, U1, O1, A1, …) mengacu ke dokumen pendamping.
+
+---
+
+## Perubahan dari v1.2
+
+Menyamakan dokumen dengan kode di `main`. Tidak ada aturan validasi yang berubah; yang diperbaiki adalah salinannya di dokumen.
+
+| Bagian | Perubahan |
+|---|---|
+| 15 | + teks persis pesan kredensial salah, `Email atau password salah.` |
+| 17.1 | "Tiga dari tujuh aturan" jadi "dua dari delapan", sama dengan tabel 17.2 (aturan 4 dan 6) |
+| 17.2 | Judul jadi "Delapan aturan bisnis dan pesannya", + kalimat penjelas jumlah aturan dan pesan di kode. Kolom pesan aturan 1–4 disamakan dengan `messages()` |
+| 17.3 | Kode disalin ulang dari `StoreReservationRequest`: `messages()` 6 pesan jadi 13, argumen `EndSlotAfterStart` jadi `$this->input('start_slot')` |
+| 17.4 | Rujukan `APP_TIMEZONE` "bagian 19" diganti F3 `dasar-proyek.md`. Bagian 19 dokumen ini adalah U4 |
 
 ---
 
@@ -431,7 +445,7 @@ Status akun bukan masalah kredensial. Menyamarkannya hanya membuat orang mencoba
 
 **Pemeriksaan status dilakukan sebelum session dibuat**, bukan sesudah. Akun `pending`, `rejected`, dan `suspended` tidak boleh pernah login walau sepersekian detik.
 
-**Kunci error bag: `email`** — ditetapkan v1.1. Tiga pesan status di atas, pesan kredensial salah, dan pesan penolakan dari middleware role semuanya dikirim lewat kunci yang sama. Halaman P3 hanya punya dua field dan tidak menyediakan tempat untuk pesan level-form, jadi satu kunci berarti satu lokasi tampilan yang melayani semua sumber. Ini juga pola bawaan Laravel.
+**Kunci error bag: `email`** — ditetapkan v1.1. Tiga pesan status di atas, pesan kredensial salah (`Email atau password salah.` — sama untuk email yang tidak terdaftar maupun password yang keliru), dan pesan penolakan dari middleware role semuanya dikirim lewat kunci yang sama. Halaman P3 hanya punya dua field dan tidak menyediakan tempat untuk pesan level-form, jadi satu kunci berarti satu lokasi tampilan yang melayani semua sumber. Ini juga pola bawaan Laravel.
 
 **Tujuan setelah login berhasil.** Kolom Tujuan di bagian 8 menulis "P1 | O1 | A3 sesuai role", dan peta navigasi 2.1 dokumen pendamping menulis `P3 (?redirect=...)`. Keduanya benar dan berlaku bersamaan lewat mekanisme `intended` bawaan Laravel:
 
@@ -475,18 +489,20 @@ Form terpenting di sistem ini.
 | `end_slot` | select / hidden | Jam selesai, `07:30` … `20:00` (26 nilai) |
 | `purpose` | text | Tujuan penggunaan |
 
-**Kenapa satu field tanggal + dua field slot, bukan dua field datetime:** bentuk inilah yang membuat tiga dari tujuh aturan menjadi **mustahil dilanggar secara struktural**, bukan sekadar ditolak validasi. Satu field tanggal berarti tidak ada cara mengirim reservasi yang melintasi dua tanggal. Daftar slot yang terbatas berarti tidak ada cara mengirim jam 09.17.
+**Kenapa satu field tanggal + dua field slot, bukan dua field datetime:** bentuk inilah yang membuat dua dari delapan aturan (aturan 4 dan 6 di 17.2) menjadi **mustahil dilanggar secara struktural**, bukan sekadar ditolak validasi. Satu field tanggal berarti tidak ada cara mengirim reservasi yang melintasi dua tanggal. Daftar slot yang terbatas berarti tidak ada cara mengirim jam 09.17.
 
 `start_time` dan `end_time` disusun controller dari ketiga field itu sebelum disimpan.
 
-### 17.2 Kedelapan aturan dan pesannya
+### 17.2 Delapan aturan bisnis dan pesannya
+
+Tabel ini menghitung **aturan bisnis** dari F1, A2, A3, dan D5, bukan entri di kode. Di `StoreReservationRequest`, `rules()` berisi 15 aturan validasi pada lima field, `messages()` berisi 13 pesan, dan 1 pesan lagi datang dari rule kustom `EndSlotAfterStart`.
 
 | # | Aturan | Asal | Ditegakkan oleh | Pesan error |
 |---|---|---|---|---|
-| 1 | `start_time` kelipatan 30 menit, detik = 0 | F1 | `Rule::in` 26 nilai slot | Jam mulai harus kelipatan 30 menit. |
-| 2 | `end_time` kelipatan 30 menit, detik = 0 | F1 | `Rule::in` 26 nilai slot | Jam selesai harus kelipatan 30 menit. |
-| 3 | Keduanya dalam 07.00–20.00 | F1 | `Rule::in` (daftarnya hanya berisi jam operasional) | Reservasi hanya dapat diajukan pada jam operasional 07.00–20.00. |
-| 4 | `DATE(start_time) = DATE(end_time)` | F1, A2 | **Struktural** — hanya ada satu field tanggal | Reservasi tidak boleh melewati pergantian hari. |
+| 1 | `start_time` kelipatan 30 menit, detik = 0 | F1 | `Rule::in` 26 nilai slot | Jam mulai harus kelipatan 30 menit dalam jam operasional 07.00–20.00. |
+| 2 | `end_time` kelipatan 30 menit, detik = 0 | F1 | `Rule::in` 26 nilai slot | Jam selesai harus kelipatan 30 menit dalam jam operasional 07.00–20.00. |
+| 3 | Keduanya dalam 07.00–20.00 | F1 | `Rule::in` (daftarnya hanya berisi jam operasional) | *(pesan aturan 1 atau 2 — tidak ada pesan terpisah)* |
+| 4 | `DATE(start_time) = DATE(end_time)` | F1, A2 | **Struktural** — hanya ada satu field tanggal | *(tidak dapat terjadi)* |
 | 5 | `end_time > start_time` | F1, A2 | Rule kustom `EndSlotAfterStart` | Jam selesai harus lebih besar dari jam mulai. |
 | 6 | Maksimal 26 slot | A2 | **Struktural** — konsekuensi aturan 3 dan 4 | *(tidak dapat terjadi)* |
 | 7 | `CURDATE()+1 ≤ DATE(start_time) ≤ CURDATE()+30` | A3 | `after_or_equal` + `before_or_equal` | Reservasi paling cepat untuk besok. / Reservasi paling jauh 30 hari ke depan. |
@@ -509,20 +525,31 @@ public function rules(): array
             'before_or_equal:' . now()->addDays(30)->toDateString(),
         ],
         'start_slot' => ['required', Rule::in(Slot::startTimes())],
-        'end_slot'   => ['required', Rule::in(Slot::endTimes()), new EndSlotAfterStart($this->start_slot)],
-        'purpose'    => ['required', 'string', 'min:5', 'max:255'],
+        'end_slot'   => [
+            'required',
+            Rule::in(Slot::endTimes()),
+            new EndSlotAfterStart($this->input('start_slot')),
+        ],
+        'purpose' => ['required', 'string', 'min:5', 'max:255'],
     ];
 }
 
 public function messages(): array
 {
     return [
+        'facility_id.required' => 'Pilih fasilitas terlebih dahulu.',
         'facility_id.exists'   => 'Fasilitas ini sedang tidak menerima reservasi.',
+        'date.required'        => 'Tanggal penggunaan wajib diisi.',
+        'date.date_format'     => 'Format tanggal tidak valid.',
         'date.after_or_equal'  => 'Reservasi paling cepat untuk besok.',
         'date.before_or_equal' => 'Reservasi paling jauh 30 hari ke depan.',
+        'start_slot.required'  => 'Jam mulai wajib dipilih.',
         'start_slot.in'        => 'Jam mulai harus kelipatan 30 menit dalam jam operasional 07.00–20.00.',
+        'end_slot.required'    => 'Jam selesai wajib dipilih.',
         'end_slot.in'          => 'Jam selesai harus kelipatan 30 menit dalam jam operasional 07.00–20.00.',
+        'purpose.required'     => 'Tujuan penggunaan wajib diisi.',
         'purpose.min'          => 'Tujuan penggunaan minimal 5 karakter.',
+        'purpose.max'          => 'Tujuan penggunaan maksimal 255 karakter.',
     ];
 }
 ```
@@ -533,7 +560,7 @@ public function messages(): array
 
 **`Rule::exists(...)->where('status','active')` bukan sekadar memeriksa ID ada.** Ia sekaligus menegakkan D5 di sisi server, bukan hanya mematikan tombol di tampilan. Satu POST yang dikirim manual ke fasilitas `under_maintenance` tetap ditolak.
 
-**Perbandingan tanggal memakai `now()`, dan `now()` mengembalikan WIB** berkat `APP_TIMEZONE` yang dijemput `config/app.php` (lihat bagian 19). Kalau masih UTC, `after_or_equal` salah sehari untuk setiap pengajuan yang dibuat setelah pukul 17.00.
+**Perbandingan tanggal memakai `now()`, dan `now()` mengembalikan WIB** berkat `APP_TIMEZONE` yang dijemput `config/app.php` (lihat F3 `dasar-proyek.md`). Kalau masih UTC, `after_or_equal` salah sehari untuk setiap pengajuan yang dibuat setelah pukul 17.00.
 
 **Aturan 4 dan 6 tidak punya baris kode, dan itu bukan kelalaian.** Kalau ditanya "mana validasi yang mencegah reservasi melintasi hari?", jawabannya: bentuk form tidak menyediakan cara untuk melakukannya. Aturan yang dijamin oleh struktur lebih kuat daripada aturan yang dijamin oleh pengecekan.
 

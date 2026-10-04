@@ -2,7 +2,7 @@
 ## Sistem Reservasi & Pelaporan Fasilitas Kampus
 
 **Mata kuliah:** Pengembangan Platform Khusus (PPK)
-**Versi dokumen:** 1.0 — 18 September 2026
+**Versi dokumen:** 1.1 — 4 Oktober 2026
 **Ditetapkan oleh:** Elang (pemegang M1)
 
 **Dokumen induk:** `dasar-proyek.md` — aturan bisnis yang mengikat
@@ -10,6 +10,14 @@
 - `pembagian-modul-dan-urutan-kerja.md` bagian 2 — yang menugaskan penetapan ini
 - `route-dan-kontrak-form.md` bagian 15 — kontrak form Login
 - `halaman-navigasi-dan-skema.md` bagian 2.1 — peta navigasi jalur publik
+
+---
+
+## Perubahan dari v1.0
+
+| Bagian | Perubahan |
+|---|---|
+| Yang dibuktikan | Uji pesan generik diberi catatan status berisi teks persisnya, `Email atau password salah.` Keputusannya tidak berubah |
 
 ---
 
@@ -168,7 +176,7 @@ Enam pengujian dijalankan manual di lingkungan lokal, memakai akun demo dari `Da
 |---|---|
 | Tiga role login, masing-masing mendarat di landing berbeda | H1 dan D6 |
 | Tiga status gagal, masing-masing pesan sendiri | C2, D2, dan tabel bagian 15 |
-| Password salah pada akun verified → pesan generik | Keberadaan akun tidak bocor |
+| Password salah pada akun verified → pesan generik. *Status 4 Oktober 2026:* teksnya `Email atau password salah.`, sama untuk email yang tidak terdaftar | Keberadaan akun tidak bocor |
 | Pengguna membuka URL petugas → 403 | D3 |
 | Petugas yang sudah login membuka P3 → mendarat di landing petugas | `redirectUsersTo` |
 | Akun di-suspend saat sedang login, lalu membuka halaman ber-role | D2, termasuk batasannya |
