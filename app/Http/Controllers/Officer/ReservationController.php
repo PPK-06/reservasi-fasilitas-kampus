@@ -59,9 +59,10 @@ class ReservationController extends Controller
         }
 
         $conflictFacilityName = null;
+        $conflictReservation = null;
 
         try {
-            DB::transaction(function () use ($reservation, &$conflictFacilityName) {
+            DB::transaction(function () use ($reservation, &$conflictFacilityName, &$conflictReservation) {
                 $facility = \App\Models\Facility::whereKey($reservation->facility_id)
                     ->lockForUpdate()
                     ->firstOrFail();
@@ -71,13 +72,14 @@ class ReservationController extends Controller
                     throw new \RuntimeException('facility_inactive');
                 }
 
-                $conflict = Reservation::where('facility_id', $facility->id)
+                $conflictReservation = Reservation::with('user')
+                    ->where('facility_id', $facility->id)
                     ->where('status', 'approved')
                     ->where('start_time', '<', $reservation->end_time)
                     ->where('end_time', '>', $reservation->start_time)
-                    ->exists();
+                    ->first();
 
-                if ($conflict) {
+                if ($conflictReservation) {
                     throw new \RuntimeException('conflict');
                 }
 
@@ -87,7 +89,14 @@ class ReservationController extends Controller
             });
         } catch (\RuntimeException $e) {
             if ($e->getMessage() === 'conflict') {
-                return back()->with('error', 'Gagal menyetujui: jadwal bertumpuk dengan reservasi lain yang baru saja disetujui.');
+                $applicant = $conflictReservation?->user?->name ?? 'pengguna lain';
+                $timeSlot = $conflictReservation
+                    ? $conflictReservation->start_time->format('H:i') . ' – ' . $conflictReservation->end_time->format('H:i')
+                    : '';
+
+                $conflictInfo = $timeSlot ? "{$applicant} ({$timeSlot})" : $applicant;
+
+                return back()->with('error', "Gagal menyetujui: jadwal bertumpuk dengan reservasi oleh {$conflictInfo}.");
             }
 
             return back()->with('error', 'Gagal menyetujui: fasilitas sedang tidak aktif.');

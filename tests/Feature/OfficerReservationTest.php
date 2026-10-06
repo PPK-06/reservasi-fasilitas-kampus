@@ -132,7 +132,7 @@ it('petugas tidak dapat menyetujui reservasi jika bertumpuk dengan reservasi app
     $end = now()->addDays(3)->setTime(12, 0, 0);
 
     // Reservasi yang sudah approved di fasilitas dan jam tersebut
-    Reservation::factory()->approved()->create([
+    $existing = Reservation::factory()->approved()->create([
         'facility_id' => $facility->id,
         'start_time' => $start,
         'end_time' => $end,
@@ -148,7 +148,7 @@ it('petugas tidak dapat menyetujui reservasi jika bertumpuk dengan reservasi app
     $this->actingAs($officer)
         ->patch(route('officer.reservations.approve', $resBentrok))
         ->assertRedirect()
-        ->assertSessionHas('error', 'Gagal menyetujui: jadwal bertumpuk dengan reservasi lain yang baru saja disetujui.');
+        ->assertSessionHas('error', "Gagal menyetujui: jadwal bertumpuk dengan reservasi oleh {$existing->user->name} ({$existing->start_time->format('H:i')} – {$existing->end_time->format('H:i')}).");
 
     expect($resBentrok->fresh()->status)->toBe('pending');
 });
