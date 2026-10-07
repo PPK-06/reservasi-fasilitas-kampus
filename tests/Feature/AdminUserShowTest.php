@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Schema;
  * penjaga, jadi setiap transisi yang tidak sah diuji dengan PATCH yang dikirim
  * langsung, bukan lewat tombol.
  *
- * Belum mencakup suspend: masih abort(501), menunggu komponen peringatan D4.
+ * Suspend diuji terpisah di AdminUserSuspendTest.
  */
 uses(DatabaseTransactions::class);
 
@@ -58,7 +58,7 @@ it('menampilkan tombol Verifikasi dan Tolak untuk akun pending', function (): vo
         ->assertSee('Tolak');
 });
 
-it('tidak menampilkan tombol transisi status apa pun untuk akun verified', function (): void {
+it('tidak menampilkan tombol Verifikasi, Tolak, dan Aktifkan untuk akun verified', function (): void {
     daftarkanRouteNavbarAdmin();
     $user = akunBerstatus('verified');
 
@@ -67,11 +67,7 @@ it('tidak menampilkan tombol transisi status apa pun untuk akun verified', funct
     $response->assertOk()
         ->assertDontSee(route('admin.users.verify', $user), false)
         ->assertDontSee(route('admin.users.reject', $user), false)
-        ->assertDontSee(route('admin.users.activate', $user), false)
-        // Nonaktifkan menunggu komponen peringatan D4; tombolnya tidak boleh
-        // dirender lebih dulu sementara route-nya masih abort(501).
-        ->assertDontSee(route('admin.users.suspend', $user), false)
-        ->assertDontSee('Nonaktifkan');
+        ->assertDontSee(route('admin.users.activate', $user), false);
 });
 
 it('menampilkan tombol Aktifkan hanya untuk akun rejected dan suspended', function (): void {
@@ -300,14 +296,6 @@ it('menolak akses petugas ke seluruh aksi A5 dengan 403', function (): void {
     $this->actingAs($petugas)->patch(route('admin.users.reject', $user))->assertForbidden();
 
     expect($user->fresh()->status)->toBe('pending');
-});
-
-it('membiarkan suspend tetap belum dikerjakan', function (): void {
-    $user = akunBerstatus('verified');
-
-    $this->actingAs(adminPenguji())->patch(route('admin.users.suspend', $user))->assertStatus(501);
-
-    expect($user->fresh()->status)->toBe('verified');
 });
 
 it('mengaktifkan akun rejected dan suspended lalu kembali ke A5 (bagian 11)', function (): void {
