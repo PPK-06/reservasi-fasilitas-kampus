@@ -3,6 +3,8 @@
 use App\Models\Facility;
 use App\Models\Reservation;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 
 /**
  * A5 Detail Akun — aksi suspend (C2 verified → suspended) dan modal
@@ -19,13 +21,26 @@ uses(DatabaseTransactions::class);
 
 it('menampilkan tombol Nonaktifkan dan form suspend untuk akun verified', function (): void {
     $user = buatAkunDenganRole('pengguna');
+    $action = 'action="'.route('admin.users.suspend', $user).'"';
 
-    $this->actingAs(buatAkunDenganRole('admin'))
+    $response = $this->actingAs(buatAkunDenganRole('admin'))
         ->get(route('admin.users.show', $user))
         ->assertOk()
         ->assertSee('Nonaktifkan')
         ->assertSee('data-bs-target="#suspendModal"', false)
-        ->assertSee(route('admin.users.suspend', $user), false);
+        ->assertSee($action, false);
+
+    /*
+     * Hanya isi form suspend, sampai </form> pertama sesudah action-nya. Form
+     * Reset Password di halaman yang sama juga PATCH, jadi memeriksa seluruh
+     * halaman tidak membuktikan apa pun, begitu pula Str::between yang
+     * memotong sampai </form> terakhir.
+     */
+    $form = Str::before(Str::after($response->getContent(), $action), '</form>');
+
+    expect($form)->toContain('name="_method" value="PATCH"')
+        ->toContain('name="_token"')
+        ->not->toContain('reset-password');
 });
 
 it('tidak menampilkan form suspend untuk akun yang bukan verified', function (string $status): void {
@@ -53,19 +68,52 @@ it('menampilkan reservasi approved mendatang dari beberapa fasilitas di modal (D
     $alfa = Facility::factory()->create(['name' => 'Ruang Uji Suspend Alfa']);
     $beta = Facility::factory()->create(['name' => 'Ruang Uji Suspend Beta']);
 
-    Reservation::factory()->for($user)->for($alfa)->approved()->create();
-    Reservation::factory()->for($user)->for($beta)->approved()->create([
+    $reservasiAlfa = Reservation::factory()->for($user)->for($alfa)->approved()->create();
+    $reservasiBeta = Reservation::factory()->for($user)->for($beta)->approved()->create([
         'start_time' => now()->addDays(3)->setTime(13, 0),
         'end_time' => now()->addDays(3)->setTime(15, 0),
     ]);
 
+    // Tautan ke antrian petugas (O3) hanya untuk role petugas, bukan admin.
     $this->actingAs(buatAkunDenganRole('admin'))
         ->get(route('admin.users.show', $user))
         ->assertOk()
         ->assertSee('Ruang Uji Suspend Alfa')
         ->assertSee('Ruang Uji Suspend Beta')
         ->assertSee('Terdapat 2 reservasi')
-        ->assertSee('modal-lg', false);
+        ->assertSee('modal-lg', false)
+        ->assertDontSee(route('officer.reservations.show', $reservasiAlfa), false)
+        ->assertDontSee(route('officer.reservations.show', $reservasiBeta), false);
+});
+
+it('mengurutkan daftar D4 menurut waktu mulai, bukan per fasilitas', function (): void {
+    $user = buatAkunDenganRole('pengguna');
+    $alfa = Facility::factory()->create(['name' => 'Ruang Uji Urutan Alfa']);
+    $beta = Facility::factory()->create(['name' => 'Ruang Uji Urutan Beta']);
+    $hari = fn (int $tambah) => now()->addDays($tambah)->setTime(9, 0);
+
+    Reservation::factory()->for($user)->for($alfa)->approved()->create([
+        'start_time' => $hari(5),
+        'end_time' => $hari(5)->addHours(2),
+    ]);
+    Reservation::factory()->for($user)->for($beta)->approved()->create([
+        'start_time' => $hari(3),
+        'end_time' => $hari(3)->addHours(2),
+    ]);
+    Reservation::factory()->for($user)->for($alfa)->approved()->create([
+        'start_time' => $hari(2),
+        'end_time' => $hari(2)->addHours(2),
+    ]);
+
+    $this->actingAs(buatAkunDenganRole('admin'))
+        ->get(route('admin.users.show', $user))
+        ->assertOk()
+        ->assertSeeInOrder(['Ruang Uji Urutan Alfa', 'Ruang Uji Urutan Beta', 'Ruang Uji Urutan Alfa'])
+        ->assertSeeInOrder([
+            $hari(2)->format('d M Y'),
+            $hari(3)->format('d M Y'),
+            $hari(5)->format('d M Y'),
+        ]);
 });
 
 it('tidak menampilkan reservasi pending, yang sudah lewat, atau milik akun lain', function (): void {
@@ -117,17 +165,21 @@ it('menonaktifkan akun verified lalu kembali ke A5 dengan pesan sukses', functio
     expect($user->fresh()->status)->toBe('suspended');
 })->with(['pengguna', 'petugas']);
 
-it('menolak suspend untuk akun yang bukan verified tanpa mengubah status (C2)', function (string $status): void {
+it('menolak suspend untuk akun yang bukan verified tanpa mengubah status (C2)', function (string $status, string $pesan): void {
     $user = buatAkunDenganStatus($status);
 
     $this->actingAs(buatAkunDenganRole('admin'))
         ->patch(route('admin.users.suspend', $user))
         ->assertRedirect(route('admin.users.show', $user))
-        ->assertSessionHas('error')
+        ->assertSessionHas('error', $pesan)
         ->assertSessionMissing('success');
 
     expect($user->fresh()->status)->toBe($status);
-})->with(['pending', 'rejected', 'suspended']);
+})->with([
+    'pending' => ['pending', 'Akun yang masih menunggu belum pernah diberi akses, jadi tidak dinonaktifkan. Pakai aksi Verifikasi atau Tolak untuk menilai pendaftarannya.'],
+    'rejected' => ['rejected', 'Akun yang ditolak tidak punya akses, jadi tidak dinonaktifkan.'],
+    'suspended' => ['suspended', 'Akun ini sudah berstatus dinonaktifkan.'],
+]);
 
 it('menolak admin yang menonaktifkan akunnya sendiri', function (): void {
     $admin = buatAkunDenganRole('admin');
@@ -135,7 +187,7 @@ it('menolak admin yang menonaktifkan akunnya sendiri', function (): void {
     $this->actingAs($admin)
         ->patch(route('admin.users.suspend', $admin))
         ->assertRedirect(route('admin.users.show', $admin))
-        ->assertSessionHas('error')
+        ->assertSessionHas('error', 'Anda tidak dapat menonaktifkan akun Anda sendiri.')
         ->assertSessionMissing('success');
 
     expect($admin->fresh()->status)->toBe('verified');
@@ -167,15 +219,20 @@ it('tidak membatalkan reservasi approved milik akun yang dinonaktifkan (C6)', fu
 
 it('hanya mengubah status saat suspend (C2, C6)', function (): void {
     $user = buatAkunDenganRole('pengguna');
-    $asli = $user->only(['name', 'email', 'role', 'password']);
+    $asli = Arr::except($user->fresh()->getAttributes(), ['status', 'updated_at']);
+
+    // Kolom nullable milik pengguna (C4) harus terisi, supaya pengosongannya terdeteksi.
+    expect($asli['identity_number'])->not->toBeNull()
+        ->and($asli['user_type'])->not->toBeNull();
 
     $this->actingAs(buatAkunDenganRole('admin'))
-        ->patch(route('admin.users.suspend', $user));
+        ->patch(route('admin.users.suspend', $user))
+        ->assertSessionHas('success');
 
     $segar = $user->fresh();
 
     expect($segar)->not->toBeNull()
-        ->and($segar->only(array_keys($asli)))->toBe($asli)
+        ->and(Arr::except($segar->getAttributes(), ['status', 'updated_at']))->toBe($asli)
         ->and($segar->status)->toBe('suspended');
 });
 
