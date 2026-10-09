@@ -230,7 +230,86 @@ it('A2: validasi gagal saat input tidak valid saat tambah fasilitas', function (
         ->post(route('admin.facilities.store'), $payload);
 
     $response->assertRedirect(route('admin.facilities.create'))
-        ->assertSessionHasErrors(['name', 'type', 'location', 'capacity', 'status']);
+        ->assertSessionHasErrors(['name', 'type', 'location', 'capacity', 'status'])
+        ->assertSessionHasInput('type', 'TipeNgawur')
+        ->assertSessionHasInput('location', 'LokasiNgawur');
+
+    $this->assertDatabaseMissing('facilities', ['type' => 'TipeNgawur']);
+});
+
+it('A2: validasi gagal saat input tidak valid saat edit fasilitas dan data tidak berubah', function (): void {
+    $admin = buatAkunDenganRole('admin');
+    $facility = Facility::factory()->create([
+        'name' => 'Nama Asli Edit',
+        'type' => 'Ruang Kelas',
+        'location' => 'Gedung A',
+        'capacity' => 30,
+        'status' => 'active',
+    ]);
+
+    $payload = [
+        'name' => '', // required
+        'type' => 'TipeNgawur', // invalid in
+        'location' => 'LokasiNgawur', // invalid in
+        'capacity' => -5, // min 1
+        'status' => 'invalid_status', // invalid in
+    ];
+
+    $this->actingAs($admin)
+        ->from(route('admin.facilities.edit', $facility))
+        ->patch(route('admin.facilities.update', $facility), $payload)
+        ->assertRedirect(route('admin.facilities.edit', $facility))
+        ->assertSessionHasErrors(['name', 'type', 'location', 'capacity', 'status'])
+        ->assertSessionHasInput('type', 'TipeNgawur');
+
+    $this->assertDatabaseHas('facilities', [
+        'id' => $facility->id,
+        'name' => 'Nama Asli Edit',
+        'type' => 'Ruang Kelas',
+        'location' => 'Gedung A',
+        'capacity' => 30,
+        'status' => 'active',
+    ]);
+});
+
+it('A2: petugas ditolak 403 di route store dan update fasilitas admin', function (): void {
+    $petugas = buatAkunDenganRole('petugas');
+    $facility = Facility::factory()->create(['name' => 'Fasilitas Tetap']);
+
+    $this->actingAs($petugas)
+        ->post(route('admin.facilities.store'), [
+            'name' => 'Fasilitas Selundupan',
+            'type' => 'Aula',
+            'location' => 'Gedung Serba Guna',
+            'capacity' => 10,
+            'status' => 'active',
+        ])
+        ->assertForbidden();
+
+    $this->assertDatabaseMissing('facilities', ['name' => 'Fasilitas Selundupan']);
+
+    $this->actingAs($petugas)
+        ->patch(route('admin.facilities.update', $facility), [
+            'name' => 'Nama Diretas',
+            'type' => 'Aula',
+            'location' => 'Gedung Serba Guna',
+            'capacity' => 10,
+            'status' => 'active',
+        ])
+        ->assertForbidden();
+
+    $this->assertDatabaseHas('facilities', ['id' => $facility->id, 'name' => 'Fasilitas Tetap']);
+});
+
+it('O6: akun selain petugas ditolak di halaman kelola fasilitas petugas', function (): void {
+    $this->get(route('officer.facilities.index'))
+        ->assertRedirect(route('login'));
+
+    foreach (['pengguna', 'admin'] as $role) {
+        $this->actingAs(buatAkunDenganRole($role))
+            ->get(route('officer.facilities.index'))
+            ->assertForbidden();
+    }
 });
 
 /*
