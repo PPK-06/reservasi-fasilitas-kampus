@@ -102,6 +102,18 @@
                         </div>
                     </div>
 
+                    {{-- D4: peringatan reservasi terdampak (hanya edit fasilitas yang sedang active) --}}
+                    @if ($isEdit && $facility->status === 'active')
+                        <div class="mb-3" id="d4-warning-section">
+                            <x-d4-warning :reservations="$upcomingReservations ?? collect()" />
+                            @if (($upcomingReservations ?? collect())->isNotEmpty())
+                                <div class="form-text mt-2">
+                                    Peringatan ini berlaku jika status diubah ke Nonaktif atau Dalam Perbaikan.
+                                </div>
+                            @endif
+                        </div>
+                    @endif
+
                     {{-- Deskripsi --}}
                     <div class="mb-4">
                         <label for="description" class="form-label fw-semibold">Deskripsi</label>
