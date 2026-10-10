@@ -78,8 +78,9 @@
             </div>
 
             @php
+                $isExpired = $reservation->status === 'pending' && $reservation->start_time->lte(now());
                 $canCancel = false;
-                if ($reservation->status === 'pending') {
+                if ($reservation->status === 'pending' && ! $isExpired) {
                     $canCancel = true;
                 } elseif ($reservation->status === 'approved') {
                     $canCancel = now()->toDateString() < $reservation->start_time->toDateString();
@@ -93,7 +94,7 @@
                     <i class="bi bi-x-circle me-1"></i>Batalkan
                 </button>
             </div>
-            @elseif (in_array($reservation->status, ['pending', 'approved']))
+            @elseif ($reservation->status === 'approved')
             <div class="card-footer bg-white border-top py-3 px-4">
                 <span class="text-muted small">
                     <i class="bi bi-info-circle me-1"></i>Sudah lewat batas pembatalan mandiri, hubungi petugas sarana.
