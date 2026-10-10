@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Detail Reservasi | Sistem Fasilitas Kampus Undip')
+@section('title', 'Detail Reservasi · Wiyata')
 @section('page-title', 'Detail Permohonan Reservasi')
 @section('page-subtitle', 'Informasi lengkap jadwal peminjaman ruangan dan status persetujuan')
 @section('page-actions')

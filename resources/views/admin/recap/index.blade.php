@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Rekap & Export')
+@section('title', 'Rekap Data · Wiyata')
 @section('page-title', 'Rekap & Export')
 
 @section('content')

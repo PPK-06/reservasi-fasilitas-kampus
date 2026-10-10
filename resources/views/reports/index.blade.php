@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Laporan Saya | Sistem Fasilitas Kampus Undip')
+@section('title', 'Laporan Saya · Wiyata')
 @section('page-title', 'Laporan Kerusakan Saya')
 @section('page-subtitle', 'Pantau status penanganan kendala dan perbaikan sarana yang Anda laporkan')
 

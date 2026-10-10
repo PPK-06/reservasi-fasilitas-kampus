@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Reservasi Fasilitas Kampus | Universitas Diponegoro Tembalang')
+@section('title', 'Reservasi Fasilitas Kampus · Wiyata')
 
 @section('full-width-content')
 {{-- ════════════════════════════════════════════════════════════════════════
@@ -14,7 +14,7 @@
                 <div class="d-inline-flex align-items-center gap-2 px-3 py-1 mb-3 rounded-pill"
                      style="background-color: var(--undip-blue-surface); border: 1px solid #D6E4F0;">
                     <span class="badge rounded-pill" style="background-color: var(--undip-gold); color: #07172C; font-size: 0.72rem; font-weight: 700;">
-                        RESMI
+                        WIYATA
                     </span>
                     <span class="small fw-semibold" style="color: var(--undip-navy); font-size: 0.8rem;">
                         Portal Fasilitas Kampus Undip Tembalang
@@ -65,33 +65,19 @@
 
             {{-- Kolom Gambar Nyata Widya Puraya --}}
             <div class="col-lg-6">
-                <div class="position-relative">
-                    <div class="card-undip overflow-hidden border shadow-lg" style="border-radius: 16px;">
-                        <img src="{{ asset('images/landing/widya-puraya.webp') }}"
-                             srcset="{{ asset('images/landing/widya-puraya-sm.webp') }} 480w,
-                                     {{ asset('images/landing/widya-puraya.webp') }} 800w,
-                                     {{ asset('images/landing/widya-puraya-lg.webp') }} 1200w"
-                             sizes="(max-width: 768px) 100vw, 50vw"
-                             alt="Gedung Widya Puraya Universitas Diponegoro Tembalang"
-                             class="w-100 object-fit-cover"
-                             style="height: 380px;"
-                             loading="eager">
+                <div class="card-undip overflow-hidden border shadow-lg" style="border-radius: 16px;">
+                    <img src="{{ asset('images/landing/widya-puraya.webp') }}"
+                         srcset="{{ asset('images/landing/widya-puraya-sm.webp') }} 480w,
+                                 {{ asset('images/landing/widya-puraya.webp') }} 800w,
+                                 {{ asset('images/landing/widya-puraya-lg.webp') }} 1200w"
+                         sizes="(max-width: 768px) 100vw, 50vw"
+                         alt="Gedung Widya Puraya Universitas Diponegoro Tembalang"
+                         class="w-100 object-fit-cover"
+                         style="height: 380px;"
+                         loading="eager">
 
-                        <div class="p-3 bg-white d-flex align-items-center justify-content-between border-top">
-                            <div>
-                                <span class="d-block fw-bold text-dark font-heading">Gedung Widya Puraya Undip</span>
-                                <span class="text-muted small">Landmark Kampus & Kompleks Rektorat Tembalang</span>
-                            </div>
-                            <span class="badge rounded-pill bg-light text-dark border px-3 py-2">
-                                <i class="bi bi-camera me-1 text-primary"></i>Foto Berlisensi CC BY-SA 4.0
-                            </span>
-                        </div>
-                    </div>
-
-                    {{-- Floating pill status --}}
-                    <div class="position-absolute bottom-0 start-0 translate-middle-y ms-3 mb-4 p-2 px-3 bg-white rounded-3 shadow border d-none d-sm-flex align-items-center gap-2">
-                        <span class="rounded-circle bg-success" style="width: 10px; height: 10px;"></span>
-                        <span class="small fw-semibold text-dark">Sistem Terbuka untuk Civitas</span>
+                    <div class="p-3 bg-white border-top">
+                        <span class="d-block fw-bold text-dark font-heading">Gedung Widya Puraya Undip</span>
                     </div>
                 </div>
             </div>
@@ -118,41 +104,21 @@
         <div class="row g-4">
             @forelse ($facilities->take(6) as $f)
                 @php
-                    // Pilih visual yang sesuai dengan konteks fasilitas nyata
-                    $imageSrc = asset('images/landing/widya-puraya.webp');
-                    $imageSrcset = asset('images/landing/widya-puraya-sm.webp') . ' 480w, ' . asset('images/landing/widya-puraya.webp') . ' 800w';
-                    $altText = 'Foto fasilitas ' . $f->name;
-
-                    if ($f->type === 'Ruang Kelas') {
-                        $imageSrc = asset('images/landing/gedung-manajemen.webp');
-                        $imageSrcset = asset('images/landing/gedung-manajemen-sm.webp') . ' 480w, ' . asset('images/landing/gedung-manajemen.webp') . ' 800w';
-                        $altText = 'Gedung perkuliahan dan ruang kelas Universitas Diponegoro Tembalang';
-                    } elseif ($f->type === 'Laboratorium') {
-                        $imageSrc = asset('images/landing/lab-diplomasi.webp');
-                        $imageSrcset = asset('images/landing/lab-diplomasi-sm.webp') . ' 480w, ' . asset('images/landing/lab-diplomasi.webp') . ' 800w';
-                        $altText = 'Laboratorium komputer dan sidang Undip Tembalang';
-                    } elseif ($f->type === 'Aula') {
-                        $imageSrc = asset('images/landing/dekanat-ft.webp');
-                        $imageSrcset = asset('images/landing/dekanat-ft-sm.webp') . ' 480w, ' . asset('images/landing/dekanat-ft.webp') . ' 800w';
-                        $altText = 'Gedung aula dan pertemuan Universitas Diponegoro Tembalang';
-                    } elseif ($f->type === 'Lapangan' || $f->type === 'Alat') {
-                        $imageSrc = null; // Menampilkan placeholder bertema bersih
-                    }
+                    $imageSrc = $f->image_url;
+                    $altText = $f->imageAlt();
                 @endphp
 
                 <div class="col-md-6 col-lg-4">
                     <div class="card card-undip card-undip-interactive h-100 d-flex flex-column">
-                        {{-- Bagian Media / Thumbnail --}}
-                        <div class="position-relative overflow-hidden" style="height: 200px; border-top-left-radius: 13px; border-top-right-radius: 13px;">
+                        {{-- Bagian Media / Thumbnail Bersih Tanpa Teks Overlay --}}
+                        <div class="overflow-hidden" style="height: 200px; border-top-left-radius: 13px; border-top-right-radius: 13px;">
                             @if ($imageSrc)
                                 <img src="{{ $imageSrc }}"
-                                     srcset="{{ $imageSrcset }}"
                                      sizes="(max-width: 768px) 100vw, 33vw"
                                      alt="{{ $altText }}"
                                      class="w-100 h-100 object-fit-cover"
                                      loading="lazy">
                             @else
-                                {{-- Placeholder representatif tanpa data palsu --}}
                                 <div class="w-100 h-100 d-flex flex-column align-items-center justify-content-center"
                                      style="background: linear-gradient(135deg, #07172C 0%, #134074 100%); color: #ffffff;">
                                     @if ($f->type === 'Lapangan')
@@ -164,15 +130,16 @@
                                     @endif
                                 </div>
                             @endif
-
-                            {{-- Badge Tipe di Sudut Atas --}}
-                            <span class="position-absolute top-0 start-0 m-3 badge bg-white text-dark shadow-sm border fw-semibold">
-                                {{ $f->type }}
-                            </span>
                         </div>
 
                         {{-- Body Kartu --}}
                         <div class="card-body p-4 d-flex flex-column flex-grow-1">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <span class="badge bg-light text-dark border fw-semibold" style="font-size: 0.75rem;">
+                                    {{ $f->type }}
+                                </span>
+                            </div>
+
                             <h5 class="fw-bold mb-2 font-heading" style="color: var(--undip-navy-dark);">
                                 {{ $f->name }}
                             </h5>
@@ -525,29 +492,33 @@
 
                     <div class="row g-2">
                         <div class="col-6">
-                            <div class="rounded-2 overflow-hidden border shadow-sm position-relative" style="height: 100px;">
-                                <img src="{{ asset('images/landing/patung-diponegoro.webp') }}"
-                                     srcset="{{ asset('images/landing/patung-diponegoro-sm.webp') }} 480w, {{ asset('images/landing/patung-diponegoro.webp') }} 800w"
-                                     sizes="(max-width: 768px) 50vw, 20vw"
-                                     alt="Monumen Patung Pangeran Diponegoro Tembalang"
-                                     class="w-100 h-100 object-fit-cover"
-                                     loading="lazy">
-                                <span class="position-absolute bottom-0 start-0 w-100 text-center py-1 bg-dark bg-opacity-75 text-white" style="font-size: 0.68rem; font-weight: 600;">
-                                    Taman Diponegoro
-                                </span>
+                            <div class="card border rounded-2 overflow-hidden shadow-sm">
+                                <div style="height: 90px;">
+                                    <img src="{{ asset('images/landing/patung-diponegoro.webp') }}"
+                                         srcset="{{ asset('images/landing/patung-diponegoro-sm.webp') }} 480w, {{ asset('images/landing/patung-diponegoro.webp') }} 800w"
+                                         sizes="(max-width: 768px) 50vw, 20vw"
+                                         alt="Monumen Patung Pangeran Diponegoro Tembalang"
+                                         class="w-100 h-100 object-fit-cover"
+                                         loading="lazy">
+                                </div>
+                                <div class="text-center py-1 bg-white border-top">
+                                    <span class="text-dark small fw-semibold" style="font-size: 0.72rem;">Taman Diponegoro</span>
+                                </div>
                             </div>
                         </div>
                         <div class="col-6">
-                            <div class="rounded-2 overflow-hidden border shadow-sm position-relative" style="height: 100px;">
-                                <img src="{{ asset('images/landing/masjid-kampus.webp') }}"
-                                     srcset="{{ asset('images/landing/masjid-kampus-sm.webp') }} 480w, {{ asset('images/landing/masjid-kampus.webp') }} 800w"
-                                     sizes="(max-width: 768px) 50vw, 20vw"
-                                     alt="Masjid Kampus Universitas Diponegoro Tembalang"
-                                     class="w-100 h-100 object-fit-cover"
-                                     loading="lazy">
-                                <span class="position-absolute bottom-0 start-0 w-100 text-center py-1 bg-dark bg-opacity-75 text-white" style="font-size: 0.68rem; font-weight: 600;">
-                                    Masjid Kampus
-                                </span>
+                            <div class="card border rounded-2 overflow-hidden shadow-sm">
+                                <div style="height: 90px;">
+                                    <img src="{{ asset('images/landing/masjid-kampus.webp') }}"
+                                         srcset="{{ asset('images/landing/masjid-kampus-sm.webp') }} 480w, {{ asset('images/landing/masjid-kampus.webp') }} 800w"
+                                         sizes="(max-width: 768px) 50vw, 20vw"
+                                         alt="Masjid Kampus Universitas Diponegoro Tembalang"
+                                         class="w-100 h-100 object-fit-cover"
+                                         loading="lazy">
+                                </div>
+                                <div class="text-center py-1 bg-white border-top">
+                                    <span class="text-dark small fw-semibold" style="font-size: 0.72rem;">Masjid Kampus</span>
+                                </div>
                             </div>
                         </div>
                     </div>

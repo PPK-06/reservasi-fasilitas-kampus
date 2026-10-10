@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Ajukan Reservasi')
+@section('title', 'Ajukan Reservasi · Wiyata')
 @section('page-title', 'Ajukan Reservasi')
 
 @section('content')

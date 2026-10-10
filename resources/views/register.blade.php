@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Registrasi Akun Civitas | Sistem Fasilitas Kampus Undip')
+@section('title', 'Registrasi Akun Civitas · Wiyata')
 
 @section('content')
 <div class="row justify-content-center py-4">
@@ -14,7 +14,7 @@
                          style="width: 52px; height: 52px; object-fit: contain;"
                          onerror="this.style.display='none'">
                     <h4 class="fw-bold mb-1 font-heading" style="color: var(--undip-navy);">Registrasi Civitas</h4>
-                    <p class="text-muted small mb-0">Daftarkan akun resmi untuk peminjaman sarana dan pelaporan kampus</p>
+                    <p class="text-muted small mb-0">Daftarkan akun Wiyata untuk peminjaman sarana dan pelaporan kampus</p>
                 </div>
 
                 <form method="POST" action="{{ route('register.store') }}">

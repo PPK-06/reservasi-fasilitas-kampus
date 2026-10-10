@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Katalog Fasilitas Kampus | Universitas Diponegoro Tembalang')
+@section('title', 'Katalog Fasilitas · Wiyata')
 
 @section('page-title', 'Katalog Fasilitas Kampus')
 @section('page-subtitle', 'Daftar sarana perkuliahan, laboratorium, aula, dan perlengkapan kegiatan di Tembalang')
@@ -107,40 +107,18 @@
                 $isMaint    = $facility->status === 'under_maintenance';
                 $isInactive = $facility->status === 'inactive';
 
-                // Pemilihan gambar yang otentik sesuai jenis fasilitas kampus
-                $thumbSrc = null;
-                $thumbSrcset = null;
-                $thumbAlt = 'Foto ' . $facility->name;
-
-                if ($facility->type === 'Ruang Kelas') {
-                    $thumbSrc = asset('images/landing/gedung-manajemen.webp');
-                    $thumbSrcset = asset('images/landing/gedung-manajemen-sm.webp') . ' 480w, ' . asset('images/landing/gedung-manajemen.webp') . ' 800w';
-                    $thumbAlt = 'Ruang kuliah dan kelas di lingkungan kampus Undip Tembalang';
-                } elseif ($facility->type === 'Laboratorium') {
-                    $thumbSrc = asset('images/landing/lab-diplomasi.webp');
-                    $thumbSrcset = asset('images/landing/lab-diplomasi-sm.webp') . ' 480w, ' . asset('images/landing/lab-diplomasi.webp') . ' 800w';
-                    $thumbAlt = 'Laboratorium riset dan komputer Undip Tembalang';
-                } elseif ($facility->type === 'Aula') {
-                    if (str_contains($facility->name, 'Utama')) {
-                        $thumbSrc = asset('images/landing/widya-puraya.webp');
-                        $thumbSrcset = asset('images/landing/widya-puraya-sm.webp') . ' 480w, ' . asset('images/landing/widya-puraya.webp') . ' 800w';
-                    } else {
-                        $thumbSrc = asset('images/landing/dekanat-ft.webp');
-                        $thumbSrcset = asset('images/landing/dekanat-ft-sm.webp') . ' 480w, ' . asset('images/landing/dekanat-ft.webp') . ' 800w';
-                    }
-                    $thumbAlt = 'Aula dan gedung pertemuan kampus Undip Tembalang';
-                }
+                $thumbSrc = $facility->image_url;
+                $thumbAlt = $facility->imageAlt();
             @endphp
 
             <div class="col-xl-3 col-lg-4 col-md-6">
                 <div class="card card-undip card-undip-interactive h-100 d-flex flex-column border {{ !$isActive ? 'opacity-75' : '' }}"
                      style="{{ !$isActive ? 'filter: grayscale(25%);' : '' }}">
 
-                    {{-- Visual Header --}}
-                    <div class="position-relative overflow-hidden" style="height: 160px; border-top-left-radius: 13px; border-top-right-radius: 13px;">
+                    {{-- Visual Header Bersih Tanpa Teks Overlay --}}
+                    <div class="overflow-hidden" style="height: 160px; border-top-left-radius: 13px; border-top-right-radius: 13px;">
                         @if ($thumbSrc)
                             <img src="{{ $thumbSrc }}"
-                                 srcset="{{ $thumbSrcset }}"
                                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                                  alt="{{ $thumbAlt }}"
                                  class="w-100 h-100 object-fit-cover"
@@ -157,33 +135,29 @@
                                 @endif
                             </div>
                         @endif
-
-                        {{-- Badges di atas Foto --}}
-                        <div class="position-absolute top-0 start-0 m-2">
-                            <span class="badge bg-white text-dark shadow-sm border fw-semibold" style="font-size: 0.72rem;">
-                                {{ $facility->type }}
-                            </span>
-                        </div>
-
-                        <div class="position-absolute top-0 end-0 m-2">
-                            @if ($isActive)
-                                <span class="badge-status badge-status-approved shadow-sm">
-                                    <i class="bi bi-check-circle-fill"></i> Aktif
-                                </span>
-                            @elseif ($isMaint)
-                                <span class="badge-status badge-status-maintenance shadow-sm">
-                                    <i class="bi bi-tools"></i> Dalam Perbaikan
-                                </span>
-                            @else
-                                <span class="badge-status badge-status-rejected shadow-sm">
-                                    <i class="bi bi-x-circle-fill"></i> Nonaktif
-                                </span>
-                            @endif
-                        </div>
                     </div>
 
                     {{-- Body Kartu --}}
                     <div class="card-body p-3 d-flex flex-column flex-grow-1">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="badge bg-light text-dark border fw-semibold" style="font-size: 0.72rem;">
+                                {{ $facility->type }}
+                            </span>
+                            @if ($isActive)
+                                <span class="badge-status badge-status-approved">
+                                    <i class="bi bi-check-circle-fill"></i> Aktif
+                                </span>
+                            @elseif ($isMaint)
+                                <span class="badge-status badge-status-maintenance">
+                                    <i class="bi bi-tools"></i> Dalam Perbaikan
+                                </span>
+                            @else
+                                <span class="badge-status badge-status-rejected">
+                                    <i class="bi bi-x-circle-fill"></i> Nonaktif
+                                </span>
+                            @endif
+                        </div>
+
                         <h6 class="fw-bold mb-1 font-heading text-truncate {{ !$isActive ? 'text-muted' : 'text-dark' }}"
                             title="{{ $facility->name }}">
                             {{ $facility->name }}

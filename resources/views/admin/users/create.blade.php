@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Tambah Akun | Sistem Fasilitas Kampus')
+@section('title', 'Tambah Akun · Wiyata')
 
 @section('page-title', 'Tambah Akun')
 

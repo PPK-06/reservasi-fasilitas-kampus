@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Detail Reservasi | Petugas')
+@section('title', 'Detail Reservasi Petugas · Wiyata')
 @section('page-title', 'Detail Reservasi Petugas')
 @section('page-subtitle', 'Pemeriksaan kelayakan permohonan peminjaman ruangan dan aksi validasi')
 @section('page-actions')

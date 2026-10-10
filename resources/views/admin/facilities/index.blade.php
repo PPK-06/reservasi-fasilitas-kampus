@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Master Fasilitas | Sistem Fasilitas Kampus')
+@section('title', 'Master Fasilitas · Wiyata')
 
 @section('page-title', 'Master Fasilitas')
 @section('page-actions')

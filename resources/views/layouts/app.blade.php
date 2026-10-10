@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Sistem Fasilitas Kampus Undip')</title>
+    <title>@yield('title', 'Wiyata · Reservasi Fasilitas Kampus Undip')</title>
+
+    {{-- Meta, Favicon & Brand Manifest --}}
+    @include('partials.head-meta')
 
     {{-- Google Fonts: Plus Jakarta Sans & Outfit --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -62,12 +65,20 @@
             --shadow-card-hover: 0 10px 24px rgba(11, 37, 69, 0.09), 0 2px 6px rgba(11, 37, 69, 0.04);
         }
 
+        html, body {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
         body {
             font-family: 'Outfit', system-ui, -apple-system, sans-serif;
             background-color: var(--canvas-bg);
             color: var(--text-body);
             line-height: 1.6;
             -webkit-font-smoothing: antialiased;
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
+            padding-bottom: env(safe-area-inset-bottom);
         }
 
         h1, h2, h3, h4, h5, h6, .font-heading {
@@ -156,7 +167,7 @@
         }
 
         /* ════════════════════════════════════════════
-           TOMBOL & KONTROL FORM
+           TOMBOL & KONTROL FORM (Touch-Target 44px & iOS Auto-Zoom Guard)
            ════════════════════════════════════════════ */
         .btn-undip-primary {
             background-color: var(--undip-navy);
@@ -164,6 +175,10 @@
             color: #ffffff;
             font-weight: 600;
             padding: 0.5rem 1.25rem;
+            min-height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             border-radius: var(--radius-sm);
             transition: all 0.15s ease-out;
         }
@@ -181,6 +196,10 @@
             color: var(--undip-navy-dark);
             font-weight: 700;
             padding: 0.5rem 1.25rem;
+            min-height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             border-radius: var(--radius-sm);
             transition: all 0.15s ease-out;
         }
@@ -198,6 +217,10 @@
             color: var(--undip-navy);
             font-weight: 600;
             padding: 0.45rem 1.15rem;
+            min-height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             border-radius: var(--radius-sm);
             transition: all 0.15s ease-out;
         }
@@ -207,14 +230,30 @@
             color: #ffffff;
         }
 
+        .navbar-toggler {
+            min-width: 44px;
+            min-height: 44px;
+            padding: 0.5rem;
+        }
+
         .form-control, .form-select {
             border: 1px solid var(--border-medium);
             border-radius: var(--radius-sm);
             padding: 0.52rem 0.85rem;
-            font-size: 0.92rem;
+            font-size: 1rem; /* 16px mencegah auto-zoom pada perangkat iOS */
+            min-height: 44px;
             color: var(--text-heading);
             background-color: #ffffff;
             transition: border-color 0.15s ease-out, box-shadow 0.15s ease-out;
+        }
+
+        .modal-dialog {
+            max-width: min(92vw, 600px);
+            margin: 1.25rem auto;
+        }
+
+        .dropdown-menu {
+            max-width: 90vw;
         }
 
         .form-control:focus, .form-select:focus {
@@ -346,7 +385,7 @@
             <div class="navbar-brand-text">
                 <span class="navbar-brand-univ">Universitas Diponegoro</span>
                 <span class="navbar-brand-title">
-                    <i class="bi bi-building me-1 text-warning"></i> Fasilitas Kampus
+                    Wiyata
                 </span>
             </div>
         </a>
@@ -568,14 +607,11 @@
                          alt="Logo Undip"
                          class="footer-logo-img"
                          onerror="this.style.display='none'">
-                    <span class="fw-bold text-dark font-heading">UNIVERSITAS DIPONEGORO</span>
+                    <span class="fw-bold text-dark font-heading">WIYATA · UNIVERSITAS DIPONEGORO</span>
                 </div>
                 <p class="mb-1 text-muted small">
                     Sistem Reservasi dan Pelaporan Fasilitas Kampus Tembalang.
                     Jl. Prof. Sudarto, S.H., Tembalang, Semarang, Jawa Tengah 50275.
-                </p>
-                <p class="mb-0 text-muted" style="font-size: 0.78rem;">
-                    Foto sarana bersumber dari kontributor Wikimedia Commons di bawah lisensi CC BY-SA 4.0 dan CC BY 4.0.
                 </p>
             </div>
             <div class="col-md-5 text-md-end">

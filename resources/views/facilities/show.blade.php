@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $facility->name . ' | Sistem Fasilitas Kampus')
+@section('title', $facility->name . ' · Wiyata')
 
 @section('page-title', 'Detail Fasilitas')
 @section('page-actions')
@@ -50,18 +50,8 @@
     <div class="col-lg-8">
         <div class="card card-undip border shadow-sm">
             @php
-                $bannerSrc = null;
-                $bannerAlt = 'Foto ' . $facility->name;
-                if ($facility->type === 'Ruang Kelas') {
-                    $bannerSrc = asset('images/landing/gedung-manajemen.webp');
-                    $bannerAlt = 'Gedung perkuliahan dan ruang kelas Undip Tembalang';
-                } elseif ($facility->type === 'Laboratorium') {
-                    $bannerSrc = asset('images/landing/lab-diplomasi.webp');
-                    $bannerAlt = 'Laboratorium riset dan komputer Undip Tembalang';
-                } elseif ($facility->type === 'Aula') {
-                    $bannerSrc = str_contains($facility->name, 'Utama') ? asset('images/landing/widya-puraya.webp') : asset('images/landing/dekanat-ft.webp');
-                    $bannerAlt = 'Gedung aula dan pertemuan kampus Undip Tembalang';
-                }
+                $bannerSrc = $facility->image_url;
+                $bannerAlt = $facility->imageAlt();
             @endphp
 
             @if ($bannerSrc)

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard Antrian Petugas | Sistem Fasilitas Kampus Undip')
+@section('title', 'Dashboard Antrian Petugas · Wiyata')
 @section('page-title', 'Dashboard Petugas Sarana')
 @section('page-subtitle', 'Ikhtisar antrian permohonan reservasi dan laporan pemeliharaan fasilitas kampus')
 

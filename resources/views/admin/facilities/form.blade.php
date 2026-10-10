@@ -5,7 +5,7 @@
     $title = $isEdit ? 'Edit Fasilitas' : 'Tambah Fasilitas';
 @endphp
 
-@section('title', $title . ' | Sistem Fasilitas Kampus')
+@section('title', $title . ' · Wiyata')
 
 @section('page-title', $title)
 @section('page-actions')

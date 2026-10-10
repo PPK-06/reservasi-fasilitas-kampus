@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Masuk Akun | Sistem Fasilitas Kampus Undip')
+@section('title', 'Masuk Akun · Wiyata')
 
 @section('content')
 <div class="row justify-content-center py-4">
@@ -15,7 +15,7 @@
                          style="width: 52px; height: 52px; object-fit: contain;"
                          onerror="this.style.display='none'">
                     <h4 class="fw-bold mb-1 font-heading" style="color: var(--undip-navy);">Masuk Akun</h4>
-                    <p class="text-muted small mb-0">Sistem Informasi Reservasi & Pelaporan Fasilitas Kampus</p>
+                    <p class="text-muted small mb-0">Wiyata · Sistem Reservasi & Pelaporan Fasilitas Kampus</p>
                 </div>
 
                 <form method="POST" action="{{ route('login.store') }}">
