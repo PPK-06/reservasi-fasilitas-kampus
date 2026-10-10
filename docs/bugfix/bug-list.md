@@ -3,7 +3,7 @@
 | ID | Kategori | Deskripsi | Status | File Terkait | Bukti Reproduksi / Catatan |
 |---|---|---|---|---|---|
 | B-001 | Global | Bagian notifikasi di bawah navbar tidak akan pernah terutup secara otomatis dan membutuhkan close manual | Solved | `resources/views/layouts/app.blade.php` | Menambahkan script auto-close untuk alert di `.flash-wrapper` dengan timeout 5 detik via `bootstrap.Alert.getOrCreateInstance(alertEl).close()`. |
-| B-002 | Petugas | Font dalam dashboard bagian antrian reservasi tidak selaras dengan font laporan belum selesai, gunakan bagian laporan belum selesai sebagai refrensi pembenaran | Pending | TBD | TBD |
+| B-002 | Petugas | Font dalam dashboard bagian antrian reservasi tidak selaras dengan font laporan belum selesai, gunakan bagian laporan belum selesai sebagai refrensi pembenaran | Solved | `resources/views/officer/dashboard.blade.php` | Menghapus kelas `font-monospace` pada waktu antrian reservasi dan menyelaraskannya menjadi `<small class="text-muted">` sesuai referensi panel laporan. |
 | B-003 | Petugas | Font dalam halaman antrian terutama pada bagian waktu pemakaian tidak selaras dengan font waktu lain nya (gunakan bagian laporan belum selesai sebagai refrensi pembenaran) | Pending | TBD | TBD |
 | B-004 | Petugas | Dalam bagian Detail Reservasi itu ada redundansi status tiket reservasi | Pending | TBD | TBD |
 | B-005 | Petugas | UI dalam halaman Ketersediaan tidak selaras dengan UI bagian halaman lainnya | Pending | TBD | TBD |

@@ -25,9 +25,9 @@
                         <div class="d-flex justify-content-between align-items-start">
                             <div>
                                 <div class="fw-bold text-dark font-heading">{{ $r->facility->name }}</div>
-                                <div class="text-muted small mt-1 font-monospace">
+                                <small class="text-muted">
                                     <i class="bi bi-clock me-1"></i>{{ $r->start_time->format('d M Y, H:i') }} – {{ $r->end_time->format('H:i') }}
-                                </div>
+                                </small>
                             </div>
                             <span class="badge bg-light text-dark border small">
                                 <i class="bi bi-person me-1"></i>{{ $r->user->name }}
