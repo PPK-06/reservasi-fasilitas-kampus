@@ -48,8 +48,9 @@
      * Matriks transisi C2, dengan pembagian aksi mengikuti bagian 11 dokumen
      * route: verify dan reject sama-sama hanya melayani `pending`, sedangkan
      * pemulihan akses akun `rejected` dan `suspended` adalah pekerjaan activate.
-     * Suspend belum dikerjakan (menunggu komponen peringatan D4), jadi akun
-     * `verified` untuk sementara tanpa tombol transisi.
+     * Suspend hanya melayani `verified`, dan tidak dirender di A5 milik admin
+     * yang sedang login: A4 tidak bisa membuat admin, jadi menonaktifkan diri
+     * sendiri berisiko lockout (komentar Admin\UserController@suspend).
      *
      * Reset Password bukan transisi C2, tapi cakupannya juga dibatasi: hanya
      * akun `verified` dan `suspended`, yang punya akses atau akan dipulihkan
@@ -61,6 +62,7 @@
     $bolehVerifikasi = $user->status === 'pending';
     $bolehTolak = $user->status === 'pending';
     $bolehAktifkan = in_array($user->status, ['rejected', 'suspended'], true);
+    $bolehNonaktifkan = $user->status === 'verified' && ! $user->is(auth()->user());
     $bolehResetPassword = in_array($user->status, ['verified', 'suspended'], true);
 @endphp
 
@@ -105,7 +107,7 @@
             </div>
 
             {{-- Tombol aksi mengikuti matriks transisi C2 (peta 2.4). Nonaktifkan
-                 belum dikerjakan, jadi sengaja tidak dirender sama sekali.
+                 membuka modal konfirmasi berisi peringatan D4.
                  Reset Password bukan transisi status (C5), jadi dipisah ke
                  sisi kanan. --}}
             <div class="card-footer bg-white border-top py-3">
@@ -147,6 +149,13 @@
                         </form>
                     @endif
 
+                    @if ($bolehNonaktifkan)
+                        <button type="button" class="btn btn-outline-danger btn-sm"
+                                data-bs-toggle="modal" data-bs-target="#suspendModal">
+                            <i class="bi bi-slash-circle me-1"></i>Nonaktifkan
+                        </button>
+                    @endif
+
                     @if ($bolehResetPassword)
                         <button type="button" class="btn btn-outline-secondary btn-sm ms-auto"
                                 data-bs-toggle="modal" data-bs-target="#resetPasswordModal">
@@ -159,6 +168,49 @@
 
     </div>
 </div>
+
+{{-- ════════════════════════════════════════════
+     MODAL NONAKTIFKAN — transisi verified → suspended (C2)
+     D4: reservasi approved mendatang milik akun ini ditampilkan sebagai
+     peringatan, tidak dibatalkan (C6).
+     ════════════════════════════════════════════ --}}
+@if ($bolehNonaktifkan)
+<div class="modal fade" id="suspendModal" tabindex="-1"
+     aria-labelledby="suspendModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered {{ $upcomingReservations->isNotEmpty() ? 'modal-lg' : '' }}">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold" id="suspendModalLabel">
+                    <i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>Nonaktifkan Akun
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+            </div>
+
+            <div class="modal-body pt-2">
+                <p class="text-muted">
+                    Nonaktifkan akun <strong>{{ $user->name }}</strong>? Akun ini tidak
+                    dapat login sampai diaktifkan kembali oleh admin.
+                </p>
+
+                <x-d4-warning :reservations="$upcomingReservations" column="facility" />
+            </div>
+
+            <div class="modal-footer border-top-0">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-arrow-left me-1"></i>Batal
+                </button>
+                <form method="POST" action="{{ route('admin.users.suspend', $user) }}">
+                    @csrf
+                    @method('PATCH')
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-slash-circle me-1"></i>Ya, Nonaktifkan
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@endif
 
 {{-- ════════════════════════════════════════════
      MODAL RESET PASSWORD — kontrak bagian 25
