@@ -159,9 +159,6 @@
                                max="{{ now()->addDays(30)->toDateString() }}"
                                onchange="this.form.submit()">
                     </form>
-                    <button type="button" class="btn btn-outline-secondary btn-sm" id="btn-p2-reset" title="Reset pilihan slot">
-                        <i class="bi bi-arrow-counterclockwise"></i>
-                    </button>
                 </div>
             </div>
             <div class="card-body">
@@ -219,7 +216,10 @@
                             Tanggal pemesanan: <strong>{{ \Carbon\Carbon::parse($selectedDate)->translatedFormat('l, d F Y') }}</strong>
                         </div>
                     </div>
-                    <div>
+                    <div class="d-flex align-items-center gap-2">
+                        <button type="button" class="btn btn-outline-secondary px-3 fw-semibold" id="btn-p2-reset" title="Reset pilihan slot">
+                            <i class="bi bi-arrow-counterclockwise me-1"></i>Reset
+                        </button>
                         @auth
                             @if (auth()->user()->role === 'pengguna')
                                 <button type="button"
