@@ -52,7 +52,7 @@
         <small class="text-muted d-block mt-2">
             <i class="bi bi-info-circle me-1"></i>
             Reservasi ini <strong>tidak dibatalkan otomatis</strong>. Pembatalan
-            dilakukan petugas lewat halaman antrian (US 10).
+            dilakukan petugas lewat halaman antrian.
         </small>
     </div>
 @endif
