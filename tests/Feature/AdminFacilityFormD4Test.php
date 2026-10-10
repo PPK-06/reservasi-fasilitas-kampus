@@ -85,9 +85,32 @@ it('D4 A2: reservasi fasilitas lain, pending, dan yang sudah lewat tidak ditampi
         ->assertDontSee('Pemohon Sudah Lewat');
 });
 
-it('D4 A2: fasilitas yang tidak active tidak menampilkan peringatan walau punya reservasi', function (string $state): void {
+it('D4 A2: edit fasilitas under_maintenance menampilkan peringatan jika status diubah ke Nonaktif', function (): void {
     $admin = buatAkunDenganRole('admin');
-    $facility = Facility::factory()->{$state}()->create();
+    $facility = Facility::factory()->underMaintenance()->create();
+    $pemohon = User::factory()->create(['name' => 'Pemohon Terdampak Perbaikan']);
+
+    Reservation::factory()->approved()->create([
+        'facility_id' => $facility->id,
+        'user_id' => $pemohon->id,
+        'start_time' => now()->addDays(3)->setTime(10, 0),
+        'end_time' => now()->addDays(3)->setTime(12, 0),
+    ]);
+
+    $this->actingAs($admin)
+        ->get(route('admin.facilities.edit', $facility))
+        ->assertOk()
+        ->assertViewIs('admin.facilities.form')
+        ->assertSee('d4-warning-section')
+        ->assertSee('Terdapat 1 reservasi yang sudah disetujui')
+        ->assertSee('Pemohon Terdampak Perbaikan')
+        ->assertSee('Peringatan ini berlaku jika status diubah ke Nonaktif.')
+        ->assertDontSee('Peringatan ini berlaku jika status diubah ke Nonaktif atau Dalam Perbaikan.');
+});
+
+it('D4 A2: fasilitas inactive tidak menampilkan peringatan walau punya reservasi', function (): void {
+    $admin = buatAkunDenganRole('admin');
+    $facility = Facility::factory()->inactive()->create();
 
     Reservation::factory()->approved()->create([
         'facility_id' => $facility->id,
@@ -97,10 +120,11 @@ it('D4 A2: fasilitas yang tidak active tidak menampilkan peringatan walau punya 
     $this->actingAs($admin)
         ->get(route('admin.facilities.edit', $facility))
         ->assertOk()
+        ->assertDontSee('d4-warning-section')
         ->assertDontSee('Terdapat 1 reservasi')
         ->assertDontSee('Pemohon Fasilitas Nonaktif')
         ->assertDontSee('Peringatan ini berlaku');
-})->with(['inactive', 'underMaintenance']);
+});
 
 it('D4 A2: fasilitas active tanpa reservasi mendatang tidak menampilkan peringatan', function (): void {
     $admin = buatAkunDenganRole('admin');
@@ -125,6 +149,7 @@ it('D4 A2: form tambah fasilitas tidak menampilkan peringatan', function (): voi
         ->get(route('admin.facilities.create'))
         ->assertOk()
         ->assertViewIs('admin.facilities.form')
+        ->assertDontSee('d4-warning-section')
         ->assertDontSee('reservasi yang sudah disetujui')
         ->assertDontSee('Pemohon Di Fasilitas Lain')
         ->assertDontSee('Peringatan ini berlaku');

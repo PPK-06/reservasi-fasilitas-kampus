@@ -102,13 +102,17 @@
                         </div>
                     </div>
 
-                    {{-- D4: peringatan reservasi terdampak (hanya edit fasilitas yang sedang active) --}}
-                    @if ($isEdit && $facility->status === 'active')
+                    {{-- D4: peringatan reservasi terdampak (edit fasilitas yang bukan inactive) --}}
+                    @if ($isEdit && $facility->status !== 'inactive')
                         <div class="mb-3" id="d4-warning-section">
                             <x-d4-warning :reservations="$upcomingReservations ?? collect()" />
                             @if (($upcomingReservations ?? collect())->isNotEmpty())
                                 <div class="form-text mt-2">
-                                    Peringatan ini berlaku jika status diubah ke Nonaktif atau Dalam Perbaikan.
+                                    @if ($facility->status === 'under_maintenance')
+                                        Peringatan ini berlaku jika status diubah ke Nonaktif.
+                                    @else
+                                        Peringatan ini berlaku jika status diubah ke Nonaktif atau Dalam Perbaikan.
+                                    @endif
                                 </div>
                             @endif
                         </div>
