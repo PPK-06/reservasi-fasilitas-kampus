@@ -48,7 +48,31 @@
          KOLOM KIRI — Informasi Fasilitas
          ═══════════════════════════════════════════════════════ --}}
     <div class="col-lg-8">
-        <div class="card border-0 shadow-sm">
+        <div class="card card-undip border shadow-sm">
+            @php
+                $bannerSrc = null;
+                $bannerAlt = 'Foto ' . $facility->name;
+                if ($facility->type === 'Ruang Kelas') {
+                    $bannerSrc = asset('images/landing/gedung-manajemen.webp');
+                    $bannerAlt = 'Gedung perkuliahan dan ruang kelas Undip Tembalang';
+                } elseif ($facility->type === 'Laboratorium') {
+                    $bannerSrc = asset('images/landing/lab-diplomasi.webp');
+                    $bannerAlt = 'Laboratorium riset dan komputer Undip Tembalang';
+                } elseif ($facility->type === 'Aula') {
+                    $bannerSrc = str_contains($facility->name, 'Utama') ? asset('images/landing/widya-puraya.webp') : asset('images/landing/dekanat-ft.webp');
+                    $bannerAlt = 'Gedung aula dan pertemuan kampus Undip Tembalang';
+                }
+            @endphp
+
+            @if ($bannerSrc)
+                <div style="height: 220px; overflow: hidden; border-top-left-radius: 13px; border-top-right-radius: 13px;">
+                    <img src="{{ $bannerSrc }}"
+                         alt="{{ $bannerAlt }}"
+                         class="w-100 h-100 object-fit-cover"
+                         loading="eager">
+                </div>
+            @endif
+
             <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
                 <h5 class="mb-0 fw-bold text-dark">
                     <i class="bi bi-building me-2"></i>{{ $facility->name }}
@@ -147,7 +171,7 @@
         {{-- ═══════════════════════════════════════════════════════
              GRID KETERSEDIAAN JADWAL (P2 / US 1 / F4 / D5)
              ═══════════════════════════════════════════════════════ --}}
-        <div class="card border-0 shadow-sm mt-4" id="section-grid-ketersediaan">
+        <div class="card card-undip border shadow-sm mt-4" id="section-grid-ketersediaan">
             <div class="card-header bg-white d-flex flex-wrap justify-content-between align-items-center gap-2 py-3">
                 <h6 class="mb-0 fw-bold text-dark">
                     <i class="bi bi-calendar3 me-2"></i>Ketersediaan Jadwal
@@ -258,7 +282,7 @@
         {{-- Tombol aksi — hanya untuk pengguna yang login sebagai 'pengguna' --}}
         @auth
             @if (auth()->user()->role === 'pengguna')
-                <div class="card border-0 shadow-sm mb-4">
+                <div class="card card-undip border shadow-sm mb-4">
                     <div class="card-body">
                         <h6 class="fw-bold text-dark mb-3">
                             <i class="bi bi-lightning me-1"></i>Aksi
@@ -283,13 +307,13 @@
         @endauth
 
         @guest
-            <div class="card border-0 shadow-sm mb-4">
+            <div class="card card-undip border shadow-sm mb-4">
                 <div class="card-body text-center py-4">
                     <i class="bi bi-person-circle fs-2 text-muted d-block mb-2"></i>
                     <p class="text-muted mb-3" style="font-size: 0.85rem;">
                         Silakan login untuk mengajukan reservasi atau melaporkan kerusakan.
                     </p>
-                    <a href="{{ route('login') }}" class="btn btn-outline-primary btn-sm px-4">
+                    <a href="{{ route('login') }}" class="btn btn-undip-primary btn-sm px-4">
                         <i class="bi bi-box-arrow-in-right me-1"></i>Login
                     </a>
                 </div>
@@ -297,7 +321,7 @@
         @endguest
 
         {{-- Info ringkas --}}
-        <div class="card border-0 shadow-sm">
+        <div class="card card-undip border shadow-sm">
             <div class="card-body">
                 <h6 class="fw-bold text-dark mb-3">
                     <i class="bi bi-info-circle me-1"></i>Informasi

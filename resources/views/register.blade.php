@@ -1,75 +1,97 @@
 @extends('layouts.app')
 
-@section('title', 'Registrasi — Sistem Fasilitas Kampus')
+@section('title', 'Registrasi Akun Civitas — Sistem Fasilitas Kampus Undip')
 
 @section('content')
-<div class="row justify-content-center">
-    <div class="col-md-6 col-lg-5">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body p-4">
-                <h5 class="fw-bold mb-4">Registrasi</h5>
+<div class="row justify-content-center py-4">
+    <div class="col-md-8 col-lg-6">
+        <div class="card card-undip border shadow-sm">
+            <div class="card-body p-4 p-sm-5">
+                <div class="text-center mb-4">
+                    <img src="{{ asset('images/landing/logo-undip.webp') }}"
+                         alt="Logo Undip"
+                         class="mb-3"
+                         style="width: 52px; height: 52px; object-fit: contain;"
+                         onerror="this.style.display='none'">
+                    <h4 class="fw-bold mb-1 font-heading" style="color: var(--undip-navy);">Registrasi Civitas</h4>
+                    <p class="text-muted small mb-0">Daftarkan akun resmi untuk peminjaman sarana dan pelaporan kampus</p>
+                </div>
 
                 <form method="POST" action="{{ route('register.store') }}">
                     @csrf
 
-                    {{-- Pesan error tidak dicetak ulang di sini; layout induk sudah
-                         menampilkan seluruhnya lewat banner $errors->any() (D8) --}}
-                    <div class="mb-3">
-                        <label for="name" class="form-label fw-semibold">Nama</label>
-                        <input type="text" name="name" id="name"
-                               class="form-control @error('name') is-invalid @enderror"
-                               value="{{ old('name') }}" required maxlength="100" autofocus>
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label for="name" class="form-label fw-semibold small text-dark">Nama Lengkap</label>
+                            <input type="text" name="name" id="name"
+                                   class="form-control @error('name') is-invalid @enderror"
+                                   value="{{ old('name') }}"
+                                   placeholder="Nama sesuai KTM / SK pengangkatan"
+                                   required maxlength="100" autofocus>
+                        </div>
+
+                        <div class="col-12">
+                            <label for="email" class="form-label fw-semibold small text-dark">Alamat Email Kampus</label>
+                            <input type="email" name="email" id="email"
+                                   class="form-control @error('email') is-invalid @enderror"
+                                   value="{{ old('email') }}"
+                                   placeholder="nama@students.undip.ac.id"
+                                   required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="identity_number" class="form-label fw-semibold small text-dark">Nomor Induk (NIM / NIP)</label>
+                            <input type="text" name="identity_number" id="identity_number"
+                                   class="form-control @error('identity_number') is-invalid @enderror"
+                                   value="{{ old('identity_number') }}"
+                                   placeholder="Contoh: 240601211..."
+                                   required maxlength="30">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="user_type" class="form-label fw-semibold small text-dark">Status Civitas Akademika</label>
+                            <select name="user_type" id="user_type"
+                                    class="form-select @error('user_type') is-invalid @enderror" required>
+                                <option value="" disabled @selected(old('user_type') === null)>Pilih status civitas</option>
+                                <option value="mahasiswa" @selected(old('user_type') === 'mahasiswa')>Mahasiswa</option>
+                                <option value="dosen" @selected(old('user_type') === 'dosen')>Dosen</option>
+                                <option value="staf" @selected(old('user_type') === 'staf')>Staf</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="password" class="form-label fw-semibold small text-dark">Password</label>
+                            <input type="password" name="password" id="password"
+                                   class="form-control @error('password') is-invalid @enderror"
+                                   placeholder="Minimal 8 karakter"
+                                   required minlength="8">
+                            <div class="form-text small">Minimal 8 karakter.</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="password_confirmation" class="form-label fw-semibold small text-dark">Ulangi Password</label>
+                            <input type="password" name="password_confirmation" id="password_confirmation"
+                                   class="form-control @error('password') is-invalid @enderror"
+                                   placeholder="Ulangi password"
+                                   required minlength="8">
+                        </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="email" class="form-label fw-semibold">Email</label>
-                        <input type="email" name="email" id="email"
-                               class="form-control @error('email') is-invalid @enderror"
-                               value="{{ old('email') }}" required>
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-undip-primary w-100 py-2 fw-semibold shadow-sm">
+                            <i class="bi bi-person-plus me-1"></i>Daftar
+                        </button>
                     </div>
-
-                    <div class="mb-3">
-                        <label for="password" class="form-label fw-semibold">Password</label>
-                        <input type="password" name="password" id="password"
-                               class="form-control @error('password') is-invalid @enderror"
-                               required minlength="8">
-                        <div class="form-text">Minimal 8 karakter.</div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="password_confirmation" class="form-label fw-semibold">Ulangi Password</label>
-                        <input type="password" name="password_confirmation" id="password_confirmation"
-                               class="form-control @error('password') is-invalid @enderror"
-                               required minlength="8">
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="identity_number" class="form-label fw-semibold">NIM/NIP</label>
-                        <input type="text" name="identity_number" id="identity_number"
-                               class="form-control @error('identity_number') is-invalid @enderror"
-                               value="{{ old('identity_number') }}" required maxlength="30">
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="user_type" class="form-label fw-semibold">Status Civitas</label>
-                        <select name="user_type" id="user_type"
-                                class="form-select @error('user_type') is-invalid @enderror" required>
-                            <option value="" disabled @selected(old('user_type') === null)>Pilih salah satu</option>
-                            <option value="mahasiswa" @selected(old('user_type') === 'mahasiswa')>Mahasiswa</option>
-                            <option value="dosen" @selected(old('user_type') === 'dosen')>Dosen</option>
-                            <option value="staf" @selected(old('user_type') === 'staf')>Staf</option>
-                        </select>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary w-100">
-                        <i class="bi bi-person-plus me-1"></i>Daftar
-                    </button>
                 </form>
 
-                <p class="text-center text-muted mt-4 mb-0" style="font-size:0.9rem;">
-                    Sudah punya akun?
-                    <a href="{{ route('login') }}">Masuk di sini</a>
-                </p>
+                <div class="text-center mt-4 pt-3 border-top">
+                    <p class="text-muted small mb-0">
+                        Sudah punya akun?
+                        <a href="{{ route('login') }}" class="fw-semibold text-decoration-none" style="color: var(--undip-navy);">
+                            Masuk di sini
+                        </a>
+                    </p>
+                </div>
             </div>
         </div>
     </div>
@@ -77,9 +99,6 @@
 @endsection
 
 @push('scripts')
-{{-- Umpan balik lebih cepat untuk kecocokan password. Aturan `confirmed` di
-     server tetap sumber kebenaran: tanpa JavaScript, form ini tetap terkirim
-     dan errornya muncul dari server. --}}
 <script>
     (function () {
         const password = document.getElementById('password');

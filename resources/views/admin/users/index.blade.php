@@ -7,7 +7,7 @@
 @section('page-actions')
     {{-- Peta 2.4: A3 "Tambah Akun" → A4. Satu tombol di header, bukan per baris —
          A3 tidak punya tombol aksi per baris (bagian 1.4) --}}
-    <a href="{{ route('admin.users.create') }}" class="btn btn-primary btn-sm">
+    <a href="{{ route('admin.users.create') }}" class="btn btn-undip-primary btn-sm shadow-sm">
         <i class="bi bi-person-plus me-1"></i>Tambah Akun
     </a>
 @endsection
@@ -48,7 +48,7 @@
     ];
 @endphp
 
-<div class="card border-0 shadow-sm">
+<div class="card card-undip border shadow-sm">
 
     {{-- ── Filter: tab status + penanda pending + select role ── --}}
     <div class="card-header bg-white py-3">

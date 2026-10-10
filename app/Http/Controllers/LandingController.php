@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Facility;
 use App\Support\Slot;
-use Illuminate\Http\Request;
 
 class LandingController extends Controller
 {

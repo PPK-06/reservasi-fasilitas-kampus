@@ -13,7 +13,7 @@
 @section('content')
 <div class="row justify-content-center">
     <div class="col-lg-8">
-        <div class="card border-0 shadow-sm">
+        <div class="card card-undip border shadow-sm">
             <div class="card-body p-4">
                 <p class="text-muted" style="font-size:0.9rem;">
                     Akun yang dibuat admin langsung berstatus terverifikasi dan bisa
@@ -92,9 +92,9 @@
                         </div>
                     </div>
 
-                    <div class="d-flex justify-content-end gap-2 mt-2">
+                    <div class="d-flex justify-content-end gap-2 mt-3 pt-3 border-top">
                         <a href="{{ route('admin.users.index') }}" class="btn btn-outline-secondary">Batal</a>
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn btn-undip-primary shadow-sm">
                             <i class="bi bi-person-plus me-1"></i>Simpan Akun
                         </button>
                     </div>

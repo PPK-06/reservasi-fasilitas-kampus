@@ -11,7 +11,7 @@
     </div>
 @endif
 
-<div class="card shadow-sm mb-4">
+<div class="card card-undip border shadow-sm mb-4">
     <div class="card-body">
 
         <form method="GET"
@@ -119,7 +119,7 @@
 
             <div class="col-md-2 d-grid">
                 <button type="submit"
-                        class="btn btn-primary">
+                        class="btn btn-undip-primary">
                     Filter
                 </button>
             </div>
@@ -139,7 +139,7 @@
 </div>
 
 
-<div class="card shadow-sm">
+<div class="card card-undip border shadow-sm">
     <div class="card-body">
 
         @if ($reports->isEmpty())

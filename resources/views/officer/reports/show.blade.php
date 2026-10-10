@@ -55,7 +55,7 @@
 
     <div class="col-lg-7">
 
-        <div class="card shadow-sm">
+        <div class="card card-undip border shadow-sm">
             <div class="card-body p-4">
 
                 <div class="d-flex justify-content-between align-items-start mb-4">
@@ -132,10 +132,10 @@
         </div>
 
 
-        <div class="card shadow-sm mt-4">
+        <div class="card card-undip border shadow-sm mt-4">
             <div class="card-body p-4">
 
-                <h5 class="mb-3">
+                <h5 class="mb-3 font-heading fw-bold">
                     Foto Kerusakan
                 </h5>
 
@@ -173,10 +173,10 @@
 
     <div class="col-lg-5">
 
-        <div class="card shadow-sm">
+        <div class="card card-undip border shadow-sm">
             <div class="card-body p-4">
 
-                <h5 class="mb-3">
+                <h5 class="mb-3 font-heading fw-bold">
                     Tindak Lanjut Laporan
                 </h5>
 
@@ -275,7 +275,7 @@
                     <div class="d-grid">
 
                         <button type="submit"
-                                class="btn btn-primary">
+                                class="btn btn-undip-primary">
 
                             Simpan Perubahan
 
@@ -289,10 +289,10 @@
         </div>
 
 
-        <div class="card shadow-sm mt-4">
+        <div class="card card-undip border shadow-sm mt-4">
             <div class="card-body p-4">
 
-                <h5 class="mb-3">
+                <h5 class="mb-3 font-heading fw-bold">
                     Status Fasilitas
                 </h5>
 

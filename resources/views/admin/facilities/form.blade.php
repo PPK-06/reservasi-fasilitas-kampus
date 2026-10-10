@@ -17,7 +17,12 @@
 @section('content')
 <div class="row justify-content-center">
     <div class="col-lg-8">
-        <div class="card border-0 shadow-sm">
+        <div class="card card-undip border shadow-sm">
+            <div class="card-header bg-white py-3 border-bottom">
+                <h6 class="mb-0 fw-bold font-heading text-dark">
+                    <i class="bi bi-pencil-square me-2 text-primary"></i>Formulir Data Fasilitas Kampus
+                </h6>
+            </div>
             <div class="card-body p-4">
                 <form action="{{ $isEdit ? route('admin.facilities.update', $facility) : route('admin.facilities.store') }}" method="POST">
                     @csrf
@@ -131,9 +136,9 @@
                     </div>
 
                     {{-- Tombol Submit --}}
-                    <div class="d-flex justify-content-end gap-2">
+                    <div class="d-flex justify-content-end gap-2 pt-3 border-top">
                         <a href="{{ route('admin.facilities.index') }}" class="btn btn-outline-secondary">Batal</a>
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn btn-undip-primary shadow-sm">
                             <i class="bi bi-save me-1"></i>Simpan
                         </button>
                     </div>

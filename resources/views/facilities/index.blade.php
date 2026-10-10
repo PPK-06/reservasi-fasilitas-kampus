@@ -1,43 +1,44 @@
 @extends('layouts.app')
 
-@section('title', 'Daftar Fasilitas — Sistem Fasilitas Kampus')
+@section('title', 'Katalog Fasilitas Kampus — Universitas Diponegoro Tembalang')
 
-@section('page-title', 'Daftar Fasilitas')
+@section('page-title', 'Katalog Fasilitas Kampus')
+@section('page-subtitle', 'Daftar sarana perkuliahan, laboratorium, aula, dan perlengkapan kegiatan di Tembalang')
 @section('page-actions')
-    <span class="text-muted" style="font-size: 0.85rem;">
-        {{ $facilities->total() }} fasilitas ditemukan
+    <span class="badge bg-white text-dark border px-3 py-2 fw-semibold shadow-sm" style="font-size: 0.85rem;">
+        <i class="bi bi-collection me-1 text-primary"></i> {{ $facilities->total() }} fasilitas ditemukan
     </span>
 @endsection
 
 @section('content')
 
 {{-- ═══════════════════════════════════════════════════════
-     FILTER PENCARIAN — US 2 (tipe, lokasi, kapasitas)
-     Dropdown diisi dari konstanta PHP (F6 / D1 / D2)
+     FILTER PENCARIAN (Tipe, Lokasi, Kapasitas)
+     Dropdown dari konstanta model Facility (F6 / D1 / D2)
      ═══════════════════════════════════════════════════════ --}}
-<div class="card border-0 shadow-sm mb-4">
-    <div class="card-body py-3">
+<div class="card card-undip mb-4 border shadow-sm">
+    <div class="card-body p-4">
         <form method="GET" action="{{ route('facilities.index') }}" id="filterForm">
-            <div class="row g-2 align-items-end">
+            <div class="row g-3 align-items-end">
 
-                {{-- Pencarian nama --}}
+                {{-- Pencarian Nama --}}
                 <div class="col-lg-3 col-md-6">
-                    <label for="filterSearch" class="form-label fw-semibold mb-1" style="font-size:0.82rem;">
-                        <i class="bi bi-search me-1"></i>Cari nama
+                    <label for="filterSearch" class="form-label fw-semibold small text-dark mb-1">
+                        <i class="bi bi-search me-1 text-muted"></i>Cari Nama
                     </label>
                     <input type="text" name="search" id="filterSearch"
-                           class="form-control form-control-sm"
+                           class="form-control"
                            value="{{ request('search') }}"
-                           placeholder="Nama fasilitas…">
+                           placeholder="Contoh: Ruang A-101, Aula...">
                 </div>
 
-                {{-- Tipe —  F6: loop Facility::TYPES --}}
-                <div class="col-lg-2 col-md-6">
-                    <label for="filterType" class="form-label fw-semibold mb-1" style="font-size:0.82rem;">
-                        <i class="bi bi-tag me-1"></i>Tipe
+                {{-- Tipe --}}
+                <div class="col-lg-3 col-md-6">
+                    <label for="filterType" class="form-label fw-semibold small text-dark mb-1">
+                        <i class="bi bi-tag me-1 text-muted"></i>Tipe Sarana
                     </label>
-                    <select name="type" id="filterType" class="form-select form-select-sm">
-                        <option value="">Semua Tipe</option>
+                    <select name="type" id="filterType" class="form-select">
+                        <option value="">Semua Tipe Fasilitas</option>
                         @foreach (\App\Models\Facility::TYPES as $value => $label)
                             <option value="{{ $value }}" {{ request('type') === $value ? 'selected' : '' }}>
                                 {{ $label }}
@@ -46,13 +47,13 @@
                     </select>
                 </div>
 
-                {{-- Lokasi — F6: loop Facility::LOCATIONS --}}
-                <div class="col-lg-2 col-md-6">
-                    <label for="filterLocation" class="form-label fw-semibold mb-1" style="font-size:0.82rem;">
-                        <i class="bi bi-geo-alt me-1"></i>Lokasi
+                {{-- Lokasi Gedung --}}
+                <div class="col-lg-3 col-md-6">
+                    <label for="filterLocation" class="form-label fw-semibold small text-dark mb-1">
+                        <i class="bi bi-geo-alt me-1 text-muted"></i>Zona / Lokasi Gedung
                     </label>
-                    <select name="location" id="filterLocation" class="form-select form-select-sm">
-                        <option value="">Semua Lokasi</option>
+                    <select name="location" id="filterLocation" class="form-select">
+                        <option value="">Semua Lokasi Kampus</option>
                         @foreach (\App\Models\Facility::LOCATIONS as $value => $label)
                             <option value="{{ $value }}" {{ request('location') === $value ? 'selected' : '' }}>
                                 {{ $label }}
@@ -61,33 +62,31 @@
                     </select>
                 </div>
 
-                {{-- Kapasitas minimal — A4: hanya berlaku pada capacity IS NOT NULL --}}
-                <div class="col-lg-2 col-md-6">
-                    <label for="filterCapacity" class="form-label fw-semibold mb-1" style="font-size:0.82rem;">
-                        <i class="bi bi-people me-1"></i>Kapasitas min.
+                {{-- Kapasitas Minimal (A4: hanya untuk capacity IS NOT NULL) --}}
+                <div class="col-lg-3 col-md-6">
+                    <label for="filterCapacity" class="form-label fw-semibold small text-dark mb-1">
+                        <i class="bi bi-people me-1 text-muted"></i>Kapasitas Minimal
                     </label>
-                    <input type="number" name="capacity" id="filterCapacity"
-                           class="form-control form-control-sm"
-                           value="{{ request('capacity') }}"
-                           min="1" placeholder="cth: 20">
-                </div>
-
-                {{-- Tombol --}}
-                <div class="col-lg-3 col-md-12 d-flex gap-2">
-                    <button type="submit" class="btn btn-primary btn-sm px-3">
-                        <i class="bi bi-funnel me-1"></i>Filter
-                    </button>
-                    <a href="{{ route('facilities.index') }}" class="btn btn-outline-secondary btn-sm px-3">
-                        <i class="bi bi-arrow-counterclockwise me-1"></i>Reset
-                    </a>
+                    <div class="d-flex gap-2">
+                        <input type="number" name="capacity" id="filterCapacity"
+                               class="form-control"
+                               value="{{ request('capacity') }}"
+                               min="1" placeholder="cth: 30">
+                        <button type="submit" class="btn btn-undip-primary px-3" title="Terapkan Filter">
+                            <i class="bi bi-funnel"></i>
+                        </button>
+                        <a href="{{ route('facilities.index') }}" class="btn btn-outline-secondary px-3" title="Reset Filter">
+                            <i class="bi bi-arrow-counterclockwise"></i>
+                        </a>
+                    </div>
                 </div>
 
             </div>
 
             {{-- Catatan A4 --}}
             @if (request('capacity'))
-                <div class="mt-2">
-                    <small class="text-muted fst-italic">
+                <div class="mt-3 pt-2 border-top">
+                    <small class="text-muted">
                         <i class="bi bi-info-circle me-1"></i>Filter kapasitas tidak berlaku untuk tipe Alat
                         (kapasitas tidak relevan).
                     </small>
@@ -98,107 +97,149 @@
 </div>
 
 {{-- ═══════════════════════════════════════════════════════
-     GRID FASILITAS — D5: non-aktif tetap muncul
+     GRID FASILITAS KAMPUS (D5: non-aktif tetap muncul)
      ═══════════════════════════════════════════════════════ --}}
 @if ($facilities->count())
-    <div class="row g-3">
+    <div class="row g-4">
         @foreach ($facilities as $facility)
             @php
-                $isActive  = $facility->status === 'active';
-                $isMaint   = $facility->status === 'under_maintenance';
+                $isActive   = $facility->status === 'active';
+                $isMaint    = $facility->status === 'under_maintenance';
                 $isInactive = $facility->status === 'inactive';
+
+                // Pemilihan gambar yang otentik sesuai jenis fasilitas kampus
+                $thumbSrc = null;
+                $thumbSrcset = null;
+                $thumbAlt = 'Foto ' . $facility->name;
+
+                if ($facility->type === 'Ruang Kelas') {
+                    $thumbSrc = asset('images/landing/gedung-manajemen.webp');
+                    $thumbSrcset = asset('images/landing/gedung-manajemen-sm.webp') . ' 480w, ' . asset('images/landing/gedung-manajemen.webp') . ' 800w';
+                    $thumbAlt = 'Ruang kuliah dan kelas di lingkungan kampus Undip Tembalang';
+                } elseif ($facility->type === 'Laboratorium') {
+                    $thumbSrc = asset('images/landing/lab-diplomasi.webp');
+                    $thumbSrcset = asset('images/landing/lab-diplomasi-sm.webp') . ' 480w, ' . asset('images/landing/lab-diplomasi.webp') . ' 800w';
+                    $thumbAlt = 'Laboratorium riset dan komputer Undip Tembalang';
+                } elseif ($facility->type === 'Aula') {
+                    if (str_contains($facility->name, 'Utama')) {
+                        $thumbSrc = asset('images/landing/widya-puraya.webp');
+                        $thumbSrcset = asset('images/landing/widya-puraya-sm.webp') . ' 480w, ' . asset('images/landing/widya-puraya.webp') . ' 800w';
+                    } else {
+                        $thumbSrc = asset('images/landing/dekanat-ft.webp');
+                        $thumbSrcset = asset('images/landing/dekanat-ft-sm.webp') . ' 480w, ' . asset('images/landing/dekanat-ft.webp') . ' 800w';
+                    }
+                    $thumbAlt = 'Aula dan gedung pertemuan kampus Undip Tembalang';
+                }
             @endphp
 
             <div class="col-xl-3 col-lg-4 col-md-6">
-                <div class="card h-100 border-0 shadow-sm {{ !$isActive ? 'opacity-75' : '' }}"
-                     style="{{ !$isActive ? 'filter: grayscale(30%);' : '' }}">
+                <div class="card card-undip card-undip-interactive h-100 d-flex flex-column border {{ !$isActive ? 'opacity-75' : '' }}"
+                     style="{{ !$isActive ? 'filter: grayscale(25%);' : '' }}">
 
-                    {{-- Header kartu dengan badge status --}}
-                    <div class="card-header bg-white border-bottom-0 d-flex justify-content-between align-items-center py-2 px-3">
-                        <span class="badge {{ $isActive ? 'text-bg-success' : ($isMaint ? 'text-bg-warning' : 'text-bg-secondary') }}"
-                              style="font-size: 0.72rem;">
-                            @if ($isMaint)
-                                <i class="bi bi-tools me-1"></i>
-                            @elseif ($isInactive)
-                                <i class="bi bi-x-circle me-1"></i>
+                    {{-- Visual Header --}}
+                    <div class="position-relative overflow-hidden" style="height: 160px; border-top-left-radius: 13px; border-top-right-radius: 13px;">
+                        @if ($thumbSrc)
+                            <img src="{{ $thumbSrc }}"
+                                 srcset="{{ $thumbSrcset }}"
+                                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                                 alt="{{ $thumbAlt }}"
+                                 class="w-100 h-100 object-fit-cover"
+                                 loading="lazy">
+                        @else
+                            <div class="w-100 h-100 d-flex flex-column align-items-center justify-content-center"
+                                 style="background: linear-gradient(135deg, #07172C 0%, #134074 100%); color: #ffffff;">
+                                @if ($facility->type === 'Lapangan')
+                                    <i class="bi bi-trophy fs-2 mb-1 text-warning"></i>
+                                    <span style="font-size: 0.72rem;" class="text-white-50">Area Olahraga</span>
+                                @else
+                                    <i class="bi bi-box-seam fs-2 mb-1 text-warning"></i>
+                                    <span style="font-size: 0.72rem;" class="text-white-50">Unit Inventaris</span>
+                                @endif
+                            </div>
+                        @endif
+
+                        {{-- Badges di atas Foto --}}
+                        <div class="position-absolute top-0 start-0 m-2">
+                            <span class="badge bg-white text-dark shadow-sm border fw-semibold" style="font-size: 0.72rem;">
+                                {{ $facility->type }}
+                            </span>
+                        </div>
+
+                        <div class="position-absolute top-0 end-0 m-2">
+                            @if ($isActive)
+                                <span class="badge-status badge-status-approved shadow-sm">
+                                    <i class="bi bi-check-circle-fill"></i> Aktif
+                                </span>
+                            @elseif ($isMaint)
+                                <span class="badge-status badge-status-maintenance shadow-sm">
+                                    <i class="bi bi-tools"></i> Dalam Perbaikan
+                                </span>
                             @else
-                                <i class="bi bi-check-circle me-1"></i>
+                                <span class="badge-status badge-status-rejected shadow-sm">
+                                    <i class="bi bi-x-circle-fill"></i> Nonaktif
+                                </span>
                             @endif
-                            {{ $facility->statusLabel() }}
-                        </span>
-                        <span class="text-muted" style="font-size: 0.72rem;">
-                            {{ $facility->type }}
-                        </span>
+                        </div>
                     </div>
 
-                    {{-- Body --}}
-                    <div class="card-body pt-2">
-                        <h6 class="card-title fw-bold mb-1 {{ !$isActive ? 'text-muted' : 'text-dark' }}">
+                    {{-- Body Kartu --}}
+                    <div class="card-body p-3 d-flex flex-column flex-grow-1">
+                        <h6 class="fw-bold mb-1 font-heading text-truncate {{ !$isActive ? 'text-muted' : 'text-dark' }}"
+                            title="{{ $facility->name }}">
                             {{ $facility->name }}
                         </h6>
 
-                        <div class="d-flex flex-column gap-1 mb-2" style="font-size: 0.82rem;">
-                            <span class="text-muted">
-                                <i class="bi bi-geo-alt-fill me-1"></i>{{ $facility->location }}
+                        <div class="d-flex flex-column gap-1 my-2" style="font-size: 0.8rem;">
+                            <span class="text-muted text-truncate">
+                                <i class="bi bi-geo-alt-fill me-1 text-danger"></i>{{ $facility->location }}
                             </span>
                             @if ($facility->type !== 'Alat' && !is_null($facility->capacity))
                                 <span class="text-muted">
-                                    <i class="bi bi-people-fill me-1"></i>{{ $facility->capacity }} orang
+                                    <i class="bi bi-people-fill me-1 text-primary"></i>Kapasitas: {{ $facility->capacity }} orang
                                 </span>
                             @endif
                         </div>
 
                         @if ($facility->description)
-                            <p class="card-text text-muted mb-0" style="font-size: 0.8rem; line-height: 1.45;">
-                                {{ Str::limit($facility->description, 80) }}
+                            <p class="text-muted small mb-3 flex-grow-1" style="font-size: 0.78rem; line-height: 1.45;">
+                                {{ Str::limit($facility->description, 75) }}
                             </p>
+                        @else
+                            <div class="flex-grow-1"></div>
                         @endif
-                    </div>
 
-                    {{-- Footer: tombol detail --}}
-                    <div class="card-footer bg-white border-top-0 pb-3 px-3">
-                        <a href="{{ route('facilities.show', $facility) }}"
-                           class="btn btn-sm w-100 {{ $isActive ? 'btn-outline-primary' : 'btn-outline-secondary' }}">
-                            <i class="bi bi-eye me-1"></i>Lihat Detail
-                        </a>
-
-                        {{-- D5: penanda visual untuk fasilitas non-aktif --}}
-                        @if ($isMaint)
-                            <div class="text-center mt-2">
-                                <small class="text-warning fw-semibold" style="font-size: 0.73rem;">
-                                    <i class="bi bi-exclamation-triangle me-1"></i>Sedang dalam perbaikan
-                                </small>
-                            </div>
-                        @elseif ($isInactive)
-                            <div class="text-center mt-2">
-                                <small class="text-secondary fw-semibold" style="font-size: 0.73rem;">
-                                    <i class="bi bi-slash-circle me-1"></i>Tidak tersedia
-                                </small>
-                            </div>
-                        @endif
+                        {{-- Tombol Detail --}}
+                        <div class="pt-2 border-top mt-auto">
+                            <a href="{{ route('facilities.show', $facility) }}"
+                               class="btn btn-sm w-100 {{ $isActive ? 'btn-undip-primary' : 'btn-outline-secondary' }}">
+                                <i class="bi bi-eye me-1"></i>Lihat Detail
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
         @endforeach
     </div>
 
-    {{-- Paginasi — Bootstrap 5 (F11, AppServiceProvider) --}}
+    {{-- Paginasi Bersih --}}
     @if ($facilities->hasPages())
-        <div class="d-flex justify-content-center mt-4">
+        <div class="d-flex justify-content-center mt-4 pt-2">
             {{ $facilities->links() }}
         </div>
     @endif
 
 @else
-    {{-- Kosong --}}
-    <div class="card border-0 shadow-sm">
+    {{-- Empty State Ramah --}}
+    <div class="card card-undip border shadow-sm">
         <div class="card-body text-center py-5">
-            <i class="bi bi-building fs-1 text-muted d-block mb-2"></i>
-            <h6 class="fw-bold text-muted">Tidak ada fasilitas ditemukan</h6>
-            <p class="text-muted mb-3" style="font-size: 0.85rem;">
-                Coba ubah filter pencarian atau
-                <a href="{{ route('facilities.index') }}" class="text-decoration-none">reset semua filter</a>.
+            <i class="bi bi-building-slash fs-1 text-muted d-block mb-3"></i>
+            <h5 class="fw-bold text-dark font-heading mb-1">Tidak Ada Fasilitas Ditemukan</h5>
+            <p class="text-muted small mb-3">
+                Kriteria pencarian tidak cocok dengan sarana yang tersedia di kampus Tembalang.
             </p>
+            <a href="{{ route('facilities.index') }}" class="btn btn-undip-primary btn-sm px-4">
+                <i class="bi bi-arrow-counterclockwise me-1"></i>Reset Semua Filter
+            </a>
         </div>
     </div>
 @endif

@@ -4,7 +4,7 @@
 
 @section('page-title', 'Master Fasilitas')
 @section('page-actions')
-    <a href="{{ route('admin.facilities.create') }}" class="btn btn-primary btn-sm">
+    <a href="{{ route('admin.facilities.create') }}" class="btn btn-undip-primary btn-sm shadow-sm">
         <i class="bi bi-plus-lg me-1"></i>Tambah Fasilitas
     </a>
 @endsection
@@ -15,7 +15,7 @@
      FILTER — tipe, lokasi, status, pencarian nama
      Dropdown diisi dari konstanta PHP (F6 / D1 / D2 / D3)
      ═══════════════════════════════════════════════════════ --}}
-<div class="card border-0 shadow-sm mb-4">
+<div class="card card-undip border shadow-sm mb-4">
     <div class="card-body py-3">
         <form method="GET" action="{{ route('admin.facilities.index') }}" id="adminFilterForm">
             <div class="row g-2 align-items-end">
@@ -96,7 +96,7 @@
      Konvensi: card + table-responsive + thead biru primer
      (mengikuti UI snippets)
      ═══════════════════════════════════════════════════════ --}}
-<div class="card border-0 shadow-sm">
+<div class="card card-undip border shadow-sm">
     <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
         <h6 class="mb-0 fw-bold text-dark">
             <i class="bi bi-building me-1"></i>Daftar Fasilitas

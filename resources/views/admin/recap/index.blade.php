@@ -18,7 +18,7 @@
 @endif
 
 
-<div class="card shadow-sm mb-4">
+<div class="card card-undip border shadow-sm mb-4">
     <div class="card-body">
 
         <form
@@ -75,7 +75,7 @@
             <div class="col-md-2 d-grid">
                 <button
                     type="submit"
-                    class="btn btn-primary">
+                    class="btn btn-undip-primary shadow-sm">
                     Tampilkan
                 </button>
             </div>

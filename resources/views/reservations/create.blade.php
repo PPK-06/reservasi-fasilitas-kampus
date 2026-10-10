@@ -5,8 +5,13 @@
 
 @section('content')
 <div class="row justify-content-center">
-    <div class="col-lg-7">
-        <div class="card border-0 shadow-sm">
+    <div class="col-lg-8">
+        <div class="card card-undip border shadow-sm">
+            <div class="card-header bg-white py-3 border-bottom">
+                <h6 class="mb-0 fw-bold font-heading text-dark">
+                    <i class="bi bi-pencil-square me-2 text-primary"></i>Formulir Permohonan Reservasi
+                </h6>
+            </div>
             <div class="card-body p-4">
                 <form method="POST" action="{{ route('reservations.store') }}">
                     @csrf
@@ -148,7 +153,7 @@
                     </div>
 
                     <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-primary px-4">
+                        <button type="submit" class="btn btn-undip-primary px-4 shadow-sm">
                             <i class="bi bi-send me-1"></i>Ajukan
                         </button>
                         <a href="{{ route('reservations.index') }}" class="btn btn-outline-secondary">Batal</a>
