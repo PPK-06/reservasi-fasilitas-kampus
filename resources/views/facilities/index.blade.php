@@ -119,10 +119,9 @@
                     <div class="overflow-hidden" style="height: 160px; border-top-left-radius: 13px; border-top-right-radius: 13px;">
                         @if ($thumbSrc)
                             <img src="{{ $thumbSrc }}"
-                                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                                  alt="{{ $thumbAlt }}"
                                  class="w-100 h-100 object-fit-cover"
-                                 loading="lazy">
+                                 loading="eager">
                         @else
                             <div class="w-100 h-100 d-flex flex-column align-items-center justify-content-center"
                                  style="background: linear-gradient(135deg, #07172C 0%, #134074 100%); color: #ffffff;">

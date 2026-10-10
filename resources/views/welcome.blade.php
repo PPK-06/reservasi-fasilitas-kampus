@@ -114,10 +114,9 @@
                         <div class="overflow-hidden" style="height: 200px; border-top-left-radius: 13px; border-top-right-radius: 13px;">
                             @if ($imageSrc)
                                 <img src="{{ $imageSrc }}"
-                                     sizes="(max-width: 768px) 100vw, 33vw"
                                      alt="{{ $altText }}"
                                      class="w-100 h-100 object-fit-cover"
-                                     loading="lazy">
+                                     loading="eager">
                             @else
                                 <div class="w-100 h-100 d-flex flex-column align-items-center justify-content-center"
                                      style="background: linear-gradient(135deg, #07172C 0%, #134074 100%); color: #ffffff;">
@@ -499,7 +498,7 @@
                                          sizes="(max-width: 768px) 50vw, 20vw"
                                          alt="Monumen Patung Pangeran Diponegoro Tembalang"
                                          class="w-100 h-100 object-fit-cover"
-                                         loading="lazy">
+                                         loading="eager">
                                 </div>
                                 <div class="text-center py-1 bg-white border-top">
                                     <span class="text-dark small fw-semibold" style="font-size: 0.72rem;">Taman Diponegoro</span>
@@ -514,7 +513,7 @@
                                          sizes="(max-width: 768px) 50vw, 20vw"
                                          alt="Masjid Kampus Universitas Diponegoro Tembalang"
                                          class="w-100 h-100 object-fit-cover"
-                                         loading="lazy">
+                                         loading="eager">
                                 </div>
                                 <div class="text-center py-1 bg-white border-top">
                                     <span class="text-dark small fw-semibold" style="font-size: 0.72rem;">Masjid Kampus</span>
