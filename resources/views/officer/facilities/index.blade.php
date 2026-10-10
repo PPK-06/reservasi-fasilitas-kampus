@@ -73,7 +73,7 @@
 
                 {{-- Tombol --}}
                 <div class="col-lg-3 col-md-12 d-flex gap-2">
-                    <button type="submit" class="btn btn-primary btn-sm px-3">
+                    <button type="submit" class="btn btn-undip-primary btn-sm px-3">
                         <i class="bi bi-funnel me-1"></i>Filter
                     </button>
                     <a href="{{ route('officer.facilities.index') }}" class="btn btn-outline-secondary btn-sm px-3">
@@ -90,8 +90,8 @@
      TABEL DAFTAR FASILITAS
      ═══════════════════════════════════════════════════════ --}}
 <div class="card card-undip border shadow-sm">
-    <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
-        <h6 class="mb-0 fw-bold text-dark">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center py-3 border-bottom">
+        <h6 class="mb-0 fw-bold text-dark font-heading">
             <i class="bi bi-building me-1"></i>Daftar Ketersediaan Fasilitas
         </h6>
         <span class="text-muted" style="font-size: 0.82rem;">
@@ -101,7 +101,7 @@
     <div class="card-body p-0">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
-                <thead style="background-color: #0d3880; color: #fff;">
+                <thead style="background-color: var(--undip-navy); color: #ffffff;">
                     <tr>
                         <th class="ps-3" style="width:45px">#</th>
                         <th>Nama</th>
@@ -128,9 +128,9 @@
 
                             {{-- Nama --}}
                             <td>
-                                <span class="fw-semibold {{ $isInactive ? 'text-muted' : '' }}">
+                                <strong class="text-dark font-heading {{ $isInactive ? 'text-muted' : '' }}">
                                     {{ $facility->name }}
-                                </span>
+                                </strong>
                                 @if ($facility->description)
                                     <br>
                                     <small class="text-muted" style="font-size:0.78rem;">
@@ -163,16 +163,16 @@
                             {{-- Badge status (D3) --}}
                             <td class="text-center">
                                 @if ($isActive)
-                                    <span class="badge text-bg-success">
-                                        <i class="bi bi-check-circle me-1"></i>Aktif
+                                    <span class="badge-status badge-status-approved">
+                                        <i class="bi bi-check-circle"></i> Aktif
                                     </span>
                                 @elseif ($isMaint)
-                                    <span class="badge text-bg-warning">
-                                        <i class="bi bi-tools me-1"></i>Dalam Perbaikan
+                                    <span class="badge-status badge-status-maintenance">
+                                        <i class="bi bi-tools"></i> Dalam Perbaikan
                                     </span>
                                 @else
-                                    <span class="badge text-bg-secondary">
-                                        <i class="bi bi-x-circle me-1"></i>Nonaktif
+                                    <span class="badge-status badge-status-rejected">
+                                        <i class="bi bi-x-circle"></i> Nonaktif
                                     </span>
                                 @endif
                             </td>
