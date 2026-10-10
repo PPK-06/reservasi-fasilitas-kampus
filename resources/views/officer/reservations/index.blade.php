@@ -58,7 +58,7 @@
                             <small class="text-muted">{{ $r->user->identity_number ?? '-' }}</small>
                         </td>
                         <td class="small">{{ $r->start_time->format('d M Y') }}</td>
-                        <td class="small font-monospace">{{ $r->start_time->format('H:i') }} – {{ $r->end_time->format('H:i') }}</td>
+                        <td class="small">{{ $r->start_time->format('H:i') }} – {{ $r->end_time->format('H:i') }}</td>
                         <td>
                             @if ($r->status === 'pending' && $r->start_time->lte(now()))
                                 <span class="badge-status badge-status-rejected">
