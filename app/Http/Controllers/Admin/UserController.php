@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
+use App\Models\Reservation;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -90,13 +91,25 @@ class UserController extends Controller
     /**
      * A5 — detail satu akun.
      *
-     * Hanya menampilkan. Seluruh aksi berada di method PATCH di bawah, dan
-     * tombolnya dirender view mengikuti matriks C2.
+     * Seluruh aksi berada di method PATCH di bawah, dan tombolnya dirender
+     * view mengikuti matriks C2. Selain data akun, halaman ini membawa daftar
+     * reservasi approved mendatang milik akun untuk peringatan D4 di modal
+     * Nonaktifkan.
+     *
+     * Daftar itu hanya diambil untuk akun `verified`, satu-satunya status yang
+     * bisa di-suspend (C2). `upcomingApproved` mengelompokkan per fasilitas,
+     * sedangkan komponen D4 butuh satu daftar datar, jadi diratakan lalu
+     * diurutkan ulang menurut waktu mulai.
      */
     public function show(User $user): View
     {
+        $upcomingReservations = $user->status === 'verified'
+            ? Reservation::upcomingApproved(user: $user)->flatten(1)->sortBy('start_time')->values()
+            : collect();
+
         return view('admin.users.show', [
             'user' => $user,
+            'upcomingReservations' => $upcomingReservations,
         ]);
     }
 
@@ -165,11 +178,51 @@ class UserController extends Controller
     }
 
     /**
-     * A5 — transisi `verified` → `suspended` (C2).
+     * A5 — transisi `verified` → `suspended` (C2), tujuan A5 (bagian 11).
+     *
+     * Cakupannya hanya dari `verified`. Akun `pending` dan `rejected` belum
+     * pernah punya akses, jadi tidak ada yang perlu ditutup; akun `suspended`
+     * sudah tertutup. Memulihkan akses adalah pekerjaan activate.
+     *
+     * Admin tidak boleh men-suspend akunnya sendiri, dan ini diperiksa lebih
+     * dulu daripada status. A4 tidak bisa membuat akun admin, jadi admin yang
+     * menonaktifkan dirinya sendiri bisa berakhir dengan sistem tanpa admin
+     * yang bisa masuk (lockout). Men-suspend admin lain tetap boleh.
+     *
+     * Reservasi approved milik akun ini tidak dibatalkan (C6). Daftarnya hanya
+     * diperlihatkan sebagai peringatan D4 di modal konfirmasi; pembatalannya
+     * tetap pekerjaan petugas.
+     *
+     * Diperiksa di server, bukan hanya disembunyikan di tampilan: PATCH yang
+     * dikirim langsung untuk status lain atau untuk diri sendiri tetap harus
+     * ditolak. Hanya kolom status yang berubah.
      */
-    public function suspend(User $user): RedirectResponse
+    public function suspend(Request $request, User $user): RedirectResponse
     {
-        abort(501);
+        if ($user->is($request->user())) {
+            return redirect()
+                ->route('admin.users.show', $user)
+                ->with('error', 'Anda tidak dapat menonaktifkan akun Anda sendiri.');
+        }
+
+        if ($user->status !== 'verified') {
+            $alasan = match ($user->status) {
+                'pending' => 'Akun yang masih menunggu belum pernah diberi akses, jadi tidak dinonaktifkan. Pakai aksi Verifikasi atau Tolak untuk menilai pendaftarannya.',
+                'rejected' => 'Akun yang ditolak tidak punya akses, jadi tidak dinonaktifkan.',
+                default => 'Akun ini sudah berstatus dinonaktifkan.',
+            };
+
+            return redirect()
+                ->route('admin.users.show', $user)
+                ->with('error', $alasan);
+        }
+
+        $user->status = 'suspended';
+        $user->save();
+
+        return redirect()
+            ->route('admin.users.show', $user)
+            ->with('success', 'Akun '.$user->name.' berhasil dinonaktifkan.');
     }
 
     /**
