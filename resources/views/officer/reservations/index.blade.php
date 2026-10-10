@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Antrian Reservasi Petugas — Sistem Fasilitas Kampus Undip')
+@section('title', 'Antrian Reservasi Petugas | Sistem Fasilitas Kampus Undip')
 @section('page-title', 'Antrian Validasi Reservasi')
 @section('page-subtitle', 'Pemeriksaan kelayakan permohonan peminjaman ruangan kampus oleh petugas')
 

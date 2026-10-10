@@ -214,9 +214,9 @@
                 <div class="small text-muted">
 
                     Okupansi =
-                    slot terpakai ÷
-                    (26 × jumlah hari)
-                    × 100%.
+                    slot terpakai Ã·
+                    (26 Ã— jumlah hari)
+                    Ã— 100%.
 
                     Hanya reservasi berstatus
                     <code>approved</code>

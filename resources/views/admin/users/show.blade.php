@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Detail Akun — Sistem Fasilitas Kampus')
+@section('title', 'Detail Akun | Sistem Fasilitas Kampus')
 
 @section('page-title', 'Detail Akun')
 
@@ -37,7 +37,7 @@
         'admin' => 'Admin',
     ];
 
-    // C4 — nullable karena role; petugas dan admin tidak punya keduanya.
+    // C4 | nullable karena role; petugas dan admin tidak punya keduanya.
     $userTypeLabels = [
         'mahasiswa' => 'Mahasiswa',
         'dosen' => 'Dosen',
@@ -170,7 +170,7 @@
 </div>
 
 {{-- ════════════════════════════════════════════
-     MODAL NONAKTIFKAN — transisi verified → suspended (C2)
+     MODAL NONAKTIFKAN | transisi verified → suspended (C2)
      D4: reservasi approved mendatang milik akun ini ditampilkan sebagai
      peringatan, tidak dibatalkan (C6).
      ════════════════════════════════════════════ --}}
@@ -213,7 +213,7 @@
 @endif
 
 {{-- ════════════════════════════════════════════
-     MODAL RESET PASSWORD — kontrak bagian 25
+     MODAL RESET PASSWORD | kontrak bagian 25
      Pesan error tidak dicetak ulang di sini; layout induk sudah menampilkan
      seluruhnya lewat banner $errors->any() (D8). Field password tidak diisi
      ulang dengan old() karena password tidak pernah dikembalikan ke browser.

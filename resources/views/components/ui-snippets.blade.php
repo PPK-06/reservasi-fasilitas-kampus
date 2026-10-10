@@ -1,6 +1,6 @@
 {{--
 ================================================================================
-  KOMPONEN UI — COPY-PASTE SNIPPETS
+  KOMPONEN UI | COPY-PASTE SNIPPETS
   Tiga blok siap pakai berbasis Bootstrap murni.
   Tidak ada class custom yang dibutuhkan.
 ================================================================================
@@ -186,7 +186,7 @@
     </div>
 </div>
 
-<!-- Script — masuk ke @push('scripts') di view bersangkutan -->
+<!-- Script | masuk ke @push('scripts') di view bersangkutan -->
 @push('scripts')
 <script>
 document.getElementById('confirmModal').addEventListener('show.bs.modal', function (event) {
@@ -259,7 +259,7 @@ document.getElementById('confirmModal').addEventListener('show.bs.modal', functi
     </div>
 </div>
 
-<!-- Script — masuk ke @push('scripts') di view bersangkutan -->
+<!-- Script | masuk ke @push('scripts') di view bersangkutan -->
 @push('scripts')
 <script>
 document.getElementById('rejectModal').addEventListener('show.bs.modal', function (event) {

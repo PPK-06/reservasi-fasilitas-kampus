@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Daftar Akun — Sistem Fasilitas Kampus')
+@section('title', 'Daftar Akun | Sistem Fasilitas Kampus')
 
 @section('page-title', 'Daftar Akun')
 
 @section('page-actions')
-    {{-- Peta 2.4: A3 "Tambah Akun" → A4. Satu tombol di header, bukan per baris —
+    {{-- Peta 2.4: A3 "Tambah Akun" → A4. Satu tombol di header, bukan per baris -
          A3 tidak punya tombol aksi per baris (bagian 1.4) --}}
     <a href="{{ route('admin.users.create') }}" class="btn btn-undip-primary btn-sm shadow-sm">
         <i class="bi bi-person-plus me-1"></i>Tambah Akun
@@ -38,7 +38,7 @@
         'admin' => 'Admin',
     ];
 
-    // D11 — status sebagai tab. Tab "Semua" tidak membawa parameter status (D12).
+    // D11 | status sebagai tab. Tab "Semua" tidak membawa parameter status (D12).
     $statusTabs = [
         ['value' => null, 'label' => 'Semua'],
         ['value' => 'pending', 'label' => 'Menunggu'],
@@ -54,7 +54,7 @@
     <div class="card-header bg-white py-3">
         <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
 
-            {{-- D11 — tab status. Setiap tautan membawa role yang sedang aktif
+            {{-- D11 | tab status. Setiap tautan membawa role yang sedang aktif
                  supaya filter role tidak hilang saat tab diganti. --}}
             <ul class="nav nav-pills gap-1 flex-wrap">
                 @foreach ($statusTabs as $tab)
@@ -84,7 +84,7 @@
                     </span>
                 </a>
 
-                {{-- D11 — role sebagai select. Status yang sedang aktif dibawa
+                {{-- D11 | role sebagai select. Status yang sedang aktif dibawa
                      sebagai hidden input, kalau tidak filter status hilang tiap
                      kali role diganti. --}}
                 <form method="GET" action="{{ route('admin.users.index') }}" class="d-flex align-items-center gap-2">
@@ -151,15 +151,15 @@
                                 </a>
                             </td>
                             <td class="p-0">
-                                {{-- Skema 6.1: nullable karena role — petugas dan
+                                {{-- Skema 6.1: nullable karena role | petugas dan
                                      admin memang tidak punya NIM/NIP (C4) --}}
                                 <a href="{{ $rowUrl }}" class="d-block text-decoration-none text-reset px-2 py-2">
-                                    {{ $user->identity_number ?? '—' }}
+                                    {{ $user->identity_number ?? '-' }}
                                 </a>
                             </td>
                             <td class="p-0">
                                 <a href="{{ $rowUrl }}" class="d-block text-decoration-none text-reset px-2 pe-3 py-2 text-muted">
-                                    {{ $user->created_at?->format('d M Y') ?? '—' }}
+                                    {{ $user->created_at?->format('d M Y') ?? '-' }}
                                 </a>
                             </td>
                         </tr>

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Detail Reservasi — Sistem Fasilitas Kampus Undip')
+@section('title', 'Detail Reservasi | Sistem Fasilitas Kampus Undip')
 @section('page-title', 'Detail Permohonan Reservasi')
 @section('page-subtitle', 'Informasi lengkap jadwal peminjaman ruangan dan status persetujuan')
 @section('page-actions')
@@ -53,7 +53,7 @@
                     <dt class="col-sm-4 text-muted small fw-semibold">Fasilitas</dt>
                     <dd class="col-sm-8 fw-semibold text-dark mb-2">
                         {{ $reservation->facility->name }}
-                        <div class="text-muted small fw-normal">{{ $reservation->facility->type }} — {{ $reservation->facility->location }}</div>
+                        <div class="text-muted small fw-normal">{{ $reservation->facility->type }} | {{ $reservation->facility->location }}</div>
                     </dd>
 
                     <dt class="col-sm-4 text-muted small fw-semibold">Tanggal</dt>

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Tambah Akun — Sistem Fasilitas Kampus')
+@section('title', 'Tambah Akun | Sistem Fasilitas Kampus')
 
 @section('page-title', 'Tambah Akun')
 
@@ -67,7 +67,7 @@
                         </select>
                     </div>
 
-                    {{-- C4 — hanya relevan untuk role pengguna. Tanpa JavaScript
+                    {{-- C4 | hanya relevan untuk role pengguna. Tanpa JavaScript
                          keduanya tetap tampil dan tidak ber-atribut required;
                          `required_if:role,pengguna` di server satu-satunya penjaga. --}}
                     <div id="identityFields">

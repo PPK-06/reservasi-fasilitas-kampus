@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Katalog Fasilitas Kampus — Universitas Diponegoro Tembalang')
+@section('title', 'Katalog Fasilitas Kampus | Universitas Diponegoro Tembalang')
 
 @section('page-title', 'Katalog Fasilitas Kampus')
 @section('page-subtitle', 'Daftar sarana perkuliahan, laboratorium, aula, dan perlengkapan kegiatan di Tembalang')

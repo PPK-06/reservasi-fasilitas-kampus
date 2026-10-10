@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Riwayat Reservasi — Sistem Fasilitas Kampus Undip')
+@section('title', 'Riwayat Reservasi | Sistem Fasilitas Kampus Undip')
 @section('page-title', 'Riwayat Reservasi Saya')
 @section('page-subtitle', 'Pantau status permohonan peminjaman ruangan dan sarana kampus Tembalang')
 @section('page-actions')

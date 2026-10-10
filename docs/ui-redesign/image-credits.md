@@ -62,7 +62,7 @@ Dokumen pencatatan sumber gambar, lisensi, kepemilikan, dan tanggal akses sesuai
 - **Tanggal Akses**: 10 Oktober 2026
 
 ### G. Logo Resmi Universitas Diponegoro
-- **File Lokal**: `public/images/landing/logo-undip.webp` dan `logo-undip.png`
+- **File Lokal**: `public/images/landing/logo-undip.webp`
 - **Sumber**: Wikimedia / Identitas Institusi Resmi Undip
 - **URL Sumber**: https://upload.wikimedia.org/wikipedia/id/9/9b/UNDIPOfficial.png
 - **Pemilik / Hak Cipta**: Universitas Diponegoro

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Master Fasilitas — Sistem Fasilitas Kampus')
+@section('title', 'Master Fasilitas | Sistem Fasilitas Kampus')
 
 @section('page-title', 'Master Fasilitas')
 @section('page-actions')
@@ -12,7 +12,7 @@
 @section('content')
 
 {{-- ═══════════════════════════════════════════════════════
-     FILTER — tipe, lokasi, status, pencarian nama
+     FILTER | tipe, lokasi, status, pencarian nama
      Dropdown diisi dari konstanta PHP (F6 / D1 / D2 / D3)
      ═══════════════════════════════════════════════════════ --}}
 <div class="card card-undip border shadow-sm mb-4">
@@ -31,7 +31,7 @@
                            placeholder="Nama fasilitas…">
                 </div>
 
-                {{-- Tipe — F6: loop Facility::TYPES --}}
+                {{-- Tipe | F6: loop Facility::TYPES --}}
                 <div class="col-lg-2 col-md-6">
                     <label for="filterType" class="form-label fw-semibold mb-1" style="font-size:0.82rem;">
                         <i class="bi bi-tag me-1"></i>Tipe
@@ -46,7 +46,7 @@
                     </select>
                 </div>
 
-                {{-- Lokasi — F6: loop Facility::LOCATIONS --}}
+                {{-- Lokasi | F6: loop Facility::LOCATIONS --}}
                 <div class="col-lg-2 col-md-6">
                     <label for="filterLocation" class="form-label fw-semibold mb-1" style="font-size:0.82rem;">
                         <i class="bi bi-geo-alt me-1"></i>Lokasi
@@ -61,7 +61,7 @@
                     </select>
                 </div>
 
-                {{-- Status — D3: loop Facility::STATUSES --}}
+                {{-- Status | D3: loop Facility::STATUSES --}}
                 <div class="col-lg-2 col-md-6">
                     <label for="filterStatus" class="form-label fw-semibold mb-1" style="font-size:0.82rem;">
                         <i class="bi bi-circle-half me-1"></i>Status
@@ -163,7 +163,7 @@
                                 @if ($facility->type !== 'Alat' && !is_null($facility->capacity))
                                     <span style="font-size:0.85rem;">{{ $facility->capacity }}</span>
                                 @else
-                                    <span class="text-muted" style="font-size:0.78rem;">—</span>
+                                    <span class="text-muted" style="font-size:0.78rem;">-</span>
                                 @endif
                             </td>
 
@@ -256,7 +256,7 @@
 </div>
 
 {{-- ═══════════════════════════════════════════════════════
-     MODAL UBAH STATUS — satu modal per fasilitas
+     MODAL UBAH STATUS | satu modal per fasilitas
      D4: kalau fasilitas punya reservasi approved mendatang,
          modal menampilkan peringatan berisi daftar reservasi.
      ═══════════════════════════════════════════════════════ --}}

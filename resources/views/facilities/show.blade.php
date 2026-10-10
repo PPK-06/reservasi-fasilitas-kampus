@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $facility->name . ' — Sistem Fasilitas Kampus')
+@section('title', $facility->name . ' | Sistem Fasilitas Kampus')
 
 @section('page-title', 'Detail Fasilitas')
 @section('page-actions')
@@ -18,7 +18,7 @@
 @endphp
 
 {{-- ═══════════════════════════════════════════════════════
-     BANNER D5 — Fasilitas dalam perbaikan / nonaktif
+     BANNER D5 | Fasilitas dalam perbaikan / nonaktif
      ═══════════════════════════════════════════════════════ --}}
 @if ($isMaint)
     <div class="alert alert-warning border-0 shadow-sm d-flex align-items-center mb-4" role="alert">
@@ -45,7 +45,7 @@
 <div class="row g-4">
 
     {{-- ═══════════════════════════════════════════════════════
-         KOLOM KIRI — Informasi Fasilitas
+         KOLOM KIRI | Informasi Fasilitas
          ═══════════════════════════════════════════════════════ --}}
     <div class="col-lg-8">
         <div class="card card-undip border shadow-sm">
@@ -276,10 +276,10 @@
     </div>
 
     {{-- ═══════════════════════════════════════════════════════
-         KOLOM KANAN — Tombol Aksi + Info Ringkas
+         KOLOM KANAN | Tombol Aksi + Info Ringkas
          ═══════════════════════════════════════════════════════ --}}
     <div class="col-lg-4">
-        {{-- Tombol aksi — hanya untuk pengguna yang login sebagai 'pengguna' --}}
+        {{-- Tombol aksi | hanya untuk pengguna yang login sebagai 'pengguna' --}}
         @auth
             @if (auth()->user()->role === 'pengguna')
                 <div class="card card-undip border shadow-sm mb-4">

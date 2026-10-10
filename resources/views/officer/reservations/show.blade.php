@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Detail Reservasi — Petugas')
+@section('title', 'Detail Reservasi | Petugas')
 @section('page-title', 'Detail Reservasi Petugas')
 @section('page-subtitle', 'Pemeriksaan kelayakan permohonan peminjaman ruangan dan aksi validasi')
 @section('page-actions')
@@ -49,7 +49,7 @@
                     <dt class="col-sm-4 text-muted small fw-semibold">Fasilitas</dt>
                     <dd class="col-sm-8 fw-semibold text-dark mb-2">
                         {{ $reservation->facility->name }}
-                        <div class="text-muted small fw-normal">{{ $reservation->facility->type }} — {{ $reservation->facility->location }}</div>
+                        <div class="text-muted small fw-normal">{{ $reservation->facility->type }} | {{ $reservation->facility->location }}</div>
                     </dd>
 
                     <dt class="col-sm-4 text-muted small fw-semibold">Pemohon</dt>
@@ -126,7 +126,7 @@
             @elseif ($isExpired)
             <div class="card-footer bg-white border-top py-3 px-4">
                 <span class="text-muted small">
-                    <i class="bi bi-lock me-1"></i>Reservasi terlewat — aksi tidak tersedia.
+                    <i class="bi bi-lock me-1"></i>Reservasi terlewat | aksi tidak tersedia.
                 </span>
             </div>
             @endif

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Registrasi Akun Civitas — Sistem Fasilitas Kampus Undip')
+@section('title', 'Registrasi Akun Civitas | Sistem Fasilitas Kampus Undip')
 
 @section('content')
 <div class="row justify-content-center py-4">

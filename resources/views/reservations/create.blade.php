@@ -25,7 +25,7 @@
                             @foreach ($facilities as $facility)
                                 <option value="{{ $facility->id }}"
                                     {{ old('facility_id', $selectedFacility?->id) == $facility->id ? 'selected' : '' }}>
-                                    {{ $facility->name }} ({{ $facility->type }} — {{ $facility->location }})
+                                    {{ $facility->name }} ({{ $facility->type }} | {{ $facility->location }})
                                 </option>
                             @endforeach
                         </select>
@@ -49,7 +49,7 @@
                         <div class="form-text">Minimal besok, maksimal 30 hari ke depan.</div>
                     </div>
 
-                    {{-- Slot Waktu — Pemilihan Langsung di Grid --}}
+                    {{-- Slot Waktu | Pemilihan Langsung di Grid --}}
                     <div class="mb-4">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <label class="form-label fw-semibold mb-0">

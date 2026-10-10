@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Reservasi Fasilitas Kampus — Universitas Diponegoro Tembalang')
+@section('title', 'Reservasi Fasilitas Kampus | Universitas Diponegoro Tembalang')
 
 @section('full-width-content')
 {{-- ════════════════════════════════════════════════════════════════════════
@@ -8,7 +8,7 @@
      ════════════════════════════════════════════════════════════════════════ --}}
 <section class="py-5 bg-white border-bottom position-relative overflow-hidden">
     <div class="container py-lg-4">
-        <div class="row align-items-center g-5">
+        <div class="row align-items-center g-4 g-lg-5">
             {{-- Kolom Teks & CTA --}}
             <div class="col-lg-6">
                 <div class="d-inline-flex align-items-center gap-2 px-3 py-1 mb-3 rounded-pill"
@@ -251,7 +251,7 @@
             <div class="col-md-6 col-lg-3">
                 <div class="card-undip p-4 h-100 border text-center">
                     <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3 mx-auto"
-                         style="width: 54px; height: 54px; background-color: var(--undip-gold-subtle); color: var(--undip-gold-hover);">
+                         style="width: 54px; height: 54px; background-color: var(--undip-gold-subtle); color: #7A5200;">
                         <span class="fw-bold fs-5 font-heading">2</span>
                     </div>
                     <h5 class="fw-bold mb-2 font-heading">Pilih Waktu & Isi Data</h5>
@@ -366,7 +366,7 @@
      ════════════════════════════════════════════════════════════════════════ --}}
 <section class="py-5 bg-white border-top border-bottom">
     <div class="container py-4">
-        <div class="row g-5">
+        <div class="row g-4 g-lg-5">
             {{-- Ketentuan Peminjaman --}}
             <div class="col-lg-5">
                 <span class="text-uppercase fw-bold text-muted small" style="letter-spacing: 0.05em;">Pedoman Kampus</span>
@@ -513,7 +513,7 @@
                 </div>
 
                 <div class="col-lg-5 text-lg-end">
-                    <div class="p-4 rounded-3 text-start" style="background-color: var(--undip-blue-surface); border: 1px solid #DCE7F2;">
+                    <div class="p-4 rounded-3 text-start mb-3" style="background-color: var(--undip-blue-surface); border: 1px solid #DCE7F2;">
                         <h6 class="fw-bold text-dark font-heading mb-2">Butuh Bantuan Reservasi?</h6>
                         <p class="text-muted small mb-3">
                             Konsultasikan kebutuhan aula besar atau penggunaan multi-hari bersama bagian sarana dan prasarana.
@@ -521,6 +521,35 @@
                         <a href="{{ route('facilities.index') }}" class="btn btn-undip-primary w-100">
                             <i class="bi bi-search me-2"></i>Eksplorasi Katalog Lengkap
                         </a>
+                    </div>
+
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <div class="rounded-2 overflow-hidden border shadow-sm position-relative" style="height: 100px;">
+                                <img src="{{ asset('images/landing/patung-diponegoro.webp') }}"
+                                     srcset="{{ asset('images/landing/patung-diponegoro-sm.webp') }} 480w, {{ asset('images/landing/patung-diponegoro.webp') }} 800w"
+                                     sizes="(max-width: 768px) 50vw, 20vw"
+                                     alt="Monumen Patung Pangeran Diponegoro Tembalang"
+                                     class="w-100 h-100 object-fit-cover"
+                                     loading="lazy">
+                                <span class="position-absolute bottom-0 start-0 w-100 text-center py-1 bg-dark bg-opacity-75 text-white" style="font-size: 0.68rem; font-weight: 600;">
+                                    Taman Diponegoro
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="rounded-2 overflow-hidden border shadow-sm position-relative" style="height: 100px;">
+                                <img src="{{ asset('images/landing/masjid-kampus.webp') }}"
+                                     srcset="{{ asset('images/landing/masjid-kampus-sm.webp') }} 480w, {{ asset('images/landing/masjid-kampus.webp') }} 800w"
+                                     sizes="(max-width: 768px) 50vw, 20vw"
+                                     alt="Masjid Kampus Universitas Diponegoro Tembalang"
+                                     class="w-100 h-100 object-fit-cover"
+                                     loading="lazy">
+                                <span class="position-absolute bottom-0 start-0 w-100 text-center py-1 bg-dark bg-opacity-75 text-white" style="font-size: 0.68rem; font-weight: 600;">
+                                    Masjid Kampus
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
