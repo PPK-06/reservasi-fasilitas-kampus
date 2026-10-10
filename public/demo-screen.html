@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Reservasi Wiyata</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            padding: 0;
+            background: #07172C;
+            font-family: 'Outfit', sans-serif;
+            width: 960px;
+            height: 600px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .app-window {
+            width: 920px;
+            height: 560px;
+            background: #F8FAFC;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.15);
+            position: relative;
+        }
+        .window-topbar {
+            background: #0B2545;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid #C89B3C;
+        }
+        .topbar-dots {
+            display: flex;
+            gap: 6px;
+        }
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        .dot-red { background: #FF5F56; }
+        .dot-yellow { background: #FFBD2E; }
+        .dot-green { background: #27C93F; }
+        .topbar-title {
+            color: #ffffff;
+            font-size: 0.82rem;
+            font-weight: 700;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .topbar-url {
+            background: rgba(255,255,255,0.12);
+            color: rgba(255,255,255,0.8);
+            font-size: 0.72rem;
+            padding: 2px 14px;
+            border-radius: 20px;
+            font-family: monospace;
+        }
+        .app-content {
+            flex: 1;
+            padding: 20px 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            position: relative;
+        }
+        .card-box {
+            background: #ffffff;
+            border: 1px solid #E2E8F0;
+            border-radius: 10px;
+            padding: 18px 22px;
+            box-shadow: 0 2px 8px rgba(11,37,69,0.04);
+        }
+        .slot-btn {
+            border: 1.5px solid #CBD5E1;
+            border-radius: 8px;
+            padding: 10px 14px;
+            background: #FFFFFF;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .slot-btn.selected {
+            border-color: #C89B3C;
+            background: #FDF9EE;
+            box-shadow: 0 0 0 2px rgba(200, 155, 60, 0.25);
+        }
+        .slot-btn.disabled {
+            background: #F1F5F9;
+            opacity: 0.6;
+            cursor: not-allowed;
+            border-color: #E2E8F0;
+        }
+        .btn-submit {
+            background: #0B2545;
+            color: #ffffff;
+            font-weight: 600;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+        .btn-submit.active-click {
+            transform: scale(0.97);
+            background: #134074;
+            box-shadow: 0 0 0 4px rgba(200, 155, 60, 0.4);
+        }
+        /* Virtual cursor */
+        .cursor-pointer-sim {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            z-index: 999;
+            transition: transform 0.4s ease-out;
+            pointer-events: none;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+        /* Modal Success Popup */
+        .success-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(7, 23, 44, 0.65);
+            backdrop-filter: blur(2px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 800;
+        }
+        .success-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .success-modal {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 24px 28px;
+            width: 440px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+            border: 2px solid #C89B3C;
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .success-overlay.show .success-modal {
+            transform: scale(1);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-window">
+        <!-- Top bar -->
+        <div class="window-topbar">
+            <div class="topbar-dots">
+                <div class="dot dot-red"></div>
+                <div class="dot dot-yellow"></div>
+                <div class="dot dot-green"></div>
+            </div>
+            <div class="topbar-title">
+                <img src="/favicon-32x32.png" width="18" height="18" alt="Logo">
+                <span>Wiyata · Reservasi Fasilitas Undip</span>
+            </div>
+            <div class="topbar-url">wiyata.undip.ac.id/reservations/create</div>
+        </div>
+
+        <!-- Content -->
+        <div class="app-content">
+            <!-- Facility Info Strip -->
+            <div class="card-box d-flex justify-content-between align-items-center py-2 px-3" style="background:#F0F4F8; border-color:#D6E4F0;">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge" style="background-color: var(--undip-gold, #C89B3C); color: #07172C; font-weight:700;">AULA</span>
+                    <strong class="text-dark font-heading" style="font-size: 0.95rem;">Aula Utama (Gedung Serba Guna)</strong>
+                    <span class="text-muted small">• Kapasitas 500 orang</span>
+                </div>
+                <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 small">
+                    <i class="bi bi-check-circle-fill me-1"></i>Siap Dipesan
+                </span>
+            </div>
+
+            <!-- Main Form Grid -->
+            <div class="row g-3">
+                <!-- Left: Date & Slot -->
+                <div class="col-7">
+                    <div class="card-box h-100">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <label class="form-label fw-bold small text-dark mb-0">Pilih Jadwal & Slot Waktu</label>
+                            <span class="text-muted" style="font-size:0.75rem;"><i class="bi bi-calendar3 me-1"></i>Kamis, 15 Okt 2026</span>
+                        </div>
+                        <div class="d-flex flex-column gap-2" id="slotList">
+                            <div class="slot-btn" id="slot1">
+                                <div>
+                                    <strong class="text-dark small d-block">Sesi 1 · 07:30 – 09:30 WIB</strong>
+                                    <span class="text-muted" style="font-size: 0.72rem;">Sesi Pagi</span>
+                                </div>
+                                <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size:0.7rem;">Tersedia</span>
+                            </div>
+
+                            <div class="slot-btn" id="slot2">
+                                <div>
+                                    <strong class="text-dark small d-block" id="slot2Title">Sesi 2 · 09:30 – 11:30 WIB</strong>
+                                    <span class="text-muted" style="font-size: 0.72rem;" id="slot2Sub">Sesi Utama</span>
+                                </div>
+                                <span class="badge bg-success-subtle text-success border border-success-subtle" id="slot2Badge" style="font-size:0.7rem;">Tersedia</span>
+                            </div>
+
+                            <div class="slot-btn disabled" id="slot3">
+                                <div>
+                                    <strong class="text-muted small d-block">Sesi 3 · 13:00 – 15:00 WIB</strong>
+                                    <span class="text-muted" style="font-size: 0.72rem;">Kuliah Tamu Departemen</span>
+                                </div>
+                                <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle" style="font-size:0.7rem;">Terisi</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Purpose & Submit -->
+                <div class="col-5">
+                    <div class="card-box h-100 d-flex flex-column justify-content-between">
+                        <div>
+                            <label class="form-label fw-bold small text-dark mb-1">Tujuan Peminjaman</label>
+                            <div class="p-2 border rounded-2 bg-light text-muted small" style="min-height: 80px;" id="purposeBox">
+                                <span id="purposeText" class="text-dark"></span><span id="cursorBlink" style="animation: blink 0.8s infinite; color:#0B2545;">|</span>
+                            </div>
+                            <div class="form-text small mt-1" style="font-size:0.7rem;">Sertakan nama kegiatan resmi sivitas.</div>
+                        </div>
+
+                        <div class="pt-3 border-top mt-2 text-end">
+                            <button type="button" class="btn-submit w-100 justify-content-center" id="btnSubmit">
+                                <i class="bi bi-calendar-check me-1"></i>Ajukan Reservasi Sekarang
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Virtual Cursor -->
+            <svg class="cursor-pointer-sim" id="virtualCursor" viewBox="0 0 24 24" style="left: 100px; top: 100px;">
+                <path d="M4 2 L20 10 L12 13 L8 22 Z" fill="#07172C" stroke="#FFFFFF" stroke-width="1.8"/>
+            </svg>
+
+            <!-- Success Overlay Modal -->
+            <div class="success-overlay" id="successModal">
+                <div class="success-modal">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 56px; height: 56px; background: #D1FAE5; color: #065F46;">
+                        <i class="bi bi-check-circle-fill fs-2"></i>
+                    </div>
+                    <h5 class="fw-bold font-heading text-dark mb-1">Permohonan Berhasil Diajukan!</h5>
+                    <p class="text-muted small mb-3">Reservasi Aula Utama untuk Sesi 2 (09:30–11:30 WIB) berhasil didaftarkan.</p>
+                    <div class="p-2 rounded bg-light border text-start mb-3" style="font-size:0.78rem;">
+                        <div class="d-flex justify-content-between text-muted mb-1">
+                            <span>Status:</span>
+                            <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">Menunggu Validasi</span>
+                        </div>
+                        <div class="d-flex justify-content-between text-muted">
+                            <span>Validasi:</span>
+                            <span class="fw-semibold text-dark">Bebas Bentrok Jadwal ✓</span>
+                        </div>
+                    </div>
+                    <span class="badge bg-dark px-3 py-2 text-white" style="font-size: 0.75rem;">
+                        <i class="bi bi-arrow-repeat me-1"></i>Simulasi Berulang Otomatis...
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+    </style>
+
+    <script>
+        // Deterministic Seek Function for Recording / HyperFrames
+        const cursor = document.getElementById('virtualCursor');
+        const slot2 = document.getElementById('slot2');
+        const slot2Badge = document.getElementById('slot2Badge');
+        const purposeText = document.getElementById('purposeText');
+        const btnSubmit = document.getElementById('btnSubmit');
+        const successModal = document.getElementById('successModal');
+        const fullText = "Seminar Nasional Teknologi Informasi & Sivitas Undip";
+
+        function easeInOut(t) {
+            return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+        }
+
+        window.seekTo = function(t) {
+            // Total timeline: 7.0 seconds
+            // 0.0s - 0.8s: Idle / cursor start
+            if (t < 0.8) {
+                slot2.classList.remove('selected');
+                slot2Badge.className = 'badge bg-success-subtle text-success border border-success-subtle';
+                slot2Badge.textContent = 'Tersedia';
+                purposeText.textContent = '';
+                btnSubmit.classList.remove('active-click');
+                successModal.classList.remove('show');
+                cursor.style.left = '160px';
+                cursor.style.top = '480px';
+            }
+            // 0.8s - 1.8s: Cursor moves to Slot 2
+            else if (t < 1.8) {
+                const p = easeInOut((t - 0.8) / 1.0);
+                cursor.style.left = (160 + (340 - 160) * p) + 'px';
+                cursor.style.top = (480 + (240 - 480) * p) + 'px';
+                slot2.classList.remove('selected');
+                slot2Badge.className = 'badge bg-success-subtle text-success border border-success-subtle';
+                slot2Badge.textContent = 'Tersedia';
+                purposeText.textContent = '';
+                btnSubmit.classList.remove('active-click');
+                successModal.classList.remove('show');
+            }
+            // 1.8s - 2.5s: Slot 2 clicked
+            else if (t < 2.5) {
+                cursor.style.left = '340px';
+                cursor.style.top = '240px';
+                slot2.classList.add('selected');
+                slot2Badge.className = 'badge bg-warning text-dark fw-bold';
+                slot2Badge.innerHTML = '<i class="bi bi-check-lg me-1"></i>Terpilih';
+                purposeText.textContent = '';
+                btnSubmit.classList.remove('active-click');
+                successModal.classList.remove('show');
+            }
+            // 2.5s - 3.2s: Cursor moves to purpose textarea
+            else if (t < 3.2) {
+                const p = easeInOut((t - 2.5) / 0.7);
+                cursor.style.left = (340 + (680 - 340) * p) + 'px';
+                cursor.style.top = (240 + (210 - 240) * p) + 'px';
+                slot2.classList.add('selected');
+                slot2Badge.className = 'badge bg-warning text-dark fw-bold';
+                slot2Badge.innerHTML = '<i class="bi bi-check-lg me-1"></i>Terpilih';
+                purposeText.textContent = '';
+                btnSubmit.classList.remove('active-click');
+                successModal.classList.remove('show');
+            }
+            // 3.2s - 4.5s: Typing purpose text
+            else if (t < 4.5) {
+                cursor.style.left = '680px';
+                cursor.style.top = '210px';
+                const p = (t - 3.2) / 1.3;
+                const charCount = Math.floor(fullText.length * Math.min(1, p));
+                purposeText.textContent = fullText.substring(0, charCount);
+                btnSubmit.classList.remove('active-click');
+                successModal.classList.remove('show');
+            }
+            // 4.5s - 5.2s: Cursor moves to Submit button
+            else if (t < 5.2) {
+                purposeText.textContent = fullText;
+                const p = easeInOut((t - 4.5) / 0.7);
+                cursor.style.left = (680 + (760 - 680) * p) + 'px';
+                cursor.style.top = (210 + (370 - 210) * p) + 'px';
+                btnSubmit.classList.remove('active-click');
+                successModal.classList.remove('show');
+            }
+            // 5.2s - 5.5s: Click submit button
+            else if (t < 5.5) {
+                cursor.style.left = '760px';
+                cursor.style.top = '370px';
+                purposeText.textContent = fullText;
+                btnSubmit.classList.add('active-click');
+                successModal.classList.remove('show');
+            }
+            // 5.5s - 7.0s: Success Modal popup
+            else {
+                cursor.style.left = '760px';
+                cursor.style.top = '370px';
+                purposeText.textContent = fullText;
+                btnSubmit.classList.remove('active-click');
+                successModal.classList.add('show');
+            }
+        };
+
+        // If not being controlled externally, auto run loop
+        let isExternalControlled = false;
+        async function runLoop() {
+            let t = 0;
+            while (!isExternalControlled) {
+                window.seekTo(t);
+                t += 0.05;
+                if (t >= 7.0) t = 0;
+                await new Promise(r => setTimeout(r, 50));
+            }
+        }
+        runLoop();
+    </script>
+</body>
+</html>

@@ -259,73 +259,100 @@
 </section>
 
 {{-- ════════════════════════════════════════════════════════════════════════
-     4. PREVIEW KETERSEDIAAN / KALENDER JADWAL NYATA
+     4. DEMO INTERAKTIF ALUR RESERVASI (SIMULASI CEPAT)
      ════════════════════════════════════════════════════════════════════════ --}}
-@if ($previewFacility)
-<section class="py-5">
+<section class="py-5 bg-white border-top border-bottom" id="demo-reservasi">
     <div class="container py-4">
-        <div class="row align-items-center g-4">
+        <div class="row align-items-center g-4 g-lg-5">
+            {{-- Kolom Kiri: Penjelasan Alur Cepat --}}
             <div class="col-lg-5">
-                <span class="text-uppercase fw-bold text-muted small" style="letter-spacing: 0.05em;">Transparansi Waktu</span>
-                <h2 class="h2 fw-bold mb-3" style="color: var(--undip-navy);">
-                    Pratinjau Ketersediaan Slot Waktu Nyata
+                <span class="badge rounded-pill mb-2 px-3 py-1" style="background-color: var(--undip-blue-surface); color: var(--undip-navy); border: 1px solid #D6E4F0; font-size: 0.76rem; font-weight: 700;">
+                    <i class="bi bi-play-circle-fill me-1 text-primary"></i>DEMO SISTEM
+                </span>
+                <h2 class="h2 fw-bold mb-3" style="color: var(--undip-navy-dark); line-height: 1.25;">
+                    Simulasi Cepat Alur Reservasi Fasilitas
                 </h2>
-                <p class="text-muted mb-3">
-                    Sistem membagi jadwal dalam slot waktu terstandarisasi untuk mencegah tumpang tindih penggunaan fasilitas antarmahasiswa dan departemen.
+                <p class="text-muted mb-4" style="line-height: 1.6;">
+                    Pengajuan sarana di Wiyata dirancang ringkas dan transparan: pilih ruangan atau aula, tentukan slot waktu kosong, sertakan keperluan kegiatan, dan permohonan langsung terverifikasi tanpa birokrasi berbelit.
                 </p>
-                <div class="p-3 bg-white rounded-3 border mb-3">
-                    <div class="fw-bold text-dark font-heading">{{ $previewFacility->name }}</div>
-                    <div class="text-muted small">
-                        <i class="bi bi-geo-alt me-1"></i>{{ $previewFacility->location }} |
-                        Tanggal: <strong>{{ \Carbon\Carbon::parse($previewDate)->format('d F Y') }}</strong>
+
+                <div class="d-flex flex-column gap-3 mb-4">
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center"
+                             style="width: 36px; height: 36px; background: var(--undip-blue-surface); color: var(--undip-navy); flex-shrink: 0;">
+                            <i class="bi bi-calendar-check-fill"></i>
+                        </div>
+                        <div>
+                            <strong class="d-block text-dark small">Pilih Slot Tanpa Bentrok</strong>
+                            <span class="text-muted small">Slot waktu yang terisi otomatis terkunci sehingga tidak terjadi jadwal ganda antar sivitas.</span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center"
+                             style="width: 36px; height: 36px; background: #FEF3C7; color: #92400E; flex-shrink: 0;">
+                            <i class="bi bi-lightning-charge-fill"></i>
+                        </div>
+                        <div>
+                            <strong class="d-block text-dark small">Pengajuan Cepat Satu Klik</strong>
+                            <span class="text-muted small">Cukup tentukan keperluan kegiatan dan kirim permohonan langsung dari gawai Anda.</span>
+                        </div>
                     </div>
                 </div>
-                <a href="{{ route('facilities.show', $previewFacility) }}" class="btn btn-undip-primary">
-                    <i class="bi bi-calendar-event me-2"></i>Buka Jadwal Lengkap Fasilitas Ini
-                </a>
+
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                    <a href="{{ route('facilities.index') }}" class="btn btn-undip-primary shadow-sm">
+                        <i class="bi bi-search me-1"></i>Coba Ajukan Sekarang
+                    </a>
+                </div>
             </div>
 
+            {{-- Kolom Kanan: Mockup Jendela Browser dengan Video & GIF Demo --}}
             <div class="col-lg-7">
-                <div class="card-undip p-4 bg-white border">
-                    <h6 class="fw-bold mb-3 font-heading text-dark">
-                        Status Sesi Operasional ({{ \Carbon\Carbon::parse($previewDate)->format('d M Y') }})
-                    </h6>
-
-                    <div class="row g-2">
-                        @foreach ($previewSlots as $key => $slot)
-                            <div class="col-sm-6">
-                                <div class="p-3 rounded-2 border d-flex align-items-center justify-content-between"
-                                     style="background-color: {{ $slot['is_available'] ? '#F0FDF4' : '#F8FAFC' }};">
-                                    <div>
-                                        <div class="fw-bold text-dark small" style="font-family: 'Plus Jakarta Sans', sans-serif;">
-                                            {{ $slot['start'] }} – {{ $slot['end'] }}
-                                        </div>
-                                        <span class="text-muted" style="font-size: 0.76rem;">Sesi {{ $key }}</span>
-                                    </div>
-                                    @if ($slot['is_available'])
-                                        <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 small">
-                                            <i class="bi bi-check-circle me-1"></i>Tersedia
-                                        </span>
-                                    @else
-                                        <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-2 py-1 small">
-                                            <i class="bi bi-x-circle me-1"></i>Terisi / Lewat
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                        @endforeach
+                <div class="card card-undip border shadow-lg overflow-hidden" style="border-radius: 14px;">
+                    {{-- Chrome Topbar Mac / Browser --}}
+                    <div class="px-3 py-2 d-flex align-items-center justify-content-between border-bottom" style="background: var(--undip-navy-dark, #07172C);">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="rounded-circle" style="width: 10px; height: 10px; background: #FF5F56;"></span>
+                            <span class="rounded-circle" style="width: 10px; height: 10px; background: #FFBD2E;"></span>
+                            <span class="rounded-circle" style="width: 10px; height: 10px; background: #27C93F;"></span>
+                        </div>
+                        <div class="px-3 py-1 rounded-pill text-white-50 small d-none d-sm-flex align-items-center gap-1 font-monospace" style="background: rgba(255,255,255,0.1); font-size: 0.72rem;">
+                            <i class="bi bi-lock-fill text-warning"></i>
+                            <span>wiyata.undip.ac.id/reservations/demo</span>
+                        </div>
+                        <span class="badge" style="background: var(--undip-gold); color: #07172C; font-size: 0.68rem; font-weight: 700;">
+                            LIVE DEMO
+                        </span>
                     </div>
 
-                    <div class="mt-3 pt-3 border-top text-muted small d-flex align-items-center justify-content-between">
-                        <span><i class="bi bi-info-circle me-1"></i>Pembaruan real-time mengikuti persetujuan petugas.</span>
-                        <span class="fw-semibold text-dark">Sistem Terintegrasi</span>
+                    {{-- Kontainer Media Responsif (Aspect Ratio 16:10) --}}
+                    <div class="position-relative w-100 bg-dark" style="aspect-ratio: 16/10; min-height: 240px; overflow: hidden;">
+                        <video autoplay loop muted playsinline poster="{{ asset('images/landing/demo-reservasi-poster.webp') }}" class="w-100 h-100 object-fit-cover">
+                            <source src="{{ asset('images/landing/demo-reservasi.mp4') }}" type="video/mp4">
+                            <source src="{{ asset('images/landing/demo-reservasi.webm') }}" type="video/webm">
+                            {{-- Fallback GIF murni --}}
+                            <img src="{{ asset('images/landing/demo-reservasi.gif') }}" alt="Demo animasi reservasi fasilitas kampus Wiyata" class="w-100 h-100 object-fit-cover">
+                        </video>
+                    </div>
+
+                    {{-- Footer Mockup --}}
+                    <div class="p-3 bg-white d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2 border-top">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="spinner-grow spinner-grow-sm text-success" role="status"></span>
+                            <small class="text-dark fw-semibold" style="font-size: 0.8rem;">
+                                Animasi Alur: Pilih Ruang → Tentukan Sesi → Reservasi Berhasil
+                            </small>
+                        </div>
+                        <span class="text-muted small" style="font-size: 0.75rem;">
+                            <i class="bi bi-check-circle text-primary me-1"></i>Otomatis Mengulang
+                        </span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
-@endif
 
 {{-- ════════════════════════════════════════════════════════════════════════
      5. ATURAN, KETENTUAN & PERTANYAAN UMUM (FAQ NYATA)
