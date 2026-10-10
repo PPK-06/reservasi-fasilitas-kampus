@@ -307,32 +307,12 @@
 
                 @if ($report->facility->status === 'active')
 
-                    <div class="alert alert-warning small">
-                        Perubahan status fasilitas bersifat informatif terhadap proses
-                        penanganan laporan. Pastikan fasilitas memang perlu ditandai
-                        dalam perbaikan sebelum melanjutkan.
-                    </div>
-
-
-                    <form method="POST"
-                          action="{{ route('officer.facilities.status', $report->facility) }}">
-
-                        @csrf
-                        @method('PATCH')
-
-                        <input type="hidden"
-                               name="status"
-                               value="under_maintenance">
-
-                        <button type="submit"
-                                class="btn btn-warning w-100">
-
-                            Tandai Dalam Perbaikan
-
-                        </button>
-
-                    </form>
-
+                    <button type="button"
+                            class="btn btn-warning w-100"
+                            data-bs-toggle="modal"
+                            data-bs-target="#statusModal-{{ $report->facility->id }}">
+                        Tandai Dalam Perbaikan
+                    </button>
 
                 @elseif ($report->facility->status === 'under_maintenance')
 
@@ -355,6 +335,46 @@
     </div>
 
 </div>
+
+@if ($report->facility->status === 'active')
+    <div class="modal fade" id="statusModal-{{ $report->facility->id }}" tabindex="-1"
+         aria-labelledby="statusModalLabel-{{ $report->facility->id }}" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered {{ $upcomingReservations->isNotEmpty() ? 'modal-lg' : '' }}">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header border-bottom-0 pb-0">
+                    <h5 class="modal-title fw-bold" id="statusModalLabel-{{ $report->facility->id }}">
+                        <i class="bi bi-tools text-warning me-2"></i>Tandai Perbaikan Fasilitas
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                </div>
+
+                <div class="modal-body pt-2">
+                    <p class="text-muted">
+                        Kamu yakin ingin menandai fasilitas
+                        <strong>{{ $report->facility->name }}</strong> dalam perbaikan?
+                        Pengguna tidak akan bisa mengajukan reservasi baru.
+                    </p>
+
+                    <x-d4-warning :reservations="$upcomingReservations" />
+                </div>
+
+                <div class="modal-footer border-top-0">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-arrow-left me-1"></i>Batal
+                    </button>
+                    <form method="POST" action="{{ route('officer.facilities.status', $report->facility) }}">
+                        @csrf
+                        @method('PATCH')
+                        <input type="hidden" name="status" value="under_maintenance">
+                        <button type="submit" class="btn btn-warning">
+                            <i class="bi bi-tools me-1"></i>Tandai Dalam Perbaikan
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+@endif
 
 @endsection
 

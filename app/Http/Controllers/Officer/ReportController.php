@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateReportRequest;
 use App\Models\Facility;
 use App\Models\Report;
+use App\Models\Reservation;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -55,7 +56,10 @@ class ReportController extends Controller
             'photos',
         ]);
 
-        return view('officer.reports.show', compact('report'));
+        $upcomingReservations = Reservation::upcomingApproved($report->facility)
+            ->flatten();
+
+        return view('officer.reports.show', compact('report', 'upcomingReservations'));
     }
 
     public function update(
