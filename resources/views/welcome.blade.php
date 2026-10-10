@@ -319,10 +319,10 @@
                         </div>
                         <div class="px-3 py-1 rounded-pill text-white-50 small d-none d-sm-flex align-items-center gap-1 font-monospace" style="background: rgba(255,255,255,0.1); font-size: 0.72rem;">
                             <i class="bi bi-lock-fill text-warning"></i>
-                            <span>wiyata.undip.ac.id/reservations/demo</span>
+                            <span>wiyata.undip.ac.id/facilities/5</span>
                         </div>
                         <span class="badge" style="background: var(--undip-gold); color: #07172C; font-size: 0.68rem; font-weight: 700;">
-                            LIVE DEMO
+                            SIMULASI REALISTIS
                         </span>
                     </div>
 
@@ -341,11 +341,11 @@
                         <div class="d-flex align-items-center gap-2">
                             <span class="spinner-grow spinner-grow-sm text-success" role="status"></span>
                             <small class="text-dark fw-semibold" style="font-size: 0.8rem;">
-                                Animasi Alur: Pilih Ruang → Tentukan Sesi → Reservasi Berhasil
+                                Simulasi Alur: Pilih Sesi Grid → Isi Keperluan → Validasi Berhasil
                             </small>
                         </div>
                         <span class="text-muted small" style="font-size: 0.75rem;">
-                            <i class="bi bi-check-circle text-primary me-1"></i>Otomatis Mengulang
+                            <i class="bi bi-arrow-repeat text-primary me-1"></i>Otomatis Mengulang
                         </span>
                     </div>
                 </div>

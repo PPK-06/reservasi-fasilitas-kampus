@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Demo Reservasi Wiyata</title>
+    <title>Demo Fasilitas Wiyata</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -16,163 +16,217 @@
             padding: 0;
             background: #07172C;
             font-family: 'Outfit', sans-serif;
-            width: 960px;
-            height: 600px;
+            width: 1000px;
+            height: 640px;
             overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
         }
-        .app-window {
-            width: 920px;
-            height: 560px;
+        .browser-window {
+            width: 980px;
+            height: 620px;
             background: #F8FAFC;
             border-radius: 12px;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-            border: 1px solid rgba(255,255,255,0.15);
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.18);
             position: relative;
         }
+        /* Top Chrome */
         .window-topbar {
             background: #0B2545;
-            padding: 8px 16px;
+            padding: 7px 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             border-bottom: 2px solid #C89B3C;
         }
-        .topbar-dots {
-            display: flex;
-            gap: 6px;
-        }
-        .dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-        }
+        .topbar-dots { display: flex; gap: 6px; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
         .dot-red { background: #FF5F56; }
         .dot-yellow { background: #FFBD2E; }
         .dot-green { background: #27C93F; }
-        .topbar-title {
-            color: #ffffff;
-            font-size: 0.82rem;
-            font-weight: 700;
-            font-family: 'Plus Jakarta Sans', sans-serif;
+        .topbar-url {
+            background: rgba(255,255,255,0.12);
+            color: rgba(255,255,255,0.85);
+            font-size: 0.73rem;
+            padding: 3px 18px;
+            border-radius: 20px;
+            font-family: monospace;
             display: flex;
             align-items: center;
             gap: 6px;
         }
-        .topbar-url {
-            background: rgba(255,255,255,0.12);
-            color: rgba(255,255,255,0.8);
-            font-size: 0.72rem;
-            padding: 2px 14px;
-            border-radius: 20px;
-            font-family: monospace;
-        }
-        .app-content {
-            flex: 1;
-            padding: 20px 28px;
+        /* Wiyata Mini Navbar */
+        .app-navbar {
+            background: #0B2545;
+            padding: 6px 20px;
             display: flex;
-            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .app-brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #fff;
+            text-decoration: none;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 700;
+            font-size: 0.92rem;
+        }
+        .app-nav-links {
+            display: flex;
+            gap: 14px;
+            font-size: 0.78rem;
+            color: rgba(255,255,255,0.8);
+        }
+        .app-nav-links .active {
+            color: #fff;
+            font-weight: 600;
+            border-bottom: 2px solid #C89B3C;
+        }
+        /* Page Header */
+        .app-header {
+            background: #fff;
+            padding: 8px 24px;
+            border-bottom: 1px solid #E2E8F0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        /* Main Body */
+        .app-main {
+            flex: 1;
+            padding: 14px 20px;
+            overflow: hidden;
+            display: flex;
             gap: 16px;
             position: relative;
         }
-        .card-box {
-            background: #ffffff;
+        /* Cards */
+        .card-custom {
+            background: #fff;
             border: 1px solid #E2E8F0;
             border-radius: 10px;
-            padding: 18px 22px;
-            box-shadow: 0 2px 8px rgba(11,37,69,0.04);
+            box-shadow: 0 2px 6px rgba(11,37,69,0.04);
+            overflow: hidden;
+        }
+        /* Facility Mini Banner Card */
+        .facility-card {
+            width: 320px;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+        .facility-img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+        }
+        /* Grid Slot */
+        .grid-card {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
         .slot-btn {
-            border: 1.5px solid #CBD5E1;
-            border-radius: 8px;
-            padding: 10px 14px;
-            background: #FFFFFF;
+            border: 1px solid #0d6efd;
+            color: #0d6efd;
+            background: #fff;
+            border-radius: 6px;
+            padding: 4px 6px;
+            text-align: center;
+            font-size: 0.74rem;
             cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .slot-btn.selected {
-            border-color: #C89B3C;
-            background: #FDF9EE;
-            box-shadow: 0 0 0 2px rgba(200, 155, 60, 0.25);
+            transition: all 0.15s;
+            line-height: 1.2;
         }
         .slot-btn.disabled {
-            background: #F1F5F9;
-            opacity: 0.6;
+            border-color: #CBD5E1;
+            background: #E2E8F0;
+            color: #64748B;
             cursor: not-allowed;
-            border-color: #E2E8F0;
+            opacity: 0.6;
         }
-        .btn-submit {
-            background: #0B2545;
-            color: #ffffff;
-            font-weight: 600;
-            border: none;
-            padding: 10px 22px;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s;
+        .slot-btn.selected {
+            background: #0d6efd !important;
+            color: #ffffff !important;
+            border-color: #0d6efd !important;
+            box-shadow: 0 2px 4px rgba(13,110,253,0.3);
         }
-        .btn-submit.active-click {
-            transform: scale(0.97);
-            background: #134074;
-            box-shadow: 0 0 0 4px rgba(200, 155, 60, 0.4);
+        .slot-btn.selected small {
+            color: rgba(255,255,255,0.85) !important;
         }
-        /* Virtual cursor */
-        .cursor-pointer-sim {
+        /* Cursor */
+        .virtual-cursor {
             position: absolute;
-            width: 24px;
-            height: 24px;
-            z-index: 999;
-            transition: transform 0.4s ease-out;
+            width: 22px;
+            height: 22px;
+            z-index: 1000;
             pointer-events: none;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.35));
         }
-        /* Modal Success Popup */
-        .success-overlay {
+        /* Modal Overlay */
+        .modal-overlay {
             position: absolute;
             inset: 0;
-            background: rgba(7, 23, 44, 0.65);
-            backdrop-filter: blur(2px);
+            background: rgba(7, 23, 44, 0.6);
             display: flex;
             align-items: center;
             justify-content: center;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.3s ease;
-            z-index: 800;
+            transition: opacity 0.25s ease;
+            z-index: 900;
         }
-        .success-overlay.show {
+        .modal-overlay.active {
             opacity: 1;
             pointer-events: auto;
         }
-        .success-modal {
-            background: #ffffff;
-            border-radius: 14px;
-            padding: 24px 28px;
-            width: 440px;
-            text-align: center;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.25);
-            border: 2px solid #C89B3C;
-            transform: scale(0.9);
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        .modal-box {
+            background: #fff;
+            border-radius: 12px;
+            width: 480px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            border: 1px solid #CBD5E1;
+            overflow: hidden;
+            transform: scale(0.92);
+            transition: transform 0.25s ease;
         }
-        .success-overlay.show .success-modal {
+        .modal-overlay.active .modal-box {
             transform: scale(1);
+        }
+        /* Flash Alert */
+        .flash-alert {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #D1FAE5;
+            color: #065F46;
+            border-bottom: 2px solid #10B981;
+            padding: 8px 18px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transform: translateY(-100%);
+            transition: transform 0.3s ease;
+            z-index: 850;
+        }
+        .flash-alert.active {
+            transform: translateY(0);
         }
     </style>
 </head>
 <body>
-    <div class="app-window">
+    <div class="browser-window">
         <!-- Top bar -->
         <div class="window-topbar">
             <div class="topbar-dots">
@@ -180,230 +234,318 @@
                 <div class="dot dot-yellow"></div>
                 <div class="dot dot-green"></div>
             </div>
-            <div class="topbar-title">
-                <img src="/favicon-32x32.png" width="18" height="18" alt="Logo">
-                <span>Wiyata · Reservasi Fasilitas Undip</span>
+            <div class="topbar-url">
+                <i class="bi bi-lock-fill text-warning"></i>
+                <span>https://wiyata.undip.ac.id/facilities/5</span>
             </div>
-            <div class="topbar-url">wiyata.undip.ac.id/reservations/create</div>
+            <span class="badge" style="background:#C89B3C; color:#07172C; font-weight:700; font-size:0.68rem;">LIVE SYSTEM</span>
         </div>
 
-        <!-- Content -->
-        <div class="app-content">
-            <!-- Facility Info Strip -->
-            <div class="card-box d-flex justify-content-between align-items-center py-2 px-3" style="background:#F0F4F8; border-color:#D6E4F0;">
-                <div class="d-flex align-items-center gap-2">
-                    <span class="badge" style="background-color: var(--undip-gold, #C89B3C); color: #07172C; font-weight:700;">AULA</span>
-                    <strong class="text-dark font-heading" style="font-size: 0.95rem;">Aula Utama (Gedung Serba Guna)</strong>
-                    <span class="text-muted small">• Kapasitas 500 orang</span>
-                </div>
-                <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 small">
-                    <i class="bi bi-check-circle-fill me-1"></i>Siap Dipesan
-                </span>
+        <!-- App Mini Navbar -->
+        <div class="app-navbar">
+            <div class="app-brand">
+                <img src="/favicon-32x32.png" width="20" height="20" alt="Logo">
+                <span>WIYATA</span>
             </div>
+            <div class="app-nav-links">
+                <span>Beranda</span>
+                <span class="active">Fasilitas</span>
+                <span>Reservasi</span>
+                <span>Riwayat</span>
+            </div>
+            <span class="badge bg-white text-dark border px-2 py-1" style="font-size:0.7rem;">
+                <i class="bi bi-person-circle text-primary me-1"></i>Pengguna Verified
+            </span>
+        </div>
 
-            <!-- Main Form Grid -->
-            <div class="row g-3">
-                <!-- Left: Date & Slot -->
-                <div class="col-7">
-                    <div class="card-box h-100">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <label class="form-label fw-bold small text-dark mb-0">Pilih Jadwal & Slot Waktu</label>
-                            <span class="text-muted" style="font-size:0.75rem;"><i class="bi bi-calendar3 me-1"></i>Kamis, 15 Okt 2026</span>
+        <!-- Flash Alert Container -->
+        <div class="flash-alert" id="flashAlert">
+            <i class="bi bi-check-circle-fill fs-5 text-success"></i>
+            <span>Reservasi berhasil diajukan dan sedang menunggu persetujuan petugas.</span>
+        </div>
+
+        <!-- App Header -->
+        <div class="app-header">
+            <div>
+                <strong class="text-dark font-heading" style="font-size: 0.95rem;">Detail Fasilitas</strong>
+                <span class="text-muted small ms-2">· Aula Utama (Gedung Serba Guna)</span>
+            </div>
+            <span class="btn btn-outline-secondary btn-sm py-0 px-2" style="font-size: 0.72rem;">
+                <i class="bi bi-arrow-left me-1"></i>Kembali
+            </span>
+        </div>
+
+        <!-- App Main Content -->
+        <div class="app-main">
+            <!-- Left: Facility Summary Card -->
+            <div class="card-custom facility-card">
+                <img src="/images/landing/widya-puraya.webp" alt="Aula Utama" class="facility-img">
+                <div class="p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <strong class="text-dark font-heading" style="font-size: 0.92rem;">Aula Utama</strong>
+                        <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 0.68rem;">Aktif</span>
+                    </div>
+                    <div class="row g-2 mb-2" style="font-size: 0.72rem;">
+                        <div class="col-6">
+                            <div class="p-2 bg-light rounded">
+                                <span class="text-muted d-block">Tipe</span>
+                                <strong>Aula</strong>
+                            </div>
                         </div>
-                        <div class="d-flex flex-column gap-2" id="slotList">
-                            <div class="slot-btn" id="slot1">
-                                <div>
-                                    <strong class="text-dark small d-block">Sesi 1 · 07:30 – 09:30 WIB</strong>
-                                    <span class="text-muted" style="font-size: 0.72rem;">Sesi Pagi</span>
-                                </div>
-                                <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size:0.7rem;">Tersedia</span>
-                            </div>
-
-                            <div class="slot-btn" id="slot2">
-                                <div>
-                                    <strong class="text-dark small d-block" id="slot2Title">Sesi 2 · 09:30 – 11:30 WIB</strong>
-                                    <span class="text-muted" style="font-size: 0.72rem;" id="slot2Sub">Sesi Utama</span>
-                                </div>
-                                <span class="badge bg-success-subtle text-success border border-success-subtle" id="slot2Badge" style="font-size:0.7rem;">Tersedia</span>
-                            </div>
-
-                            <div class="slot-btn disabled" id="slot3">
-                                <div>
-                                    <strong class="text-muted small d-block">Sesi 3 · 13:00 – 15:00 WIB</strong>
-                                    <span class="text-muted" style="font-size: 0.72rem;">Kuliah Tamu Departemen</span>
-                                </div>
-                                <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle" style="font-size:0.7rem;">Terisi</span>
+                        <div class="col-6">
+                            <div class="p-2 bg-light rounded">
+                                <span class="text-muted d-block">Kapasitas</span>
+                                <strong>500 orang</strong>
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <!-- Right: Purpose & Submit -->
-                <div class="col-5">
-                    <div class="card-box h-100 d-flex flex-column justify-content-between">
-                        <div>
-                            <label class="form-label fw-bold small text-dark mb-1">Tujuan Peminjaman</label>
-                            <div class="p-2 border rounded-2 bg-light text-muted small" style="min-height: 80px;" id="purposeBox">
-                                <span id="purposeText" class="text-dark"></span><span id="cursorBlink" style="animation: blink 0.8s infinite; color:#0B2545;">|</span>
-                            </div>
-                            <div class="form-text small mt-1" style="font-size:0.7rem;">Sertakan nama kegiatan resmi sivitas.</div>
-                        </div>
-
-                        <div class="pt-3 border-top mt-2 text-end">
-                            <button type="button" class="btn-submit w-100 justify-content-center" id="btnSubmit">
-                                <i class="bi bi-calendar-check me-1"></i>Ajukan Reservasi Sekarang
-                            </button>
-                        </div>
-                    </div>
+                    <p class="text-muted small mb-0" style="font-size: 0.72rem; line-height: 1.4;">
+                        Aula utama kampus dengan panggung, tata suara, dan pendingin ruangan.
+                    </p>
                 </div>
             </div>
 
-            <!-- Virtual Cursor -->
-            <svg class="cursor-pointer-sim" id="virtualCursor" viewBox="0 0 24 24" style="left: 100px; top: 100px;">
-                <path d="M4 2 L20 10 L12 13 L8 22 Z" fill="#07172C" stroke="#FFFFFF" stroke-width="1.8"/>
-            </svg>
+            <!-- Right: Grid Ketersediaan Jadwal (/facilities/5) -->
+            <div class="card-custom grid-card p-3">
+                <div class="d-flex justify-content-between align-items-center pb-2 border-bottom mb-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-calendar3 text-primary"></i>
+                        <strong class="text-dark font-heading small">Ketersediaan Jadwal</strong>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-light text-dark border" style="font-size:0.72rem;">
+                            Kamis, 15 Okt 2026
+                        </span>
+                    </div>
+                </div>
 
-            <!-- Success Overlay Modal -->
-            <div class="success-overlay" id="successModal">
-                <div class="success-modal">
-                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 56px; height: 56px; background: #D1FAE5; color: #065F46;">
-                        <i class="bi bi-check-circle-fill fs-2"></i>
+                <div class="d-flex justify-content-between align-items-center mb-2 text-muted" style="font-size: 0.7rem;">
+                    <span>Jam operasional: <strong>07:00 – 20:00 WIB</strong> (26 slot)</span>
+                    <div class="d-flex gap-2">
+                        <span><span class="d-inline-block rounded border border-primary bg-white" style="width:10px;height:10px;"></span> Tersedia</span>
+                        <span><span class="d-inline-block rounded bg-secondary" style="width:10px;height:10px;"></span> Terisi</span>
+                        <span><span class="d-inline-block rounded bg-primary" style="width:10px;height:10px;"></span> Dipilih</span>
                     </div>
-                    <h5 class="fw-bold font-heading text-dark mb-1">Permohonan Berhasil Diajukan!</h5>
-                    <p class="text-muted small mb-3">Reservasi Aula Utama untuk Sesi 2 (09:30–11:30 WIB) berhasil didaftarkan.</p>
-                    <div class="p-2 rounded bg-light border text-start mb-3" style="font-size:0.78rem;">
-                        <div class="d-flex justify-content-between text-muted mb-1">
-                            <span>Status:</span>
-                            <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">Menunggu Validasi</span>
+                </div>
+
+                <!-- 24 Slot Buttons Grid (Mirrors /facilities/5) -->
+                <div class="row row-cols-6 g-1 mb-3" id="slotsGrid">
+                    <!-- Row 1 -->
+                    <div class="col"><div class="slot-btn disabled">07:00<small class="d-block text-secondary">Terisi</small></div></div>
+                    <div class="col"><div class="slot-btn disabled">07:30<small class="d-block text-secondary">Terisi</small></div></div>
+                    <div class="col"><div class="slot-btn disabled">08:00<small class="d-block text-secondary">Terisi</small></div></div>
+                    <div class="col"><div class="slot-btn disabled">08:30<small class="d-block text-secondary">Terisi</small></div></div>
+                    <div class="col"><div class="slot-btn" id="s_0900">09:00<small class="d-block text-primary">Tersedia</small></div></div>
+                    <div class="col"><div class="slot-btn" id="s_0930">09:30<small class="d-block text-primary">Tersedia</small></div></div>
+                    
+                    <!-- Row 2 -->
+                    <div class="col"><div class="slot-btn" id="s_1000">10:00<small class="d-block text-primary">Tersedia</small></div></div>
+                    <div class="col"><div class="slot-btn" id="s_1030">10:30<small class="d-block text-primary">Tersedia</small></div></div>
+                    <div class="col"><div class="slot-btn" id="s_1100">11:00<small class="d-block text-primary">Tersedia</small></div></div>
+                    <div class="col"><div class="slot-btn">11:30<small class="d-block text-primary">Tersedia</small></div></div>
+                    <div class="col"><div class="slot-btn">12:00<small class="d-block text-primary">Tersedia</small></div></div>
+                    <div class="col"><div class="slot-btn">12:30<small class="d-block text-primary">Tersedia</small></div></div>
+
+                    <!-- Row 3 -->
+                    <div class="col"><div class="slot-btn">13:00<small class="d-block text-primary">Tersedia</small></div></div>
+                    <div class="col"><div class="slot-btn">13:30<small class="d-block text-primary">Tersedia</small></div></div>
+                    <div class="col"><div class="slot-btn disabled">14:00<small class="d-block text-secondary">Terisi</small></div></div>
+                    <div class="col"><div class="slot-btn disabled">14:30<small class="d-block text-secondary">Terisi</small></div></div>
+                    <div class="col"><div class="slot-btn">15:00<small class="d-block text-primary">Tersedia</small></div></div>
+                    <div class="col"><div class="slot-btn">15:30<small class="d-block text-primary">Tersedia</small></div></div>
+
+                    <!-- Row 4 -->
+                    <div class="col"><div class="slot-btn">16:00<small class="d-block text-primary">Tersedia</small></div></div>
+                    <div class="col"><div class="slot-btn">16:30<small class="d-block text-primary">Tersedia</small></div></div>
+                    <div class="col"><div class="slot-btn">17:00<small class="d-block text-primary">Tersedia</small></div></div>
+                    <div class="col"><div class="slot-btn">17:30<small class="d-block text-primary">Tersedia</small></div></div>
+                    <div class="col"><div class="slot-btn">18:00<small class="d-block text-primary">Tersedia</small></div></div>
+                    <div class="col"><div class="slot-btn">18:30<small class="d-block text-primary">Tersedia</small></div></div>
+                </div>
+
+                <!-- Action Bar (Identical to /facilities/5) -->
+                <div class="d-flex justify-content-between align-items-center pt-2 border-top mt-auto">
+                    <div>
+                        <div class="fw-semibold text-dark" style="font-size: 0.78rem;" id="selectionInfo">
+                            Klik slot jam mulai lalu jam selesai di grid.
                         </div>
-                        <div class="d-flex justify-content-between text-muted">
-                            <span>Validasi:</span>
-                            <span class="fw-semibold text-dark">Bebas Bentrok Jadwal ✓</span>
+                        <div class="text-muted" style="font-size: 0.7rem;" id="selectionSub">
+                            Tanggal: 15 Oktober 2026
                         </div>
                     </div>
-                    <span class="badge bg-dark px-3 py-2 text-white" style="font-size: 0.75rem;">
-                        <i class="bi bi-arrow-repeat me-1"></i>Simulasi Berulang Otomatis...
-                    </span>
+                    <button type="button" class="btn btn-primary btn-sm px-3 fw-semibold" id="btnOpenModal" disabled style="font-size: 0.78rem;">
+                        <i class="bi bi-calendar-plus me-1"></i>Ajukan Reservasi
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Virtual Cursor -->
+        <svg class="virtual-cursor" id="virtualCursor" viewBox="0 0 24 24" style="left: 450px; top: 520px;">
+            <path d="M4 2 L20 10 L12 13 L8 22 Z" fill="#07172C" stroke="#FFFFFF" stroke-width="1.8"/>
+        </svg>
+
+        <!-- Exact /facilities/5 Reservation Modal -->
+        <div class="modal-overlay" id="modalOverlay">
+            <div class="modal-box">
+                <div class="p-3 border-bottom d-flex justify-content-between align-items-center bg-light">
+                    <strong class="text-dark font-heading" style="font-size: 0.92rem;">
+                        <i class="bi bi-calendar-plus text-primary me-2"></i>Ajukan Reservasi
+                    </strong>
+                    <span class="btn-close" style="font-size: 0.7rem;"></span>
+                </div>
+                <div class="p-3">
+                    <div class="p-2 rounded bg-light border mb-3" style="font-size: 0.75rem;">
+                        <div class="d-flex justify-content-between mb-1 pb-1 border-bottom">
+                            <span class="text-muted">Fasilitas</span>
+                            <strong>Aula Utama</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1 pb-1 border-bottom">
+                            <span class="text-muted">Tanggal</span>
+                            <strong>Kamis, 15 Oktober 2026</strong>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Waktu Pemakaian</span>
+                            <span class="badge bg-primary">09:00 – 11:30 (5 slot / 2.5 jam)</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label fw-semibold small text-dark mb-1">
+                            Alasan / Tujuan Penggunaan <span class="text-danger">*</span>
+                        </label>
+                        <div class="form-control form-control-sm text-dark bg-white" style="min-height: 60px; font-size: 0.78rem;" id="modalPurposeBox">
+                            <span id="purposeTyped"></span><span id="typingCaret" style="color:#0d6efd;">|</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-2 px-3 bg-light border-top d-flex justify-content-end gap-2">
+                    <span class="btn btn-outline-secondary btn-sm py-1 px-3" style="font-size: 0.75rem;">Batal</span>
+                    <button type="button" class="btn btn-primary btn-sm py-1 px-3 fw-semibold" id="btnSubmitModal" style="font-size: 0.75rem;">
+                        <i class="bi bi-send me-1"></i>Kirim Pengajuan
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <style>
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-    </style>
-
     <script>
-        // Deterministic Seek Function for Recording / HyperFrames
         const cursor = document.getElementById('virtualCursor');
-        const slot2 = document.getElementById('slot2');
-        const slot2Badge = document.getElementById('slot2Badge');
-        const purposeText = document.getElementById('purposeText');
-        const btnSubmit = document.getElementById('btnSubmit');
-        const successModal = document.getElementById('successModal');
-        const fullText = "Seminar Nasional Teknologi Informasi & Sivitas Undip";
+        const s0900 = document.getElementById('s_0900');
+        const s0930 = document.getElementById('s_0930');
+        const s1000 = document.getElementById('s_1000');
+        const s1030 = document.getElementById('s_1030');
+        const s1100 = document.getElementById('s_1100');
+        const selectedSlots = [s0900, s0930, s1000, s1030, s1100];
+        const selectionInfo = document.getElementById('selectionInfo');
+        const btnOpenModal = document.getElementById('btnOpenModal');
+        const modalOverlay = document.getElementById('modalOverlay');
+        const purposeTyped = document.getElementById('purposeTyped');
+        const btnSubmitModal = document.getElementById('btnSubmitModal');
+        const flashAlert = document.getElementById('flashAlert');
 
-        function easeInOut(t) {
-            return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-        }
+        const sampleText = "Seminar Nasional Teknologi Informasi & Sivitas Undip 2026";
+
+        function ease(t) { return t < 0.5 ? 2*t*t : -1+(4-2*t)*t; }
 
         window.seekTo = function(t) {
-            // Total timeline: 7.0 seconds
-            // 0.0s - 0.8s: Idle / cursor start
-            if (t < 0.8) {
-                slot2.classList.remove('selected');
-                slot2Badge.className = 'badge bg-success-subtle text-success border border-success-subtle';
-                slot2Badge.textContent = 'Tersedia';
-                purposeText.textContent = '';
-                btnSubmit.classList.remove('active-click');
-                successModal.classList.remove('show');
-                cursor.style.left = '160px';
+            // Timeline Total 7.2s
+            // 0.0s - 0.7s: Initial state
+            if (t < 0.7) {
+                selectedSlots.forEach(s => s.classList.remove('selected'));
+                selectionInfo.textContent = 'Klik slot jam mulai lalu jam selesai di grid.';
+                btnOpenModal.disabled = true;
+                modalOverlay.classList.remove('active');
+                purposeTyped.textContent = '';
+                flashAlert.classList.remove('active');
+                cursor.style.left = '520px';
                 cursor.style.top = '480px';
             }
-            // 0.8s - 1.8s: Cursor moves to Slot 2
-            else if (t < 1.8) {
-                const p = easeInOut((t - 0.8) / 1.0);
-                cursor.style.left = (160 + (340 - 160) * p) + 'px';
-                cursor.style.top = (480 + (240 - 480) * p) + 'px';
-                slot2.classList.remove('selected');
-                slot2Badge.className = 'badge bg-success-subtle text-success border border-success-subtle';
-                slot2Badge.textContent = 'Tersedia';
-                purposeText.textContent = '';
-                btnSubmit.classList.remove('active-click');
-                successModal.classList.remove('show');
+            // 0.7s - 1.5s: Move to 09:00
+            else if (t < 1.5) {
+                const p = ease((t - 0.7) / 0.8);
+                cursor.style.left = (520 + (680 - 520) * p) + 'px';
+                cursor.style.top = (480 + (228 - 480) * p) + 'px';
+                selectedSlots.forEach(s => s.classList.remove('selected'));
+                selectionInfo.textContent = 'Klik slot jam mulai lalu jam selesai di grid.';
+                btnOpenModal.disabled = true;
             }
-            // 1.8s - 2.5s: Slot 2 clicked
-            else if (t < 2.5) {
-                cursor.style.left = '340px';
-                cursor.style.top = '240px';
-                slot2.classList.add('selected');
-                slot2Badge.className = 'badge bg-warning text-dark fw-bold';
-                slot2Badge.innerHTML = '<i class="bi bi-check-lg me-1"></i>Terpilih';
-                purposeText.textContent = '';
-                btnSubmit.classList.remove('active-click');
-                successModal.classList.remove('show');
+            // 1.5s - 2.2s: Click 09:00, move to 11:00
+            else if (t < 2.2) {
+                s0900.classList.add('selected');
+                const p = ease((t - 1.5) / 0.7);
+                cursor.style.left = (680 + (600 - 680) * p) + 'px';
+                cursor.style.top = (228 + (268 - 228) * p) + 'px';
             }
-            // 2.5s - 3.2s: Cursor moves to purpose textarea
-            else if (t < 3.2) {
-                const p = easeInOut((t - 2.5) / 0.7);
-                cursor.style.left = (340 + (680 - 340) * p) + 'px';
-                cursor.style.top = (240 + (210 - 240) * p) + 'px';
-                slot2.classList.add('selected');
-                slot2Badge.className = 'badge bg-warning text-dark fw-bold';
-                slot2Badge.innerHTML = '<i class="bi bi-check-lg me-1"></i>Terpilih';
-                purposeText.textContent = '';
-                btnSubmit.classList.remove('active-click');
-                successModal.classList.remove('show');
+            // 2.2s - 2.8s: Click 11:00, slots range selected!
+            else if (t < 2.8) {
+                cursor.style.left = '600px';
+                cursor.style.top = '268px';
+                selectedSlots.forEach(s => s.classList.add('selected'));
+                selectionInfo.innerHTML = '<span class="text-primary fw-bold">Terpilih: 09:00 – 11:30 (5 slot / 2.5 jam)</span>';
+                btnOpenModal.disabled = false;
             }
-            // 3.2s - 4.5s: Typing purpose text
-            else if (t < 4.5) {
-                cursor.style.left = '680px';
-                cursor.style.top = '210px';
-                const p = (t - 3.2) / 1.3;
-                const charCount = Math.floor(fullText.length * Math.min(1, p));
-                purposeText.textContent = fullText.substring(0, charCount);
-                btnSubmit.classList.remove('active-click');
-                successModal.classList.remove('show');
+            // 2.8s - 3.4s: Move to "Ajukan Reservasi" button
+            else if (t < 3.4) {
+                selectedSlots.forEach(s => s.classList.add('selected'));
+                selectionInfo.innerHTML = '<span class="text-primary fw-bold">Terpilih: 09:00 – 11:30 (5 slot / 2.5 jam)</span>';
+                btnOpenModal.disabled = false;
+                const p = ease((t - 2.8) / 0.6);
+                cursor.style.left = (600 + (910 - 600) * p) + 'px';
+                cursor.style.top = (268 + (458 - 268) * p) + 'px';
             }
-            // 4.5s - 5.2s: Cursor moves to Submit button
-            else if (t < 5.2) {
-                purposeText.textContent = fullText;
-                const p = easeInOut((t - 4.5) / 0.7);
-                cursor.style.left = (680 + (760 - 680) * p) + 'px';
-                cursor.style.top = (210 + (370 - 210) * p) + 'px';
-                btnSubmit.classList.remove('active-click');
-                successModal.classList.remove('show');
+            // 3.4s - 3.7s: Click "Ajukan Reservasi", modal opens!
+            else if (t < 3.7) {
+                cursor.style.left = '910px';
+                cursor.style.top = '458px';
+                modalOverlay.classList.add('active');
+                purposeTyped.textContent = '';
             }
-            // 5.2s - 5.5s: Click submit button
+            // 3.7s - 5.0s: Typing purpose in modal
+            else if (t < 5.0) {
+                modalOverlay.classList.add('active');
+                cursor.style.left = '620px';
+                cursor.style.top = '360px';
+                const p = (t - 3.7) / 1.3;
+                const count = Math.floor(sampleText.length * Math.min(1, p));
+                purposeTyped.textContent = sampleText.substring(0, count);
+            }
+            // 5.0s - 5.5s: Move to "Kirim Pengajuan"
             else if (t < 5.5) {
-                cursor.style.left = '760px';
-                cursor.style.top = '370px';
-                purposeText.textContent = fullText;
-                btnSubmit.classList.add('active-click');
-                successModal.classList.remove('show');
+                modalOverlay.classList.add('active');
+                purposeTyped.textContent = sampleText;
+                const p = ease((t - 5.0) / 0.5);
+                cursor.style.left = (620 + (690 - 620) * p) + 'px';
+                cursor.style.top = (360 + (425 - 360) * p) + 'px';
             }
-            // 5.5s - 7.0s: Success Modal popup
+            // 5.5s - 5.8s: Click "Kirim Pengajuan"
+            else if (t < 5.8) {
+                cursor.style.left = '690px';
+                cursor.style.top = '425px';
+                purposeTyped.textContent = sampleText;
+                modalOverlay.classList.add('active');
+            }
+            // 5.8s - 7.2s: Modal closes, flash alert SUCCESS appears!
             else {
-                cursor.style.left = '760px';
-                cursor.style.top = '370px';
-                purposeText.textContent = fullText;
-                btnSubmit.classList.remove('active-click');
-                successModal.classList.add('show');
+                modalOverlay.classList.remove('active');
+                flashAlert.classList.add('active');
+                cursor.style.left = '690px';
+                cursor.style.top = '425px';
             }
         };
 
-        // If not being controlled externally, auto run loop
-        let isExternalControlled = false;
-        async function runLoop() {
+        // Self loop
+        let isControlled = false;
+        async function runAuto() {
             let t = 0;
-            while (!isExternalControlled) {
+            while (!isControlled) {
                 window.seekTo(t);
                 t += 0.05;
-                if (t >= 7.0) t = 0;
+                if (t >= 7.2) t = 0;
                 await new Promise(r => setTimeout(r, 50));
             }
         }
-        runLoop();
+        runAuto();
     </script>
 </body>
 </html>
