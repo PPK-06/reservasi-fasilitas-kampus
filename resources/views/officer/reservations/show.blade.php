@@ -69,21 +69,6 @@
                     <dt class="col-sm-4 text-muted small fw-semibold">Tujuan</dt>
                     <dd class="col-sm-8 text-dark mb-2">{{ $reservation->purpose }}</dd>
 
-                    <dt class="col-sm-4 text-muted small fw-semibold">Status</dt>
-                    <dd class="col-sm-8 mb-2">
-                        @if ($s === 'pending' && $reservation->start_time->lte(now()))
-                            <span class="badge text-bg-secondary">Terlewat</span>
-                        @elseif ($s === 'pending')
-                            <span class="badge text-bg-warning">Menunggu</span>
-                        @elseif ($s === 'approved')
-                            <span class="badge text-bg-success">Disetujui</span>
-                        @elseif ($s === 'rejected')
-                            <span class="badge text-bg-danger">Ditolak</span>
-                        @else
-                            <span class="badge text-bg-secondary">Dibatalkan</span>
-                        @endif
-                    </dd>
-
                     @if ($reservation->status_reason)
                     <dt class="col-sm-4 text-muted small fw-semibold">Alasan</dt>
                     <dd class="col-sm-8 text-danger mb-2">{{ $reservation->status_reason }}</dd>
