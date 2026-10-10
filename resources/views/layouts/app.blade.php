@@ -328,10 +328,8 @@
            HEADER HALAMAN
            ════════════════════════════════════════════ */
         .undip-page-header {
-            background: #ffffff;
-            border-bottom: 1px solid var(--border-subtle);
-            padding: 1.25rem 0;
-            margin-bottom: 1.75rem;
+            padding: 2rem 0 0;
+            margin-bottom: 0;
         }
 
         .undip-page-title {
