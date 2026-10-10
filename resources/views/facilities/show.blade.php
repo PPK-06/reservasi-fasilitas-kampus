@@ -83,7 +83,7 @@
             <div class="card-body">
                 {{-- Detail grid --}}
                 <div class="row g-3 mb-4">
-                    <div class="col-sm-6">
+                    <div class="{{ $facility->type !== 'Alat' && !is_null($facility->capacity) ? 'col-sm-4' : 'col-sm-6' }}">
                         <div class="d-flex align-items-start gap-3 p-3 rounded-3" style="background: #f8f9fa;">
                             <div class="d-flex align-items-center justify-content-center rounded-circle"
                                  style="width:42px; height:42px; background:#e8edf3; flex-shrink:0;">
@@ -96,7 +96,7 @@
                         </div>
                     </div>
 
-                    <div class="col-sm-6">
+                    <div class="{{ $facility->type !== 'Alat' && !is_null($facility->capacity) ? 'col-sm-4' : 'col-sm-6' }}">
                         <div class="d-flex align-items-start gap-3 p-3 rounded-3" style="background: #f8f9fa;">
                             <div class="d-flex align-items-center justify-content-center rounded-circle"
                                  style="width:42px; height:42px; background:#e8edf3; flex-shrink:0;">
@@ -110,7 +110,7 @@
                     </div>
 
                     @if ($facility->type !== 'Alat' && !is_null($facility->capacity))
-                    <div class="col-sm-6">
+                    <div class="col-sm-4">
                         <div class="d-flex align-items-start gap-3 p-3 rounded-3" style="background: #f8f9fa;">
                             <div class="d-flex align-items-center justify-content-center rounded-circle"
                                  style="width:42px; height:42px; background:#e8edf3; flex-shrink:0;">
@@ -123,25 +123,6 @@
                         </div>
                     </div>
                     @endif
-
-                    <div class="col-sm-6">
-                        <div class="d-flex align-items-start gap-3 p-3 rounded-3" style="background: #f8f9fa;">
-                            <div class="d-flex align-items-center justify-content-center rounded-circle"
-                                 style="width:42px; height:42px; background:{{ $isActive ? '#d4edda' : ($isMaint ? '#fff3cd' : '#e2e3e5') }}; flex-shrink:0;">
-                                @if ($isActive)
-                                    <i class="bi bi-check-circle-fill text-success"></i>
-                                @elseif ($isMaint)
-                                    <i class="bi bi-tools text-warning"></i>
-                                @else
-                                    <i class="bi bi-x-circle-fill text-secondary"></i>
-                                @endif
-                            </div>
-                            <div>
-                                <div class="text-muted" style="font-size: 0.78rem; font-weight: 600;">STATUS</div>
-                                <div class="fw-semibold">{{ $facility->statusLabel() }}</div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 {{-- Deskripsi --}}
@@ -309,37 +290,6 @@
                 </div>
             </div>
         @endguest
-
-        {{-- Info ringkas --}}
-        <div class="card card-undip border shadow-sm">
-            <div class="card-body">
-                <h6 class="fw-bold text-dark mb-3">
-                    <i class="bi bi-info-circle me-1"></i>Informasi
-                </h6>
-                <ul class="list-unstyled mb-0" style="font-size: 0.85rem;">
-                    <li class="d-flex justify-content-between py-2 border-bottom">
-                        <span class="text-muted">Tipe</span>
-                        <span class="fw-semibold">{{ $facility->type }}</span>
-                    </li>
-                    <li class="d-flex justify-content-between py-2 border-bottom">
-                        <span class="text-muted">Lokasi</span>
-                        <span class="fw-semibold">{{ $facility->location }}</span>
-                    </li>
-                    @if ($facility->type !== 'Alat' && !is_null($facility->capacity))
-                    <li class="d-flex justify-content-between py-2 border-bottom">
-                        <span class="text-muted">Kapasitas</span>
-                        <span class="fw-semibold">{{ $facility->capacity }} orang</span>
-                    </li>
-                    @endif
-                    <li class="d-flex justify-content-between py-2">
-                        <span class="text-muted">Status</span>
-                        <span class="badge {{ $isActive ? 'text-bg-success' : ($isMaint ? 'text-bg-warning' : 'text-bg-secondary') }}">
-                            {{ $facility->statusLabel() }}
-                        </span>
-                    </li>
-                </ul>
-            </div>
-        </div>
     </div>
 
 </div>
