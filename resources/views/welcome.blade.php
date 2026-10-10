@@ -6,8 +6,8 @@
 {{-- ════════════════════════════════════════════════════════════════════════
      1. HERO SECTION DENGAN CITRA ARSITEKTUR WIDYA PURAYA UNDIP
      ════════════════════════════════════════════════════════════════════════ --}}
-<section class="py-5 bg-white border-bottom position-relative overflow-hidden">
-    <div class="container py-lg-4">
+<section class="d-flex align-items-center bg-white border-bottom position-relative overflow-hidden" style="min-height: calc(100vh - 62px);">
+    <div class="container py-4 py-lg-5 w-100">
         <div class="row align-items-center g-4 g-lg-5">
             {{-- Kolom Teks & CTA --}}
             <div class="col-lg-6">
