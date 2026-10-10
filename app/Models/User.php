@@ -26,7 +26,7 @@ class User extends Authenticatable
     public const LANDING_ROUTES = [
         'pengguna' => 'facilities.index',
         'petugas' => 'officer.dashboard',
-        'admin' => 'admin.users.index',
+        'admin' => 'admin.facilities.index',
     ];
 
     /**

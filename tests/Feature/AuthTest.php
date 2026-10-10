@@ -39,7 +39,7 @@ it('memasukkan akun verified dan mengarahkannya ke landing sesuai role (H1)', fu
 })->with([
     'pengguna' => ['pengguna', 'facilities.index'],
     'petugas' => ['petugas', 'officer.dashboard'],
-    'admin' => ['admin', 'admin.users.index'],
+    'admin' => ['admin', 'admin.facilities.index'],
 ]);
 
 it('menolak password yang salah dan tidak membuat session', function (): void {
