@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Officer;
 
 use App\Http\Controllers\Controller;
+use App\Models\Facility;
 use App\Models\Reservation;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -63,7 +64,7 @@ class ReservationController extends Controller
 
         try {
             DB::transaction(function () use ($reservation, &$conflictFacilityName, &$conflictReservation) {
-                $facility = \App\Models\Facility::whereKey($reservation->facility_id)
+                $facility = Facility::whereKey($reservation->facility_id)
                     ->lockForUpdate()
                     ->firstOrFail();
 
@@ -77,6 +78,7 @@ class ReservationController extends Controller
                     ->where('status', 'approved')
                     ->where('start_time', '<', $reservation->end_time)
                     ->where('end_time', '>', $reservation->start_time)
+                    ->orderBy('start_time')
                     ->first();
 
                 if ($conflictReservation) {
@@ -91,7 +93,7 @@ class ReservationController extends Controller
             if ($e->getMessage() === 'conflict') {
                 $applicant = $conflictReservation?->user?->name ?? 'pengguna lain';
                 $timeSlot = $conflictReservation
-                    ? $conflictReservation->start_time->format('H:i') . ' – ' . $conflictReservation->end_time->format('H:i')
+                    ? $conflictReservation->start_time->format('H:i').' – '.$conflictReservation->end_time->format('H:i')
                     : '';
 
                 $conflictInfo = $timeSlot ? "{$applicant} ({$timeSlot})" : $applicant;

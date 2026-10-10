@@ -2,6 +2,7 @@
 
 use App\Models\Facility;
 use App\Models\Reservation;
+use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Schema;
 
@@ -127,28 +128,90 @@ it('petugas tidak dapat menyetujui reservasi pending yang waktu mulainya sudah l
 it('petugas tidak dapat menyetujui reservasi jika bertumpuk dengan reservasi approved lain F2', function (): void {
     $officer = buatAkunDenganRole('petugas');
     $facility = Facility::factory()->create();
+    $facilityLain = Facility::factory()->create();
 
-    $start = now()->addDays(3)->setTime(10, 0, 0);
-    $end = now()->addDays(3)->setTime(12, 0, 0);
+    $userA = User::factory()->create();
+    $userB = User::factory()->create();
+    $userC = User::factory()->create();
 
-    // Reservasi yang sudah approved di fasilitas dan jam tersebut
-    $existing = Reservation::factory()->approved()->create([
-        'facility_id' => $facility->id,
-        'start_time' => $start,
-        'end_time' => $end,
+    $day = now()->addDays(3);
+
+    // Pengecoh 2: approved 10:00-12:00 milik user C di FASILITAS LAIN
+    Reservation::factory()->approved()->create([
+        'facility_id' => $facilityLain->id,
+        'user_id' => $userC->id,
+        'start_time' => (clone $day)->setTime(10, 0, 0),
+        'end_time' => (clone $day)->setTime(12, 0, 0),
     ]);
 
-    // Reservasi pending baru yang bentrok pada jam yang sama
+    // Pengecoh 1: approved 07:00-09:00 milik user B di fasilitas yang sama
+    Reservation::factory()->approved()->create([
+        'facility_id' => $facility->id,
+        'user_id' => $userB->id,
+        'start_time' => (clone $day)->setTime(7, 0, 0),
+        'end_time' => (clone $day)->setTime(9, 0, 0),
+    ]);
+
+    // Approved 10:00-12:00 milik user A di fasilitas yang sama
+    Reservation::factory()->approved()->create([
+        'facility_id' => $facility->id,
+        'user_id' => $userA->id,
+        'start_time' => (clone $day)->setTime(10, 0, 0),
+        'end_time' => (clone $day)->setTime(12, 0, 0),
+    ]);
+
+    // Pending 11:00-13:00 milik pengguna yang bentrok dengan user A
     $resBentrok = Reservation::factory()->pending()->create([
         'facility_id' => $facility->id,
-        'start_time' => $start,
-        'end_time' => $end,
+        'start_time' => (clone $day)->setTime(11, 0, 0),
+        'end_time' => (clone $day)->setTime(13, 0, 0),
     ]);
 
     $this->actingAs($officer)
         ->patch(route('officer.reservations.approve', $resBentrok))
         ->assertRedirect()
-        ->assertSessionHas('error', "Gagal menyetujui: jadwal bertumpuk dengan reservasi oleh {$existing->user->name} ({$existing->start_time->format('H:i')} – {$existing->end_time->format('H:i')}).");
+        ->assertSessionHas('error', "Gagal menyetujui: jadwal bertumpuk dengan reservasi oleh {$userA->name} (10:00 – 12:00).");
+
+    $errorMessage = session('error');
+    expect($errorMessage)
+        ->toContain($userA->name)
+        ->toContain('10:00 – 12:00')
+        ->not->toContain($userB->name)
+        ->not->toContain($userC->name);
 
     expect($resBentrok->fresh()->status)->toBe('pending');
+
+    // Happy path reservasi bersambung: approved 08:00-10:00, lalu approve pending 10:00-12:00 harus berhasil
+    $facilityBersambung = Facility::factory()->create();
+    Reservation::factory()->approved()->create([
+        'facility_id' => $facilityBersambung->id,
+        'start_time' => (clone $day)->setTime(8, 0, 0),
+        'end_time' => (clone $day)->setTime(10, 0, 0),
+    ]);
+    $resPendingBersambung = Reservation::factory()->pending()->create([
+        'facility_id' => $facilityBersambung->id,
+        'start_time' => (clone $day)->setTime(10, 0, 0),
+        'end_time' => (clone $day)->setTime(12, 0, 0),
+    ]);
+
+    $this->actingAs($officer)
+        ->patch(route('officer.reservations.approve', $resPendingBersambung))
+        ->assertRedirect(route('officer.reservations.index'))
+        ->assertSessionHas('success', 'Reservasi disetujui.');
+
+    expect($resPendingBersambung->fresh()->status)->toBe('approved');
+
+    // Sisi batas sebaliknya: approved 10:00-12:00, approve pending bersambung sebelum jam mulai (08:00-10:00) harus berhasil
+    $resPendingSebelum = Reservation::factory()->pending()->create([
+        'facility_id' => $facilityBersambung->id,
+        'start_time' => (clone $day)->setTime(6, 0, 0),
+        'end_time' => (clone $day)->setTime(8, 0, 0),
+    ]);
+
+    $this->actingAs($officer)
+        ->patch(route('officer.reservations.approve', $resPendingSebelum))
+        ->assertRedirect(route('officer.reservations.index'))
+        ->assertSessionHas('success', 'Reservasi disetujui.');
+
+    expect($resPendingSebelum->fresh()->status)->toBe('approved');
 });
