@@ -72,6 +72,56 @@ class Facility extends Model
     }
 
     /**
+     * Jalur berkas gambar fasilitas kampus.
+     */
+    public function imagePath(): ?string
+    {
+        return match ($this->name) {
+            'Lapangan Basket' => 'images/fasilitas/lapangan-basket.webp',
+            'Lapangan Futsal' => 'images/fasilitas/lapangan-futsal.webp',
+            'Proyektor Epson EB-X51' => 'images/fasilitas/proyektor-epson-eb-x51.webp',
+            'Sound System Portabel', 'Sound System Portable' => 'images/fasilitas/sound-system-portable.webp',
+            'Aula Utama' => 'images/landing/widya-puraya.webp',
+            'Aula Serbaguna Lantai 2' => 'images/landing/dekanat-ft.webp',
+            default => match ($this->type) {
+                'Ruang Kelas' => 'images/landing/gedung-manajemen.webp',
+                'Laboratorium' => 'images/landing/lab-diplomasi.webp',
+                'Aula' => 'images/landing/dekanat-ft.webp',
+                default => null,
+            },
+        };
+    }
+
+    /**
+     * URL aset gambar fasilitas.
+     */
+    public function getImageUrlAttribute(): ?string
+    {
+        $path = $this->imagePath();
+
+        return $path ? asset($path) : null;
+    }
+
+    /**
+     * Teks alternatif deskriptif untuk gambar fasilitas.
+     */
+    public function imageAlt(): string
+    {
+        return match ($this->name) {
+            'Lapangan Basket' => 'Lapangan basket kampus Universitas Diponegoro Tembalang',
+            'Lapangan Futsal' => 'Lapangan futsal kampus Universitas Diponegoro Tembalang',
+            'Proyektor Epson EB-X51' => 'Proyektor Epson EB-X51 inventaris kampus Universitas Diponegoro',
+            'Sound System Portabel', 'Sound System Portable' => 'Sound system portabel inventaris kampus Universitas Diponegoro',
+            default => match ($this->type) {
+                'Ruang Kelas' => 'Gedung perkuliahan dan ruang kelas Universitas Diponegoro Tembalang',
+                'Laboratorium' => 'Laboratorium riset dan komputer Universitas Diponegoro Tembalang',
+                'Aula' => 'Gedung aula dan pertemuan kampus Universitas Diponegoro Tembalang',
+                default => 'Foto fasilitas '.$this->name.' Universitas Diponegoro Tembalang',
+            },
+        };
+    }
+
+    /**
      * @return array<string, array{start: string, end: string, status: string, is_available: bool, is_booked: bool, is_past_limit: bool}>
      */
     public function slotAvailability(string|DateTimeInterface $date): array

@@ -71,20 +71,49 @@ Dokumen pencatatan sumber gambar, lisensi, kepemilikan, dan tanggal akses sesuai
 
 ---
 
-## 2. Fasilitas yang Menggunakan Placeholder Rapi (Perlu Foto Asli)
+## 2. Gambar Fasilitas dari Tautan Pemilik Proyek (Revisi Tahap 2)
 
-Fasilitas berikut saat ini menggunakan kartu ilustratif bertema identitas Undip (*Deep Navy & Gold SVG/CSS placeholder*) dan ditandai memerlukan dokumentasi foto lapangan asli:
+Aset visual fasilitas berikut diperoleh langsung dari tautan yang disediakan oleh pemilik proyek, diunduh secara lokal, diverifikasi kesesuaian visualnya, dan dikonversi ke format WebP terkompresi tanpa hotlinking:
 
-1. **Lapangan Basket & Lapangan Futsal (Area Olahraga Kampus Tembalang)**
-   - *Status*: Perlu foto asli lapangan outdoor / indoor kompleks olahraga Undip Tembalang dengan izin lisensi terbuka.
-   - *Penanganan Saat Ini*: Placeholder berlatar Deep Navy dengan ikon lapangan olahraga dan aksen emas.
+### A. Proyektor Epson EB-X51
+- **File Lokal**: `public/images/fasilitas/proyektor-epson-eb-x51.webp`
+- **Fasilitas Representasi**: Proyektor Epson EB-X51 (Gudang Inventaris)
+- **Sumber**: Tautan Pemilik Proyek (Google Images Thumbnail)
+- **URL Sumber**: https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpQ8ASxQu5VL_2xn11LMcLdkwFSNn1v0jpmTV6IlfIVxJvrkReS_-Kcjd0&s=10
+- **Tanggal Akses**: 10 Oktober 2026
+- **Resolusi**: 447x447 px (asli) / WebP kualitas 88 (~6 KB)
+- **Verifikasi Konten**: Proyektor 3LCD Epson EB-X51 warna putih tampak atas dengan lensa zoom, panel kontrol, dan port HDMI. Cocok 100%.
 
-2. **Proyektor Epson EB-X51 & Sound System Portabel (Gudang Inventaris)**
-   - *Status*: Perlu foto asli aset inventaris sarana audio-visual universitas.
-   - *Penanganan Saat Ini*: Placeholder berlatar Slate Navy dengan ikon proyektor dan perlengkapan sarana.
+### B. Lapangan Basket
+- **File Lokal**: `public/images/fasilitas/lapangan-basket.webp`
+- **Fasilitas Representasi**: Lapangan Basket (Area Olahraga Kampus Tembalang)
+- **Sumber**: Tautan Pemilik Proyek (Google Images Thumbnail)
+- **URL Sumber**: https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQoApzRvS2_4kOiDgeWgJuG-_EKHLSo3O31s3kcUGt3BeIseJtmgOzud_U&s=10
+- **Tanggal Akses**: 10 Oktober 2026
+- **Resolusi**: 517x386 px (asli) / WebP kualitas 88 (~44 KB)
+- **Verifikasi Konten**: Lapangan basket indoor berlantai kayu poles dengan garis marking standar, dua ring hidrolik, dan tribun penonton. Cocok 100%.
+
+### C. Lapangan Futsal
+- **File Lokal**: `public/images/fasilitas/lapangan-futsal.webp`
+- **Fasilitas Representasi**: Lapangan Futsal (Area Olahraga Kampus Tembalang)
+- **Sumber**: Tautan Pemilik Proyek (Google Images Thumbnail)
+- **URL Sumber**: https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ24ri4OM-CgKvLR82aAznUYw40BULN8VFXt8wg7KxCeQ&s=10
+- **Tanggal Akses**: 10 Oktober 2026
+- **Resolusi**: 547x365 px (asli) / WebP kualitas 88 (~42 KB)
+- **Verifikasi Konten**: Lapangan futsal indoor dengan lantai modular tile biru-oranye, gawang futsal standar (3x2m), dan tribun penonton. Cocok 100%.
+
+### D. Sound System Portable
+- **File Lokal**: `public/images/fasilitas/sound-system-portable.webp`
+- **Fasilitas Representasi**: Sound System Portabel (Gudang Inventaris)
+- **Sumber**: Tautan Pemilik Proyek (Google Images Thumbnail)
+- **URL Sumber**: https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_qJ_Z7QEoXiO7IUexY9-uGaI3-vD2Ebln1_OR5bggrQ&s=10
+- **Tanggal Akses**: 10 Oktober 2026
+- **Resolusi**: 350x350 px (asli) / WebP kualitas 88 (~13 KB)
+- **Verifikasi Konten**: Unit speaker portable PA box warna hitam dengan pegangan jinjing atas, horn tweeter, dan woofer grille sirkular. Cocok 100%.
 
 ---
 
-## 3. Catatan Atribusi di Antarmuka
-Atribusi lisensi Creative Commons dicantumkan secara elegan pada catatan kaki (*footer*) halaman landing page dan modal informasi legal:
-*"Foto fasilitas kampus bersumber dari kontributor Wikimedia Commons di bawah lisensi CC BY-SA 4.0 & CC BY 4.0."*
+## 3. Catatan Lisensi dan Pembersihan UI (Revisi Tahap 2)
+Sesuai revisi R1 dan R3:
+- Seluruh teks label lisensi pada antarmuka pengguna (seperti *"Foto Berlisensi CC BY-SA 4.0"*) telah dihapus dari kartu hero dan footer demi tampilan yang bersih dan profesional.
+- Dokumentasi atribusi dan pencatatan sumber tetap dipelihara di dokumen internal ini untuk kepatuhan hak cipta dan referensi pemilik repositori.

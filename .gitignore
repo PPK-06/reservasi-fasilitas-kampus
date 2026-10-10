@@ -27,3 +27,11 @@ Homestead.yaml
 Thumbs.db
 /public/uploads/reports/*
 !/public/uploads/reports/.gitkeep
+
+# Temporary docs and scratch scripts
+/build_docx.py
+/generate_perfect_docx.py
+/outline.md
+/plan.md
+/resume_ml.*
+/docs/GELOMBANG*

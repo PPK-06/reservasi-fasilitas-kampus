@@ -43,3 +43,43 @@
 - Pengambilan gambar fasilitas nyata kampus Undip Tembalang langsung dari sumber sah berlisensi jelas (Wikimedia/resmi).
 - Verifikasi visual lintas viewport responsif (375px mobile, 768px tablet, 1280px desktop) dengan tangkapan layar asli.
 - Audit interaksi UI di browser nyata: klik navigasi, buka tutup form/modal, validasi form, dan pengecekan console error.
+
+---
+
+## Catatan Tambahan Revisi Tahap 2 (Maksimal 5 Baris per Sumber)
+
+### 1. Anthropic: frontend-design (Revisi Tahap 2)
+- Hapus dekorasi artifisial seperti teks overlay, gradient scrim penutup foto, dan watermark buatan.
+- Tampilkan visual fasilitas apa adanya secara bersih dengan judul di luar bingkai gambar.
+- Gunakan tipografi terarah (Plus Jakarta Sans & Outfit) tanpa penekanan kata tunggal berlebih.
+- Berikan hierarki informasi yang tenang dan berwibawa khas kampus riset negeri.
+
+### 2. Leonxlnx: taste-skill (Revisi Tahap 2)
+- Tegakkan larangan mutlak karakter em dash (—) di seluruh view, title metadata, dan pesan sistem.
+- Kunci parameter visual pada ENERGY 1 / RHYTHM 2 / MOTION 1 untuk portal publik sivitas akademika.
+- Lakukan pre-flight check responsif ketat tanpa toleransi horizontal overflow dari 320px hingga 1280px.
+- Pastikan interaksi mikro pada form, tabel, dan card konsisten serta berbobot.
+
+### 3. Miqdad Badjuber: anti-slop (Revisi Tahap 2)
+- Tegakkan Hard Gate R-02 (bebas em dash), R-03 (mobile perfect), dan R-23 (aset visual terkonfirmasi).
+- Hapus teks usang dan section tanpa fungsi riil seperti "Sistem Terbuka untuk Civitas" (C-3, R-05).
+- Pastikan touch target minimal 44x44px dan font input minimal 16px untuk kenyamanan perangkat iOS (R-03).
+- Gambar fasilitas tampil bersih tanpa caption atau badge lisensi yang menumpuk di atas foto (R-01, R-14).
+
+### 4. Affaan-M: ECC (Revisi Tahap 2)
+- Terapkan urutan eksekusi bertahap: R5 (nama Wiyata) -> R1 (hapus teks) -> R2+R3 (gambar bersih) -> R4 (favicon) -> R6 (mobile).
+- Jalankan automated testing (pest/phpunit) dan build assets untuk memastikan nol regresi fungsional.
+- Jaga kebersihan repositori git dengan commit atomik dan hindari file sampah.
+- Siapkan verifikasi independen oleh subagent verifier dengan kriteria verdict APPROVE/REVISE.
+
+### 5. Alibaba: open-code-review (Revisi Tahap 2)
+- Lakukan review diff perubahan terhadap branch main untuk mendeteksi potensi cacat sebelum rilis.
+- Audit keamanan Blade: pastikan escaping aman, proteksi CSRF form, dan validasi input terjaga.
+- Pastikan query Eloquent bebas N+1 saat memuat fasilitas dan status ketersediaan.
+- Pastikan semantik HTML terjaga dengan atribut alt deskriptif pada seluruh gambar fasilitas baru.
+
+### 6. Browser-Use: browser-use & open-source skill (Revisi Tahap 2)
+- Unduh dan inspeksi gambar fasilitas yang diberikan pemilik secara visual sebelum konversi ke WebP lokal.
+- Verifikasi keberhasilan pemuatan aset lokal di browser (HTTP 200, naturalWidth > 0, aspect-ratio proporsional).
+- Uji tampilan responsif secara live pada viewport 320, 360, 375, 390, 414, 768, 1024, dan 1280 px.
+- Validasi alur reservasi interaktif pada viewport mobile 375px via headless browser.
