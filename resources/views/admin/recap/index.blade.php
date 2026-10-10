@@ -5,26 +5,13 @@
 
 @section('content')
 
-@if ($errors->any())
-    <div class="alert alert-danger">
-        <strong>Filter belum valid.</strong>
-
-        <ul class="mb-0 mt-2">
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
-
-
 <div class="card card-undip border shadow-sm mb-4">
     <div class="card-body">
 
         <form
             method="GET"
             action="{{ route('admin.recap.index') }}"
-            class="row g-3 align-items-end">
+            class="row g-3 align-items-start">
 
             <div class="col-md-5">
                 <label
@@ -72,10 +59,11 @@
             </div>
 
 
-            <div class="col-md-2 d-grid">
+            <div class="col-md-2">
+                <label class="form-label d-none d-md-block" aria-hidden="true">&nbsp;</label>
                 <button
                     type="submit"
-                    class="btn btn-undip-primary shadow-sm">
+                    class="btn btn-undip-primary w-100 shadow-sm">
                     Tampilkan
                 </button>
             </div>

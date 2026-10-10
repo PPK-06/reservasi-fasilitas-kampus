@@ -551,7 +551,7 @@
     </div>
     @endif
 
-    @if ($errors->any())
+    @if ($errors->any() && !request()->routeIs('admin.recap.*'))
     <div class="alert alert-danger alert-dismissible fade show mb-0 rounded-0 border-0 border-start border-4 border-danger shadow-sm" role="alert">
         <div class="container">
             <div class="d-flex align-items-start">

@@ -118,3 +118,14 @@ it('A6 admin dapat export CSV menggunakan filter tanggal', function (): void {
     expect($response->headers->get('content-type'))
         ->toContain('text/csv');
 });
+
+it('A6 validasi menolak tanggal mulai lebih besar dari tanggal selesai', function (): void {
+    $this->actingAs($this->admin)
+        ->from(route('admin.recap.index'))
+        ->get(route('admin.recap.index', [
+            'start_date' => '2026-10-15',
+            'end_date' => '2026-10-10',
+        ]))
+        ->assertRedirect(route('admin.recap.index'))
+        ->assertSessionHasErrors('end_date');
+});
