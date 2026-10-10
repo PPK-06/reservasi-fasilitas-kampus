@@ -75,7 +75,7 @@ class StoreUserRequest extends FormRequest
             'email' => ['required', 'email', 'max:150', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'role' => ['required', 'in:pengguna,petugas'],
-            'identity_number' => ['required_if:role,pengguna', 'nullable', 'string', 'max:30', 'unique:users,identity_number'],
+            'identity_number' => ['required_if:role,pengguna', 'nullable', 'string', 'max:30', 'regex:/^[0-9]+$/', 'unique:users,identity_number'],
             'user_type' => ['required_if:role,pengguna', 'nullable', 'in:mahasiswa,dosen,staf'],
         ];
     }

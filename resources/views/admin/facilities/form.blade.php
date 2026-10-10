@@ -24,7 +24,7 @@
                 </h6>
             </div>
             <div class="card-body p-4">
-                <form action="{{ $isEdit ? route('admin.facilities.update', $facility) : route('admin.facilities.store') }}" method="POST">
+                <form action="{{ $isEdit ? route('admin.facilities.update', $facility) : route('admin.facilities.store') }}" method="POST" novalidate>
                     @csrf
                     @if ($isEdit)
                         @method('PATCH')

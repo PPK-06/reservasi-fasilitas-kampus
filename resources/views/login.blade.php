@@ -18,7 +18,7 @@
                     <p class="text-muted small mb-0">Wiyata · Sistem Reservasi & Pelaporan Fasilitas Kampus</p>
                 </div>
 
-                <form method="POST" action="{{ route('login.store') }}">
+                <form method="POST" action="{{ route('login.store') }}" novalidate id="loginForm">
                     @csrf
 
                     {{-- Error kredensial dan penolakan status akun di kunci email (D8) --}}
@@ -34,6 +34,14 @@
                                    placeholder="nama@undip.ac.id"
                                    required autofocus>
                         </div>
+                        @error('email')
+                            <div class="invalid-feedback d-block small mt-1">
+                                <i class="bi bi-exclamation-circle me-1"></i>{{ $message }}
+                            </div>
+                        @enderror
+                        <div id="emailError" class="invalid-feedback small mt-1" style="display: none;">
+                            <i class="bi bi-exclamation-circle me-1"></i><span id="emailErrorText"></span>
+                        </div>
                     </div>
 
                     <div class="mb-4">
@@ -46,6 +54,14 @@
                                    class="form-control border-start-0 @error('password') is-invalid @enderror"
                                    placeholder="••••••••"
                                    required>
+                        </div>
+                        @error('password')
+                            <div class="invalid-feedback d-block small mt-1">
+                                <i class="bi bi-exclamation-circle me-1"></i>{{ $message }}
+                            </div>
+                        @enderror
+                        <div id="passwordError" class="invalid-feedback small mt-1" style="display: none;">
+                            <i class="bi bi-exclamation-circle me-1"></i>Password wajib diisi.
                         </div>
                     </div>
 
@@ -70,4 +86,47 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+document.getElementById('loginForm')?.addEventListener('submit', function (e) {
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const emailErr = document.getElementById('emailError');
+    const emailErrText = document.getElementById('emailErrorText');
+    const pwdErr = document.getElementById('passwordError');
+
+    let hasError = false;
+    emailErr.style.display = 'none';
+    pwdErr.style.display = 'none';
+
+    const val = (emailInput.value || '').trim();
+    if (!val) {
+        emailErrText.textContent = 'Alamat email wajib diisi.';
+        emailErr.style.display = 'block';
+        emailInput.classList.add('is-invalid');
+        hasError = true;
+    } else if (!val.includes('@') || !val.includes('.')) {
+        emailErrText.textContent = 'Format email tidak sah (harus menyertakan tanda @ dan domain).';
+        emailErr.style.display = 'block';
+        emailInput.classList.add('is-invalid');
+        hasError = true;
+    } else {
+        emailInput.classList.remove('is-invalid');
+    }
+
+    if (!(passwordInput.value || '')) {
+        pwdErr.style.display = 'block';
+        passwordInput.classList.add('is-invalid');
+        hasError = true;
+    } else {
+        passwordInput.classList.remove('is-invalid');
+    }
+
+    if (hasError) {
+        e.preventDefault();
+    }
+});
+</script>
+@endpush
 @endsection

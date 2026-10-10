@@ -105,10 +105,10 @@
         }
 
         .navbar-brand-logo {
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             object-fit: contain;
-            border-radius: 4px;
+            border-radius: 6px;
             background: #ffffff;
             padding: 2px;
         }

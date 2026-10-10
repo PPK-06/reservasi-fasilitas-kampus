@@ -12,13 +12,6 @@
 
 @section('content')
 
-@if (session('success'))
-    <div class="alert alert-success alert-dismissible fade show mb-4 border-0 shadow-sm" role="alert">
-        <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
-    </div>
-@endif
-
 <div class="card card-undip border shadow-sm">
     <div class="card-header bg-white py-3 border-bottom d-flex align-items-center justify-content-between">
         <h6 class="mb-0 fw-bold font-heading text-dark">

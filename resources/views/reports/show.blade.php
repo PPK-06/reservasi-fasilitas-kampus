@@ -12,13 +12,6 @@
 
 @section('content')
 
-@if (session('success'))
-    <div class="alert alert-success alert-dismissible fade show mb-4 border-0 shadow-sm" role="alert">
-        <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
-    </div>
-@endif
-
 @php
     $categoryLabels = [
         'kerusakan_alat' => 'Kerusakan Alat',
@@ -128,12 +121,62 @@
                 <div class="row g-3">
                     @forelse ($report->photos as $photo)
                         <div class="col-12">
-                            <img
-                                src="{{ asset('uploads/reports/'.$photo->file_name) }}"
-                                alt="Foto kerusakan fasilitas {{ $report->facility->name }}"
-                                class="img-fluid rounded border shadow-sm"
-                                style="width: 100%; max-height: 350px; object-fit: cover;"
-                                loading="lazy">
+                            <div class="card border rounded-3 overflow-hidden shadow-xs">
+                                <div role="button"
+                                     data-bs-toggle="modal"
+                                     data-bs-target="#userPhotoModal{{ $photo->id }}"
+                                     class="d-flex align-items-center justify-content-center p-2 position-relative"
+                                     style="background: #0f172a; height: 260px; cursor: pointer;"
+                                     title="Klik untuk memperbesar foto">
+                                    <img src="{{ asset('uploads/reports/'.$photo->file_name) }}"
+                                         alt="Foto kerusakan fasilitas {{ $report->facility->name }}"
+                                         class="w-100 h-100"
+                                         style="object-fit: contain;">
+                                    <span class="position-absolute bottom-0 end-0 m-2 badge bg-dark bg-opacity-75 text-white border border-secondary small">
+                                        <i class="bi bi-arrows-fullscreen me-1"></i>Perbesar
+                                    </span>
+                                </div>
+                                <div class="p-2 bg-white border-top d-flex align-items-center justify-content-between">
+                                    <span class="small text-muted text-truncate" style="max-width: 160px;">Foto #{{ $loop->iteration }}</span>
+                                    <button type="button"
+                                            class="btn btn-outline-undip btn-sm py-1 px-2"
+                                            style="font-size: 0.75rem;"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#userPhotoModal{{ $photo->id }}">
+                                        <i class="bi bi-zoom-in me-1"></i>Lihat Detil
+                                    </button>
+                                </div>
+                            </div>
+
+                            {{-- Modal Tampilan Foto Penuh / Detil --}}
+                            <div class="modal fade" id="userPhotoModal{{ $photo->id }}" tabindex="-1" aria-labelledby="userPhotoModalLabel{{ $photo->id }}" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered modal-xl">
+                                    <div class="modal-content border-0 shadow-lg">
+                                        <div class="modal-header bg-light py-2 px-3 border-bottom">
+                                            <h6 class="modal-title font-heading fw-bold text-dark mb-0" id="userPhotoModalLabel{{ $photo->id }}">
+                                                <i class="bi bi-image me-2 text-primary"></i>Bukti Kerusakan #{{ $loop->iteration }} - {{ $report->facility->name }}
+                                            </h6>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                                        </div>
+                                        <div class="modal-body p-2 p-md-3 text-center" style="background: #090d16;">
+                                            <img src="{{ asset('uploads/reports/'.$photo->file_name) }}"
+                                                 alt="Foto bukti kerusakan resolusi penuh"
+                                                 class="img-fluid rounded"
+                                                 style="max-height: 80vh; width: auto; object-fit: contain;">
+                                        </div>
+                                        <div class="modal-footer py-2 px-3 bg-light border-top d-flex justify-content-between">
+                                            <a href="{{ asset('uploads/reports/'.$photo->file_name) }}"
+                                               target="_blank"
+                                               class="btn btn-outline-undip btn-sm">
+                                                <i class="bi bi-box-arrow-up-right me-1"></i>Buka Resolusi Asli di Tab Baru
+                                            </a>
+                                            <button type="button" class="btn btn-secondary btn-sm px-3" data-bs-dismiss="modal">
+                                                Tutup
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     @empty
                         <div class="col-12 text-center py-4 text-muted small">

@@ -5,12 +5,6 @@
 
 @section('content')
 
-@if (session('success'))
-    <div class="alert alert-success">
-        {{ session('success') }}
-    </div>
-@endif
-
 <div class="card card-undip border shadow-sm mb-4">
     <div class="card-body">
 

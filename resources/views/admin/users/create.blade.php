@@ -20,7 +20,7 @@
                     dipakai masuk. Akun admin tidak dibuat dari sini.
                 </p>
 
-                <form method="POST" action="{{ route('admin.users.store') }}">
+                <form method="POST" action="{{ route('admin.users.store') }}" novalidate>
                     @csrf
 
                     {{-- Pesan error tidak dicetak ulang di sini; layout induk sudah
@@ -76,6 +76,9 @@
                                 <label for="identity_number" class="form-label fw-semibold">NIM/NIP</label>
                                 <input type="text" name="identity_number" id="identity_number"
                                        class="form-control @error('identity_number') is-invalid @enderror"
+                                       inputmode="numeric"
+                                       pattern="[0-9]*"
+                                       oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                        value="{{ old('identity_number') }}" maxlength="30">
                             </div>
 

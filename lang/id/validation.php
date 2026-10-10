@@ -45,6 +45,7 @@ return [
     'mimes' => 'Kolom :attribute harus berupa berkas bertipe: :values.',
     'required' => 'Kolom :attribute wajib diisi.',
     'required_if' => 'Kolom :attribute wajib diisi saat :other bernilai :value.',
+    'regex' => 'Format kolom :attribute tidak sah.',
     'string' => 'Kolom :attribute harus berupa teks.',
     'unique' => ':attribute sudah terpakai.',
     'uploaded' => ':attribute gagal diunggah. Pastikan ukuran berkas tidak lebih dari 3 MB.',
@@ -85,7 +86,11 @@ return [
     |
     */
 
-    'custom' => [],
+    'custom' => [
+        'identity_number' => [
+            'regex' => 'Kolom NIM/NIP hanya boleh berupa angka.',
+        ],
+    ],
 
     /*
     |--------------------------------------------------------------------------

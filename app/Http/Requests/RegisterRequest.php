@@ -39,7 +39,7 @@ class RegisterRequest extends FormRequest
             'name' => ['required', 'string', 'max:100'],
             'email' => ['required', 'email', 'max:150', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'identity_number' => ['required', 'string', 'max:30', 'unique:users,identity_number'],
+            'identity_number' => ['required', 'string', 'max:30', 'regex:/^[0-9]+$/', 'unique:users,identity_number'],
             'user_type' => ['required', 'in:mahasiswa,dosen,staf'],
         ];
     }

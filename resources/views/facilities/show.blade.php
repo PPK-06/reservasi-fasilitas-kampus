@@ -358,7 +358,7 @@
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
                 </div>
-                <form method="POST" action="{{ route('reservations.store') }}">
+                <form method="POST" action="{{ route('reservations.store') }}" novalidate>
                     @csrf
                     <div class="modal-body pt-3">
                         <input type="hidden" name="facility_id" value="{{ $facility->id }}">

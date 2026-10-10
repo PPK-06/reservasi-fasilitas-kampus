@@ -13,7 +13,7 @@
                 </h6>
             </div>
             <div class="card-body p-4">
-                <form method="POST" action="{{ route('reservations.store') }}">
+                <form method="POST" action="{{ route('reservations.store') }}" novalidate>
                     @csrf
 
                     {{-- Fasilitas --}}
