@@ -60,29 +60,12 @@
                     <dd class="col-sm-8 text-dark mb-2">{{ $reservation->start_time->format('d M Y') }}</dd>
 
                     <dt class="col-sm-4 text-muted small fw-semibold">Waktu</dt>
-                    <dd class="col-sm-8 text-dark font-monospace mb-2">
-                        {{ $reservation->start_time->format('H:i') }} – {{ $reservation->end_time->format('H:i') }}
+                    <dd class="col-sm-8 text-dark mb-2">
+                        {{ $reservation->start_time->format('H:i') }} – {{ $reservation->end_time->format('H:i') }} WIB
                     </dd>
 
                     <dt class="col-sm-4 text-muted small fw-semibold">Tujuan</dt>
                     <dd class="col-sm-8 text-dark mb-2">{{ $reservation->purpose }}</dd>
-
-                    <dt class="col-sm-4 text-muted small fw-semibold">Status</dt>
-                    <dd class="col-sm-8 mb-2">
-                        @if ($s === 'pending' && $reservation->start_time->lte(now()))
-                            <span class="badge text-bg-secondary">Tidak sempat diproses</span>
-                        @elseif ($s === 'pending')
-                            <span class="badge text-bg-warning">Menunggu</span>
-                        @elseif ($s === 'approved')
-                            <span class="badge text-bg-success">Disetujui</span>
-                        @elseif ($s === 'rejected')
-                            <span class="badge text-bg-danger">Ditolak</span>
-                        @elseif ($s === 'cancelled_by_user')
-                            <span class="badge text-bg-secondary">Dibatalkan</span>
-                        @elseif ($s === 'cancelled_by_officer')
-                            <span class="badge text-bg-dark">Dibatalkan petugas</span>
-                        @endif
-                    </dd>
 
                     @if ($reservation->status_reason)
                     <dt class="col-sm-4 text-muted small fw-semibold">Alasan</dt>
