@@ -159,3 +159,82 @@ it('O5 tidak menampilkan peringatan D4 tanpa reservasi approved mendatang pada f
         'status' => 'active',
     ]);
 });
+
+it('O5 mengubah fasilitas menjadi dalam perbaikan tanpa membatalkan reservasi approved setelah submit', function (): void {
+    $this->travelTo(Carbon::parse('2030-04-08 08:00:00'));
+
+    $petugas = buatAkunDenganRole('petugas');
+    $pengguna = buatAkunDenganRole('pengguna');
+    $facility = Facility::factory()->active()->create();
+
+    $report = new Report([
+        'facility_id' => $facility->id,
+        'category' => 'kerusakan_alat',
+        'description' => 'Proyektor rusak dan petugas akan mengubah status fasilitas dari halaman laporan.',
+        'status' => 'baru',
+    ]);
+    $report->user_id = $pengguna->id;
+    $report->save();
+
+    $reservation = Reservation::factory()
+        ->approved()
+        ->for($facility)
+        ->for($pengguna)
+        ->create();
+
+    $reportUrl = route('officer.reports.show', $report);
+    $response = $this->actingAs($petugas)
+        ->from($reportUrl)
+        ->patch(route('officer.facilities.status', $facility), [
+            'status' => 'under_maintenance',
+        ]);
+
+    $response->assertRedirect($reportUrl);
+    expect($facility->refresh()->status)->toBe('under_maintenance');
+    expect($reservation->refresh()->status)->toBe('approved');
+});
+
+it('O5 menyembunyikan modal D4 dan aksi tandai perbaikan saat fasilitas sudah dalam perbaikan', function (): void {
+    $this->travelTo(Carbon::parse('2030-04-08 08:00:00'));
+
+    $petugas = buatAkunDenganRole('petugas');
+    $pengguna = buatAkunDenganRole('pengguna');
+    $facility = Facility::factory()->underMaintenance()->create();
+
+    $report = new Report([
+        'facility_id' => $facility->id,
+        'category' => 'kerusakan_alat',
+        'description' => 'Proyektor sedang ditangani pada fasilitas yang sudah dalam perbaikan.',
+        'status' => 'baru',
+    ]);
+    $report->user_id = $pengguna->id;
+    $report->save();
+
+    Reservation::factory()
+        ->approved()
+        ->for($facility)
+        ->for($pengguna)
+        ->create();
+
+    $response = $this->actingAs($petugas)
+        ->get(route('officer.reports.show', $report));
+
+    $response->assertOk()
+        ->assertDontSeeText('Tandai Dalam Perbaikan');
+
+    $document = new DOMDocument;
+    $document->loadHTML('<?xml encoding="UTF-8">'.$response->getContent(), LIBXML_NOERROR | LIBXML_NOWARNING);
+    $xpath = new DOMXPath($document);
+    $modalId = 'statusModal-'.$facility->id;
+
+    expect($xpath->query('//div[@id="'.$modalId.'"]')->length)->toBe(0);
+    expect($xpath->query(
+        '//button[@data-bs-toggle="modal" and @data-bs-target="#'.$modalId.'"]'
+    )->length)->toBe(0);
+    expect($xpath->query(
+        '//form[@action="'.route('officer.facilities.status', $facility).'"]'
+    )->length)->toBe(0);
+    expect($xpath->query(
+        '//button[contains(normalize-space(.), "Tandai Dalam Perbaikan")]'
+    )->length)->toBe(0);
+});
