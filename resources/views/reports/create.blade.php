@@ -223,10 +223,7 @@
                         </div>
                     </div>
 
-                    <div class="d-flex justify-content-end gap-2 pt-3 border-top">
-                        <a href="{{ route('reports.index') }}" class="btn btn-outline-secondary btn-sm px-3">
-                            Batal
-                        </a>
+                    <div class="d-flex justify-content-end pt-3 border-top">
                         <button type="submit" class="btn btn-undip-primary btn-sm px-4 shadow-sm">
                             <i class="bi bi-send me-1"></i>Kirim Laporan
                         </button>
