@@ -105,12 +105,12 @@
         }
 
         .navbar-brand-logo {
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
             object-fit: contain;
-            border-radius: 6px;
-            background: #ffffff;
-            padding: 2px;
+            background: transparent;
+            padding: 0;
+            border-radius: 0;
         }
 
         .navbar-brand-text {

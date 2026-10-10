@@ -307,47 +307,15 @@
                 </div>
             </div>
 
-            {{-- Kolom Kanan: Mockup Jendela Browser dengan Video & GIF Demo --}}
+            {{-- Kolom Kanan: Video & GIF Demo Saja (Bersih Tanpa Bar Tambahan) --}}
             <div class="col-lg-7">
-                <div class="card card-undip border shadow-lg overflow-hidden" style="border-radius: 14px;">
-                    {{-- Chrome Topbar Mac / Browser --}}
-                    <div class="px-3 py-2 d-flex align-items-center justify-content-between border-bottom" style="background: var(--undip-navy-dark, #07172C);">
-                        <div class="d-flex align-items-center gap-2">
-                            <span class="rounded-circle" style="width: 10px; height: 10px; background: #FF5F56;"></span>
-                            <span class="rounded-circle" style="width: 10px; height: 10px; background: #FFBD2E;"></span>
-                            <span class="rounded-circle" style="width: 10px; height: 10px; background: #27C93F;"></span>
-                        </div>
-                        <div class="px-3 py-1 rounded-pill text-white-50 small d-none d-sm-flex align-items-center gap-1 font-monospace" style="background: rgba(255,255,255,0.1); font-size: 0.72rem;">
-                            <i class="bi bi-lock-fill text-warning"></i>
-                            <span>wiyata.undip.ac.id/facilities/5</span>
-                        </div>
-                        <span class="badge" style="background: var(--undip-gold); color: #07172C; font-size: 0.68rem; font-weight: 700;">
-                            SIMULASI REALISTIS
-                        </span>
-                    </div>
-
-                    {{-- Kontainer Media Responsif (Aspect Ratio 16:10) --}}
-                    <div class="position-relative w-100 bg-dark" style="aspect-ratio: 16/10; min-height: 240px; overflow: hidden;">
-                        <video autoplay loop muted playsinline poster="{{ asset('images/landing/demo-reservasi-poster.webp') }}" class="w-100 h-100 object-fit-cover">
-                            <source src="{{ asset('images/landing/demo-reservasi.mp4') }}" type="video/mp4">
-                            <source src="{{ asset('images/landing/demo-reservasi.webm') }}" type="video/webm">
-                            {{-- Fallback GIF murni --}}
-                            <img src="{{ asset('images/landing/demo-reservasi.gif') }}" alt="Demo animasi reservasi fasilitas kampus Wiyata" class="w-100 h-100 object-fit-cover">
-                        </video>
-                    </div>
-
-                    {{-- Footer Mockup --}}
-                    <div class="p-3 bg-white d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2 border-top">
-                        <div class="d-flex align-items-center gap-2">
-                            <span class="spinner-grow spinner-grow-sm text-success" role="status"></span>
-                            <small class="text-dark fw-semibold" style="font-size: 0.8rem;">
-                                Simulasi Alur: Pilih Sesi Grid → Isi Keperluan → Validasi Berhasil
-                            </small>
-                        </div>
-                        <span class="text-muted small" style="font-size: 0.75rem;">
-                            <i class="bi bi-arrow-repeat text-primary me-1"></i>Otomatis Mengulang
-                        </span>
-                    </div>
+                <div class="card card-undip border shadow-lg overflow-hidden position-relative w-100 bg-dark" style="border-radius: 14px; aspect-ratio: 16/10; min-height: 240px;">
+                    <video autoplay loop muted playsinline poster="{{ asset('images/landing/demo-reservasi-poster.webp') }}" class="w-100 h-100 object-fit-cover">
+                        <source src="{{ asset('images/landing/demo-reservasi.mp4') }}" type="video/mp4">
+                        <source src="{{ asset('images/landing/demo-reservasi.webm') }}" type="video/webm">
+                        {{-- Fallback GIF murni --}}
+                        <img src="{{ asset('images/landing/demo-reservasi.gif') }}" alt="Demo animasi reservasi fasilitas kampus Wiyata" class="w-100 h-100 object-fit-cover">
+                    </video>
                 </div>
             </div>
         </div>

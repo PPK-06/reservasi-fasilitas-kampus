@@ -24,15 +24,12 @@
             justify-content: center;
         }
         .browser-window {
-            width: 980px;
-            height: 620px;
+            width: 1000px;
+            height: 640px;
             background: #F8FAFC;
-            border-radius: 12px;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,255,255,0.18);
             position: relative;
         }
         /* Top Chrome */
@@ -227,20 +224,6 @@
 </head>
 <body>
     <div class="browser-window">
-        <!-- Top bar -->
-        <div class="window-topbar">
-            <div class="topbar-dots">
-                <div class="dot dot-red"></div>
-                <div class="dot dot-yellow"></div>
-                <div class="dot dot-green"></div>
-            </div>
-            <div class="topbar-url">
-                <i class="bi bi-lock-fill text-warning"></i>
-                <span>https://wiyata.undip.ac.id/facilities/5</span>
-            </div>
-            <span class="badge" style="background:#C89B3C; color:#07172C; font-weight:700; font-size:0.68rem;">LIVE SYSTEM</span>
-        </div>
-
         <!-- App Mini Navbar -->
         <div class="app-navbar">
             <div class="app-brand">
@@ -459,13 +442,13 @@
                 purposeTyped.textContent = '';
                 flashAlert.classList.remove('active');
                 cursor.style.left = '520px';
-                cursor.style.top = '480px';
+                cursor.style.top = '445px';
             }
             // 0.7s - 1.5s: Move to 09:00
             else if (t < 1.5) {
                 const p = ease((t - 0.7) / 0.8);
                 cursor.style.left = (520 + (680 - 520) * p) + 'px';
-                cursor.style.top = (480 + (228 - 480) * p) + 'px';
+                cursor.style.top = (445 + (192 - 445) * p) + 'px';
                 selectedSlots.forEach(s => s.classList.remove('selected'));
                 selectionInfo.textContent = 'Klik slot jam mulai lalu jam selesai di grid.';
                 btnOpenModal.disabled = true;
@@ -475,12 +458,12 @@
                 s0900.classList.add('selected');
                 const p = ease((t - 1.5) / 0.7);
                 cursor.style.left = (680 + (600 - 680) * p) + 'px';
-                cursor.style.top = (228 + (268 - 228) * p) + 'px';
+                cursor.style.top = (192 + (232 - 192) * p) + 'px';
             }
             // 2.2s - 2.8s: Click 11:00, slots range selected!
             else if (t < 2.8) {
                 cursor.style.left = '600px';
-                cursor.style.top = '268px';
+                cursor.style.top = '232px';
                 selectedSlots.forEach(s => s.classList.add('selected'));
                 selectionInfo.innerHTML = '<span class="text-primary fw-bold">Terpilih: 09:00 – 11:30 (5 slot / 2.5 jam)</span>';
                 btnOpenModal.disabled = false;
@@ -492,12 +475,12 @@
                 btnOpenModal.disabled = false;
                 const p = ease((t - 2.8) / 0.6);
                 cursor.style.left = (600 + (910 - 600) * p) + 'px';
-                cursor.style.top = (268 + (458 - 268) * p) + 'px';
+                cursor.style.top = (232 + (422 - 232) * p) + 'px';
             }
             // 3.4s - 3.7s: Click "Ajukan Reservasi", modal opens!
             else if (t < 3.7) {
                 cursor.style.left = '910px';
-                cursor.style.top = '458px';
+                cursor.style.top = '422px';
                 modalOverlay.classList.add('active');
                 purposeTyped.textContent = '';
             }
@@ -505,7 +488,7 @@
             else if (t < 5.0) {
                 modalOverlay.classList.add('active');
                 cursor.style.left = '620px';
-                cursor.style.top = '360px';
+                cursor.style.top = '325px';
                 const p = (t - 3.7) / 1.3;
                 const count = Math.floor(sampleText.length * Math.min(1, p));
                 purposeTyped.textContent = sampleText.substring(0, count);
@@ -516,12 +499,12 @@
                 purposeTyped.textContent = sampleText;
                 const p = ease((t - 5.0) / 0.5);
                 cursor.style.left = (620 + (690 - 620) * p) + 'px';
-                cursor.style.top = (360 + (425 - 360) * p) + 'px';
+                cursor.style.top = (325 + (390 - 325) * p) + 'px';
             }
             // 5.5s - 5.8s: Click "Kirim Pengajuan"
             else if (t < 5.8) {
                 cursor.style.left = '690px';
-                cursor.style.top = '425px';
+                cursor.style.top = '390px';
                 purposeTyped.textContent = sampleText;
                 modalOverlay.classList.add('active');
             }
@@ -530,7 +513,7 @@
                 modalOverlay.classList.remove('active');
                 flashAlert.classList.add('active');
                 cursor.style.left = '690px';
-                cursor.style.top = '425px';
+                cursor.style.top = '390px';
             }
         };
 
