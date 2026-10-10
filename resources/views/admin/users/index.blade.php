@@ -93,7 +93,7 @@
                     @endif
 
                     <label for="role" class="visually-hidden">Role</label>
-                    <select name="role" id="role" class="form-select form-select-sm" style="width:auto;">
+                    <select name="role" id="role" class="form-select form-select-sm" style="min-width: 140px;">
                         <option value="">Semua Role</option>
                         @foreach ($roleLabels as $value => $label)
                             <option value="{{ $value }}" @selected($activeRole === $value)>{{ $label }}</option>

@@ -247,6 +247,14 @@
             transition: border-color 0.15s ease-out, box-shadow 0.15s ease-out;
         }
 
+        .form-select {
+            padding-right: 2.25rem;
+        }
+
+        .form-select-sm {
+            padding-right: 2rem;
+        }
+
         .modal-dialog {
             max-width: min(92vw, 600px);
             margin: 1.25rem auto;
