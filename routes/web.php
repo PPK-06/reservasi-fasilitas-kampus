@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\RecapController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FacilityController;
+use App\Http\Controllers\LandingController;
 use App\Http\Controllers\Officer\DashboardController;
 use App\Http\Controllers\Officer\FacilityController as OfficerFacilityController;
 use App\Http\Controllers\Officer\ReportController as OfficerReportController;
@@ -14,7 +15,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ReservationController;
 use Illuminate\Support\Facades\Route;
 
-Route::redirect('/', '/facilities');
+Route::get('/', [LandingController::class, 'index'])->name('home');
 
 /*
 | Publik — tanpa prefix (dokumen route bagian 8)
