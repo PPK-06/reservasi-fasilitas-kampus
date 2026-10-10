@@ -101,10 +101,15 @@ class FacilityController extends Controller
 
     /**
      * A2 – Form Edit Fasilitas
+     *
+     * D4: sertakan reservasi approved mendatang pada fasilitas ini untuk
+     * peringatan saat status diubah ke Nonaktif / Dalam Perbaikan.
      */
     public function edit(Facility $facility)
     {
-        return view('admin.facilities.form', compact('facility'));
+        $upcomingReservations = Reservation::upcomingApproved($facility)->get($facility->id, collect());
+
+        return view('admin.facilities.form', compact('facility', 'upcomingReservations'));
     }
 
     /**
