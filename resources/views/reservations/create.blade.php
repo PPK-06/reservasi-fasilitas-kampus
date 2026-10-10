@@ -156,7 +156,6 @@
                         <button type="submit" class="btn btn-undip-primary px-4 shadow-sm">
                             <i class="bi bi-send me-1"></i>Ajukan
                         </button>
-                        <a href="{{ route('reservations.index') }}" class="btn btn-outline-secondary">Batal</a>
                     </div>
                 </form>
             </div>
