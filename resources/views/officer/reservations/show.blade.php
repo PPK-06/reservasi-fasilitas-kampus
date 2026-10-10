@@ -62,7 +62,7 @@
                     <dd class="col-sm-8 text-dark mb-2">{{ $reservation->start_time->format('d M Y') }}</dd>
 
                     <dt class="col-sm-4 text-muted small fw-semibold">Waktu</dt>
-                    <dd class="col-sm-8 text-dark font-monospace mb-2">
+                    <dd class="col-sm-8 text-dark mb-2">
                         {{ $reservation->start_time->format('H:i') }} – {{ $reservation->end_time->format('H:i') }}
                     </dd>
 
