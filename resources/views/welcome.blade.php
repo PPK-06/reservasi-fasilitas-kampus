@@ -309,12 +309,14 @@
 
             {{-- Kolom Kanan: Video & GIF Demo Saja (Bersih Tanpa Bar Tambahan) --}}
             <div class="col-lg-7">
-                <div class="card card-undip border shadow-lg overflow-hidden position-relative w-100 bg-dark" style="border-radius: 14px; aspect-ratio: 16/10; min-height: 240px;">
-                    <video autoplay loop muted playsinline poster="{{ asset('images/landing/demo-reservasi-poster.webp') }}" class="w-100 h-100 object-fit-cover">
+                <div class="card card-undip border shadow-lg overflow-hidden position-relative w-100" style="border-radius: 14px; aspect-ratio: 16/10; background-color: #F8FAFC;">
+                    <video autoplay loop muted playsinline poster="{{ asset('images/landing/demo-reservasi-poster.webp') }}"
+                           class="w-100 h-100 d-block"
+                           style="object-fit: cover; width: 100%; height: 100%; border: none; background: #F8FAFC;">
                         <source src="{{ asset('images/landing/demo-reservasi.mp4') }}" type="video/mp4">
                         <source src="{{ asset('images/landing/demo-reservasi.webm') }}" type="video/webm">
                         {{-- Fallback GIF murni --}}
-                        <img src="{{ asset('images/landing/demo-reservasi.gif') }}" alt="Demo animasi reservasi fasilitas kampus Wiyata" class="w-100 h-100 object-fit-cover">
+                        <img src="{{ asset('images/landing/demo-reservasi.gif') }}" alt="Demo animasi reservasi fasilitas kampus Wiyata" class="w-100 h-100 d-block" style="object-fit: cover; background: #F8FAFC;">
                     </video>
                 </div>
             </div>
