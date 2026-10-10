@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Riwayat Reservasi · Wiyata')
-@section('page-title', 'Riwayat Reservasi Saya')
+@section('page-title', 'Reservasi Saya')
 @section('page-subtitle', 'Pantau status permohonan peminjaman ruangan dan sarana kampus Tembalang')
 @section('page-actions')
     <a href="{{ route('reservations.create') }}" class="btn btn-undip-primary btn-sm px-3 shadow-sm">
