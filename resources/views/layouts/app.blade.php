@@ -623,6 +623,19 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const flashAlerts = document.querySelectorAll('.flash-wrapper .alert');
+        flashAlerts.forEach(function (alertEl) {
+            setTimeout(function () {
+                const bsAlert = bootstrap.Alert.getOrCreateInstance(alertEl);
+                if (bsAlert) {
+                    bsAlert.close();
+                }
+            }, 5000);
+        });
+    });
+</script>
 @stack('scripts')
 </body>
 </html>
