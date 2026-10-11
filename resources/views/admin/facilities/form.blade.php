@@ -9,7 +9,7 @@
 
 @section('page-title', $title)
 @section('page-actions')
-    <a href="{{ route('admin.facilities.index') }}" class="btn btn-outline-secondary btn-sm">
+    <a href="{{ route('admin.facilities.index') }}" class="btn btn-undip-secondary">
         <i class="bi bi-arrow-left me-1"></i>Kembali
     </a>
 @endsection
@@ -20,7 +20,7 @@
         <div class="card card-undip border shadow-sm">
             <div class="card-header bg-white py-3 border-bottom">
                 <h6 class="mb-0 fw-bold font-heading text-dark">
-                    <i class="bi bi-pencil-square me-2 text-primary"></i>Formulir Data Fasilitas Kampus
+                    <i class="bi bi-pencil-square me-2 text-undip-navy"></i>Formulir Data Fasilitas Kampus
                 </h6>
             </div>
             <div class="card-body p-4">
@@ -137,7 +137,7 @@
 
                     {{-- Tombol Submit --}}
                     <div class="d-flex justify-content-end gap-2 pt-3 border-top">
-                        <a href="{{ route('admin.facilities.index') }}" class="btn btn-outline-secondary">Batal</a>
+                        <a href="{{ route('admin.facilities.index') }}" class="btn btn-undip-secondary">Batal</a>
                         <button type="submit" class="btn btn-undip-primary shadow-sm">
                             <i class="bi bi-save me-1"></i>Simpan
                         </button>

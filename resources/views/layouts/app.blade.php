@@ -260,6 +260,20 @@
             font-weight: 600;
         }
 
+        /* Varian outline navy berukuran Bootstrap biasa (cocok untuk tombol ikon btn-sm di tabel) */
+        .btn-outline-navy {
+            --bs-btn-color: var(--undip-navy);
+            --bs-btn-border-color: var(--undip-navy);
+            --bs-btn-hover-color: #ffffff;
+            --bs-btn-hover-bg: var(--undip-navy);
+            --bs-btn-hover-border-color: var(--undip-navy);
+            --bs-btn-active-color: #ffffff;
+            --bs-btn-active-bg: var(--undip-navy-light);
+            --bs-btn-active-border-color: var(--undip-navy-light);
+            --bs-btn-disabled-color: var(--undip-navy);
+            --bs-btn-disabled-border-color: var(--undip-navy);
+        }
+
         .text-undip-navy {
             color: var(--undip-navy) !important;
         }

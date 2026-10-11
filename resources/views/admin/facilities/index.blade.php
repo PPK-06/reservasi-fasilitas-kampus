@@ -78,10 +78,10 @@
 
                 {{-- Tombol --}}
                 <div class="col-lg-3 col-md-12 d-flex gap-2">
-                    <button type="submit" class="btn btn-primary btn-sm px-3">
+                    <button type="submit" class="btn btn-undip-primary btn-sm px-3">
                         <i class="bi bi-funnel me-1"></i>Filter
                     </button>
-                    <a href="{{ route('admin.facilities.index') }}" class="btn btn-outline-secondary btn-sm px-3">
+                    <a href="{{ route('admin.facilities.index') }}" class="btn btn-undip-secondary btn-sm px-3">
                         <i class="bi bi-arrow-counterclockwise me-1"></i>Reset
                     </a>
                 </div>
@@ -170,16 +170,16 @@
                             {{-- Badge status (D3) --}}
                             <td class="text-center">
                                 @if ($isActive)
-                                    <span class="badge text-bg-success">
-                                        <i class="bi bi-check-circle me-1"></i>Aktif
+                                    <span class="badge-status badge-status-approved">
+                                        <i class="bi bi-check-circle"></i> Aktif
                                     </span>
                                 @elseif ($isMaint)
-                                    <span class="badge text-bg-warning">
-                                        <i class="bi bi-tools me-1"></i>Dalam Perbaikan
+                                    <span class="badge-status badge-status-maintenance">
+                                        <i class="bi bi-tools"></i> Dalam Perbaikan
                                     </span>
                                 @else
-                                    <span class="badge text-bg-secondary">
-                                        <i class="bi bi-x-circle me-1"></i>Nonaktif
+                                    <span class="badge-status badge-status-rejected">
+                                        <i class="bi bi-x-circle"></i> Nonaktif
                                     </span>
                                 @endif
                             </td>
@@ -188,8 +188,9 @@
                             <td class="text-end pe-3">
                                 <div class="d-flex gap-1 justify-content-end">
                                     <a href="{{ route('admin.facilities.edit', $facility) }}"
-                                       class="btn btn-outline-primary btn-sm"
-                                       title="Edit">
+                                       class="btn btn-outline-navy btn-sm"
+                                       title="Edit"
+                                       aria-label="Edit">
                                         <i class="bi bi-pencil-square"></i>
                                     </a>
 
