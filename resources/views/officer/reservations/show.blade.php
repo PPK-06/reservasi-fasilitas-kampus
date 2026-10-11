@@ -45,37 +45,38 @@
             </div>
 
             <div class="card-body p-4">
-                <dl class="row mb-0 g-3">
-                    <dt class="col-sm-4 text-muted small fw-semibold">Fasilitas</dt>
-                    <dd class="col-sm-8 fw-semibold text-dark mb-2">
+                {{-- Pola dt/dd sama dengan officer/reports/show: label dt, nilai dd, info sekunder .small.text-muted --}}
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Fasilitas</dt>
+                    <dd class="col-sm-8">
                         {{ $reservation->facility->name }}
-                        <div class="text-muted small fw-normal">{{ $reservation->facility->type }} | {{ $reservation->facility->location }}</div>
+                        <div class="small text-muted">{{ $reservation->facility->type }} | {{ $reservation->facility->location }}</div>
                     </dd>
 
-                    <dt class="col-sm-4 text-muted small fw-semibold">Pemohon</dt>
-                    <dd class="col-sm-8 text-dark mb-2">
-                        <strong>{{ $reservation->user->name }}</strong>
-                        <div class="text-muted small">NIM/NIP: {{ $reservation->user->identity_number ?? '-' }} | Email: {{ $reservation->user->email }}</div>
+                    <dt class="col-sm-4">Pemohon</dt>
+                    <dd class="col-sm-8">
+                        {{ $reservation->user->name }}
+                        <div class="small text-muted">NIM/NIP: {{ $reservation->user->identity_number ?? '-' }} | Email: {{ $reservation->user->email }}</div>
                     </dd>
 
-                    <dt class="col-sm-4 text-muted small fw-semibold">Tanggal</dt>
-                    <dd class="col-sm-8 text-dark mb-2">{{ $reservation->start_time->format('d M Y') }}</dd>
+                    <dt class="col-sm-4">Tanggal</dt>
+                    <dd class="col-sm-8">{{ $reservation->start_time->translatedFormat('d M Y') }}</dd>
 
-                    <dt class="col-sm-4 text-muted small fw-semibold">Waktu</dt>
-                    <dd class="col-sm-8 text-dark mb-2">
+                    <dt class="col-sm-4">Waktu</dt>
+                    <dd class="col-sm-8">
                         {{ $reservation->start_time->format('H:i') }} – {{ $reservation->end_time->format('H:i') }}
                     </dd>
 
-                    <dt class="col-sm-4 text-muted small fw-semibold">Tujuan</dt>
-                    <dd class="col-sm-8 text-dark mb-2">{{ $reservation->purpose }}</dd>
+                    <dt class="col-sm-4">Tujuan</dt>
+                    <dd class="col-sm-8">{{ $reservation->purpose }}</dd>
 
                     @if ($reservation->status_reason)
-                    <dt class="col-sm-4 text-muted small fw-semibold">Alasan</dt>
-                    <dd class="col-sm-8 text-danger mb-2">{{ $reservation->status_reason }}</dd>
+                    <dt class="col-sm-4">Alasan</dt>
+                    <dd class="col-sm-8 text-danger">{{ $reservation->status_reason }}</dd>
                     @endif
 
-                    <dt class="col-sm-4 text-muted small fw-semibold">Diajukan</dt>
-                    <dd class="col-sm-8 text-muted small mb-0">{{ $reservation->created_at->format('d M Y, H:i') }}</dd>
+                    <dt class="col-sm-4">Diajukan</dt>
+                    <dd class="col-sm-8 mb-0">{{ $reservation->created_at->translatedFormat('d M Y, H:i') }}</dd>
                 </dl>
             </div>
 
