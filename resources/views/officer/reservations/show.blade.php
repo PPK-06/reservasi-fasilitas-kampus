@@ -4,7 +4,7 @@
 @section('page-title', 'Detail Reservasi Petugas')
 @section('page-subtitle', 'Pemeriksaan kelayakan permohonan peminjaman ruangan dan aksi validasi')
 @section('page-actions')
-    <a href="{{ route('officer.reservations.index') }}" class="btn btn-outline-secondary btn-sm px-3">
+    <a href="{{ route('officer.reservations.index') }}" class="btn btn-undip-secondary">
         <i class="bi bi-arrow-left me-1"></i>Kembali ke Antrian
     </a>
 @endsection
@@ -15,7 +15,7 @@
         <div class="card card-undip border shadow-sm">
             <div class="card-header bg-white py-3 border-bottom d-flex align-items-center justify-content-between">
                 <div class="d-flex align-items-center gap-2">
-                    <i class="bi bi-calendar-check text-primary fs-5"></i>
+                    <i class="bi bi-calendar-check text-undip-navy fs-5"></i>
                     <h6 class="mb-0 fw-bold font-heading text-dark">Data Pengajuan Reservasi</h6>
                 </div>
                 <div>
@@ -90,13 +90,13 @@
                 <form method="POST" action="{{ route('officer.reservations.approve', $reservation) }}">
                     @csrf
                     @method('PATCH')
-                    <button type="submit" class="btn btn-success btn-sm px-3 shadow-sm">
+                    <button type="submit" class="btn btn-success btn-touch px-3 shadow-sm">
                         <i class="bi bi-check-lg me-1"></i>Setujui
                     </button>
                 </form>
 
                 {{-- Tolak --}}
-                <button type="button" class="btn btn-danger btn-sm px-3 shadow-sm"
+                <button type="button" class="btn btn-danger btn-touch px-3 shadow-sm"
                         data-bs-toggle="modal" data-bs-target="#rejectModal">
                     <i class="bi bi-x-circle me-1"></i>Tolak
                 </button>

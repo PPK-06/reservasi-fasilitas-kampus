@@ -121,7 +121,7 @@
             @if (request()->hasAny(['status', 'category', 'facility_id']))
                 <div class="col-12">
                     <a href="{{ route('officer.reports.index') }}"
-                       class="btn btn-sm btn-outline-secondary">
+                       class="btn btn-undip-secondary">
                         Reset Filter
                     </a>
                 </div>

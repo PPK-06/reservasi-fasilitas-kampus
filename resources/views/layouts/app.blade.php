@@ -251,6 +251,19 @@
             transition: all 0.15s ease-out;
         }
 
+        /* Tombol varian Bootstrap (success/danger, dst.) dengan touch-target 44px yang sama */
+        .btn-touch {
+            min-height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .text-undip-navy {
+            color: var(--undip-navy) !important;
+        }
+
         .navbar-toggler {
             min-width: 44px;
             min-height: 44px;
