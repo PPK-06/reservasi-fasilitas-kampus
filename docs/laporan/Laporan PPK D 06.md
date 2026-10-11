@@ -51,7 +51,7 @@ Ferdy bertanggung jawab atas implementasi Modul M2 (Manajemen Master Fasilitas) 
 ## 2. Link File Program
 
 - **Repositori GitHub:** `https://github.com/PPK-06/reservasi-fasilitas-kampus`
-- **Link Google Drive:** `[ISI MANUAL: link Google Drive berkas program lengkap dan dokumentasi video]`
+- **Link Google Drive:** `https://drive.google.com/drive/folders/1fpDP_pGTsBffq8AyPA7HXqF9enFKN4q0`
 
 ---
 

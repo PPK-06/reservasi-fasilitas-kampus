@@ -308,7 +308,7 @@ def build_document():
     p_link.add_run("Repositori GitHub: ").bold = True
     p_link.add_run("https://github.com/PPK-06/reservasi-fasilitas-kampus\n")
     p_link.add_run("Link Google Drive: ").bold = True
-    p_link.add_run("[ISI MANUAL: link Google Drive berkas program lengkap dan dokumentasi video]")
+    p_link.add_run("https://drive.google.com/drive/folders/1fpDP_pGTsBffq8AyPA7HXqF9enFKN4q0")
 
     # -------------------------------------------------------------
     # 3. INFORMASI SETTING PROGRAM
