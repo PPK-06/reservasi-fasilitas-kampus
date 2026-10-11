@@ -26,10 +26,10 @@
     ];
 
     $statusBadges = [
-        'pending' => 'text-bg-warning',
-        'verified' => 'text-bg-success',
-        'rejected' => 'text-bg-danger',
-        'suspended' => 'text-bg-secondary',
+        'pending' => 'badge-status-pending',
+        'verified' => 'badge-status-approved',
+        'rejected' => 'badge-status-rejected',
+        'suspended' => 'badge-status-neutral',
     ];
 
     $roleLabels = [
@@ -48,10 +48,9 @@
     ];
 @endphp
 
-<div class="card card-undip border shadow-sm">
-
-    {{-- ── Filter: tab status + penanda pending + select role ── --}}
-    <div class="card-header bg-white py-3">
+{{-- ── Filter: tab status + penanda pending + select role ── --}}
+<div class="card card-undip border shadow-sm mb-4">
+    <div class="card-body py-3">
         <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
 
             {{-- D11 | tab status. Setiap tautan membawa role yang sedang aktif
@@ -100,12 +99,26 @@
                         @endforeach
                     </select>
 
-                    <button type="submit" class="btn btn-outline-primary btn-sm">
+                    <button type="submit" class="btn btn-undip-primary btn-sm px-3 text-nowrap">
                         <i class="bi bi-funnel me-1"></i>Terapkan
                     </button>
                 </form>
             </div>
         </div>
+    </div>
+</div>
+
+<div class="card card-undip border shadow-sm">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+        <h6 class="mb-0 fw-bold text-dark">
+            <i class="bi bi-people me-1"></i>Daftar Akun
+        </h6>
+        <span class="text-muted" style="font-size: 0.82rem;">
+            {{ $users->total() }} akun
+            @if ($activeStatus !== null || $activeRole !== null)
+                cocok dengan filter
+            @endif
+        </span>
     </div>
 
     {{-- ── Tabel ── --}}
@@ -145,7 +158,7 @@
                             </td>
                             <td class="p-0">
                                 <a href="{{ $rowUrl }}" class="d-block text-decoration-none text-reset px-2 py-2">
-                                    <span class="badge {{ $statusBadges[$user->status] ?? 'text-bg-light text-dark border' }}">
+                                    <span class="badge-status {{ $statusBadges[$user->status] ?? 'badge-status-neutral' }}">
                                         {{ $statusLabels[$user->status] ?? $user->status }}
                                     </span>
                                 </a>
@@ -159,7 +172,7 @@
                             </td>
                             <td class="p-0">
                                 <a href="{{ $rowUrl }}" class="d-block text-decoration-none text-reset px-2 pe-3 py-2 text-muted">
-                                    {{ $user->created_at?->format('d M Y') ?? '-' }}
+                                    {{ $user->created_at?->translatedFormat('d M Y') ?? '-' }}
                                 </a>
                             </td>
                         </tr>
@@ -194,17 +207,10 @@
     </div>
 
     {{-- ── Paginasi (D16). Bootstrap 5 sudah disetel di AppServiceProvider (F11) ── --}}
-    <div class="card-footer bg-white border-top d-flex flex-wrap justify-content-between align-items-center gap-2 py-2">
-        <span class="text-muted" style="font-size:0.85rem;">
-            {{ $users->total() }} akun
-            @if ($activeStatus !== null || $activeRole !== null)
-                cocok dengan filter
-            @endif
-        </span>
-
-        @if ($users->hasPages())
+    @if ($users->hasPages())
+        <div class="card-footer bg-white border-top py-2">
             {{ $users->links() }}
-        @endif
-    </div>
+        </div>
+    @endif
 </div>
 @endsection

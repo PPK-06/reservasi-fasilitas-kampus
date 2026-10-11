@@ -372,6 +372,19 @@
             border: 1px solid var(--status-rejected-border);
         }
 
+        .badge-status-neutral {
+            background-color: #F1F5F9;
+            color: #475569;
+            border: 1px solid var(--border-medium);
+        }
+
+        /* Tab pill (mis. filter status Master Akun) memakai navy tema */
+        .nav-pills {
+            --bs-nav-pills-link-active-color: #ffffff;
+            --bs-nav-pills-link-active-bg: var(--undip-navy);
+            --bs-nav-link-hover-color: var(--undip-navy);
+        }
+
         /* ════════════════════════════════════════════
            PAGINASI (warna tema, menggantikan biru default Bootstrap)
            ════════════════════════════════════════════ */
