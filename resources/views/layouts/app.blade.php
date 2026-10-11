@@ -230,6 +230,27 @@
             color: #ffffff;
         }
 
+        /* Pasangan sekunder untuk .btn-undip-primary: metrik sama, gaya outline netral */
+        .btn-undip-secondary {
+            --bs-btn-color: var(--text-body);
+            --bs-btn-bg: #ffffff;
+            --bs-btn-border-color: var(--border-medium);
+            --bs-btn-hover-color: var(--undip-navy);
+            --bs-btn-hover-bg: var(--undip-blue-surface);
+            --bs-btn-hover-border-color: var(--undip-navy);
+            --bs-btn-active-color: var(--undip-navy);
+            --bs-btn-active-bg: var(--undip-blue-surface);
+            --bs-btn-active-border-color: var(--undip-navy);
+            font-weight: 600;
+            padding: 0.5rem 1.25rem;
+            min-height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-sm);
+            transition: all 0.15s ease-out;
+        }
+
         .navbar-toggler {
             min-width: 44px;
             min-height: 44px;
