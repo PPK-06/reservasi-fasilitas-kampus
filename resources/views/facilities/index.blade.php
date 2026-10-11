@@ -75,7 +75,7 @@
                         <button type="submit" class="btn btn-undip-primary px-3" title="Terapkan Filter">
                             <i class="bi bi-funnel"></i>
                         </button>
-                        <a href="{{ route('facilities.index') }}" class="btn btn-outline-secondary px-3" title="Reset Filter">
+                        <a href="{{ route('facilities.index') }}" class="btn btn-undip-secondary px-3" title="Reset filter" aria-label="Reset filter">
                             <i class="bi bi-arrow-counterclockwise"></i>
                         </a>
                     </div>
