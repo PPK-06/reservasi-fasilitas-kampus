@@ -315,8 +315,8 @@
                            style="object-fit: cover; width: 100%; height: 100%; border: none; background: #F8FAFC;">
                         <source src="{{ asset('images/landing/demo-reservasi.mp4') }}" type="video/mp4">
                         <source src="{{ asset('images/landing/demo-reservasi.webm') }}" type="video/webm">
-                        {{-- Fallback GIF murni --}}
-                        <img src="{{ asset('images/landing/demo-reservasi.gif') }}" alt="Demo animasi reservasi fasilitas kampus Wiyata" class="w-100 h-100 d-block" style="object-fit: cover; background: #F8FAFC;">
+                        {{-- Fallback poster gambar murni --}}
+                        <img src="{{ asset('images/landing/demo-reservasi-poster.webp') }}" alt="Demo animasi reservasi fasilitas kampus Wiyata" class="w-100 h-100 d-block" style="object-fit: cover; background: #F8FAFC;">
                     </video>
                 </div>
             </div>
