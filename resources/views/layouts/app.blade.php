@@ -346,6 +346,26 @@
         }
 
         /* ════════════════════════════════════════════
+           PAGINASI (warna tema, menggantikan biru default Bootstrap)
+           ════════════════════════════════════════════ */
+        .pagination {
+            --bs-pagination-color: var(--undip-navy);
+            --bs-pagination-border-color: var(--border-subtle);
+            --bs-pagination-hover-color: var(--undip-navy);
+            --bs-pagination-hover-bg: var(--undip-blue-surface);
+            --bs-pagination-hover-border-color: var(--border-medium);
+            --bs-pagination-focus-color: var(--undip-navy);
+            --bs-pagination-focus-bg: var(--undip-blue-surface);
+            --bs-pagination-focus-box-shadow: 0 0 0 3px rgba(11, 37, 69, 0.12);
+            --bs-pagination-active-color: #ffffff;
+            --bs-pagination-active-bg: var(--undip-navy);
+            --bs-pagination-active-border-color: var(--undip-navy);
+            --bs-pagination-disabled-color: var(--text-muted);
+            --bs-pagination-disabled-bg: var(--canvas-bg);
+            --bs-pagination-disabled-border-color: var(--border-subtle);
+        }
+
+        /* ════════════════════════════════════════════
            HEADER HALAMAN
            ════════════════════════════════════════════ */
         .undip-page-header {
