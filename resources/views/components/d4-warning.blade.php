@@ -10,8 +10,8 @@
             Terdapat {{ $reservations->count() }} reservasi yang sudah disetujui
             dan belum dilaksanakan:
         </div>
-        <div class="table-responsive" style="max-height: 220px; overflow-y: auto;">
-            <table class="table table-sm table-borderless mb-0" style="font-size: 0.82rem;">
+        <div class="table-responsive d4-warning-table">
+            <table class="table table-sm mb-0">
                 <thead>
                     <tr class="text-muted">
                         <th>Tanggal</th>
@@ -27,7 +27,7 @@
                 <tbody>
                     @foreach ($reservations as $res)
                         <tr>
-                            <td>{{ $res->start_time->format('d M Y') }}</td>
+                            <td>{{ $res->start_time->translatedFormat('d M Y') }}</td>
                             <td>{{ $res->start_time->format('H:i') }} – {{ $res->end_time->format('H:i') }}</td>
                             @if ($column === 'facility')
                                 <td>{{ $res->facility->name ?? '-' }}</td>
@@ -38,8 +38,9 @@
                                 {{-- Link ke antrian reservasi petugas (O3) hanya untuk role petugas --}}
                                 @if ($res->id && auth()->user()?->role === 'petugas')
                                     <a href="{{ route('officer.reservations.show', $res) }}"
-                                       class="text-primary text-decoration-none"
-                                       title="Lihat di antrian petugas">
+                                       class="d4-warning-link text-decoration-none"
+                                       title="Lihat detail reservasi"
+                                       aria-label="Lihat detail reservasi">
                                         <i class="bi bi-box-arrow-up-right"></i>
                                     </a>
                                 @endif

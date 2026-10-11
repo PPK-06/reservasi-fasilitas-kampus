@@ -110,9 +110,9 @@ it('mengurutkan daftar D4 menurut waktu mulai, bukan per fasilitas', function ()
         ->assertOk()
         ->assertSeeInOrder(['Ruang Uji Urutan Alfa', 'Ruang Uji Urutan Beta', 'Ruang Uji Urutan Alfa'])
         ->assertSeeInOrder([
-            $hari(2)->format('d M Y'),
-            $hari(3)->format('d M Y'),
-            $hari(5)->format('d M Y'),
+            $hari(2)->translatedFormat('d M Y'),
+            $hari(3)->translatedFormat('d M Y'),
+            $hari(5)->translatedFormat('d M Y'),
         ]);
 });
 

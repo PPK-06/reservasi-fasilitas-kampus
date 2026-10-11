@@ -256,7 +256,7 @@
     @if ($isActive || $isMaint)
     <div class="modal fade" id="statusModal-{{ $facility->id }}" tabindex="-1"
          aria-labelledby="statusModalLabel-{{ $facility->id }}" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered {{ $upcoming->isNotEmpty() && $isActive ? 'modal-lg' : '' }}">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable {{ $upcoming->isNotEmpty() && $isActive ? 'modal-lg' : '' }}">
             <div class="modal-content border-0 shadow">
                 <div class="modal-header border-bottom-0 pb-0">
                     <h5 class="modal-title fw-bold" id="statusModalLabel-{{ $facility->id }}">
@@ -291,7 +291,7 @@
 
                 <div class="modal-footer border-top-0">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                        <i class="bi bi-arrow-left me-1"></i>Batal
+                        Batal
                     </button>
                     <form method="POST" action="{{ route('officer.facilities.status', $facility) }}">
                         @csrf

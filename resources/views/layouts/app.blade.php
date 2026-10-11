@@ -366,6 +366,39 @@
         }
 
         /* ════════════════════════════════════════════
+           TABEL PERINGATAN D4 (components/d4-warning)
+           Menyatu dengan latar .alert-warning, bergulir bila baris banyak
+           ════════════════════════════════════════════ */
+        .d4-warning-table {
+            max-height: 220px;
+            overflow-y: auto;
+        }
+
+        .d4-warning-table .table {
+            --bs-table-bg: transparent;
+            --bs-table-border-color: var(--status-pending-border);
+            font-size: 0.82rem;
+        }
+
+        .d4-warning-table thead th {
+            position: sticky;
+            top: 0;
+            background-color: var(--bs-alert-bg);
+        }
+
+        .d4-warning-table tbody tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .d4-warning-link {
+            color: var(--undip-navy);
+        }
+
+        .d4-warning-link:hover {
+            color: var(--undip-navy-light);
+        }
+
+        /* ════════════════════════════════════════════
            HEADER HALAMAN
            ════════════════════════════════════════════ */
         .undip-page-header {

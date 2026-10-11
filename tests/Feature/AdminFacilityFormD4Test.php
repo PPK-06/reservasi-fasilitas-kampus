@@ -42,7 +42,7 @@ it('D4 A2: edit fasilitas active menampilkan peringatan dan data reservasi appro
         ->assertViewIs('admin.facilities.form')
         ->assertSee('Terdapat 1 reservasi yang sudah disetujui')
         ->assertSee('Pemohon Terdampak Satu')
-        ->assertSee(now()->addDays(3)->format('d M Y'))
+        ->assertSee(now()->addDays(3)->translatedFormat('d M Y'))
         ->assertSee('10:00')
         ->assertSee('Peringatan ini berlaku jika status diubah ke Nonaktif atau Dalam Perbaikan.');
 });
